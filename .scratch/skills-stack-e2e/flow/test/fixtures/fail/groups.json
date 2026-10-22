@@ -1,0 +1,32 @@
+{
+  "groups": [
+    {
+      "name": "fixture-broken-symlink",
+      "source_repo": "test/fixtures",
+      "skills": ["fixture-broken-symlink"],
+      "needs_project": false,
+      "blocked_hosts": []
+    },
+    {
+      "name": "fixture-not-in-session",
+      "source_repo": "test/fixtures",
+      "skills": ["fixture-not-in-session"],
+      "needs_project": false,
+      "blocked_hosts": []
+    },
+    {
+      "name": "fixture-denied-host",
+      "source_repo": "test/fixtures",
+      "skills": ["fixture-denied-host"],
+      "needs_project": false,
+      "blocked_hosts": ["example.denied.invalid:443"]
+    },
+    {
+      "name": "fixture-needs-project",
+      "source_repo": "test/fixtures",
+      "skills": ["fixture-needs-project"],
+      "needs_project": true,
+      "blocked_hosts": []
+    }
+  ]
+}

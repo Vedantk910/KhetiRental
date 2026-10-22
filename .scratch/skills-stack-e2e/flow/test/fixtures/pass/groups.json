@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "fixture-good-skill",
+      "source_repo": "test/fixtures",
+      "skills": ["fixture-good-skill"],
+      "needs_project": false,
+      "blocked_hosts": []
+    }
+  ]
+}

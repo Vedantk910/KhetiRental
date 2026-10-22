@@ -1,0 +1,15 @@
+{
+  "settings": "/Users/tarun_k/.claude/settings.json",
+  "superpowers": {
+    "plugin_key": "superpowers@superpowers-marketplace",
+    "skill": "systematic-debugging",
+    "skill_dir": "/Users/tarun_k/.claude/plugins/cache/superpowers-marketplace/superpowers/7.0.0/skills"
+  },
+  "ponytail": {
+    "plugin_key": "ponytail@ponytail",
+    "health_marker": "/Users/tarun_k/.claude/.ponytail-active"
+  },
+  "graphify": {
+    "subcommand": "hook-guard"
+  }
+}

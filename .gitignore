@@ -1,0 +1,58 @@
+# KhetiRental v2.0 — .gitignore
+# Generated: 2026-06-22 | Preserved: .claude/hooks/git-guard.sh, .claude/settings.json, .claude/skills/*
+
+# ── Secrets & credentials ───────────────────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key
+*.p12
+id_rsa*
+*.gpg
+credentials*
+*secret*
+*token*
+
+# ── Local caches & write buffers ───────────────────────────────────────────
+.claude/.cc-writes/
+.claude/verify-skills.py
+.claude/settings.local.json
+
+# ── OS junk ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# ── Go / compiled artifacts ────────────────────────────────────────────────
+*.exe
+*.out
+bin/
+build/
+dist/
+
+# ── IDE / editors ───────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Graphify build output (churns on every rebuild per project CLAUDE.md) ─
+# NOTE: per CLAUDE.md, graphify-out/graph.json is expected to change on every
+# build. If you WANT to track it, remove this line and the rule above it.
+# graphify-out/
+
+# ── Scratch / agent work files ─────────────────────────────────────────────
+# Keep .scratch/ tracked (it's the issue tracker).
+# But ignore transient report files that get regenerated:
+.scratch/*/flow/report-*.json
+
+# ── Build outputs ───────────────────────────────────────────────────────────
+node_modules/
+vendor/
+target/

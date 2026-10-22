@@ -1,0 +1,68 @@
+{
+  "groups": [
+    {
+      "name": "caveman",
+      "source_repo": "JuliusBrussee/caveman",
+      "skills": ["caveman", "cavecrew", "caveman-commit", "caveman-compress", "caveman-discover", "caveman-evidence-review", "caveman-explore", "caveman-help", "caveman-learn", "caveman-manage", "caveman-optimize", "caveman-review", "caveman-setup", "caveman-stats", "investigate-first", "lean-build", "megacave", "migration", "safe-refactor", "surgical-patch", "ultracave", "verify-and-stop"],
+      "needs_project": false,
+      "blocked_hosts": []
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "source_repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "skills": ["ui-ux-pro-max", "design", "design-system", "brand", "slides", "ui-styling", "banner-design"],
+      "needs_project": false,
+      "blocked_hosts": [],
+      "executables": [
+        {
+          "invocation": "python3 ~/.claude/skills/ui-ux-pro-max/scripts/search.py \"<query>\" --domain <domain>",
+          "tested_offline": true,
+          "note": "BM25 search over bundled CSV data; no network, no deps"
+        }
+      ]
+    },
+    {
+      "name": "karpathy-guidelines",
+      "source_repo": "szkocot/andrej-karpathy-skills",
+      "skills": ["karpathy-guidelines"],
+      "needs_project": false,
+      "blocked_hosts": []
+    },
+    {
+      "name": "matt-pocock",
+      "source_repo": "mattpocock/skills",
+      "skills": ["to-spec", "to-tickets", "setup-matt-pocock-skills"],
+      "needs_project": false,
+      "blocked_hosts": [],
+      "model_invocation_disabled": true
+    },
+    {
+      "name": "anthropic-document",
+      "source_repo": "anthropics/skills",
+      "skills": ["docx", "pdf", "pptx", "xlsx"],
+      "needs_project": false,
+      "blocked_hosts": []
+    },
+    {
+      "name": "anthropic-agent",
+      "source_repo": "anthropics/skills",
+      "skills": ["claude-api", "skill-creator", "frontend-design", "canvas-design", "algorithmic-art", "internal-comms", "mcp-builder", "slack-gif-creator", "theme-factory", "web-artifacts-builder", "doc-coauthoring", "brand-guidelines", "academy-guide", "template-skill", "discernment-nudge"],
+      "needs_project": false,
+      "blocked_hosts": []
+    },
+    {
+      "name": "webapp-testing",
+      "source_repo": "anthropics/skills",
+      "skills": ["webapp-testing"],
+      "needs_project": true,
+      "blocked_hosts": []
+    },
+    {
+      "name": "vercel",
+      "source_repo": "vercel-labs/agent-skills",
+      "skills": ["vercel-react-best-practices", "vercel-react-native-skills", "vercel-optimize", "vercel-composition-patterns", "deploy-to-vercel", "web-design-guidelines", "writing-guidelines"],
+      "needs_project": false,
+      "blocked_hosts": []
+    }
+  ]
+}
