@@ -44,18 +44,20 @@ khetirental/
     └── <feature-slug>/
 ```
 
-## 2. Ownership Rules (enforced by `commit-guard.sh`)
+## 2. Ownership Rules (enforced by `commit-guard.sh` once installed; manual `git config user.name/email` until then)
 
 | Path | Owner | Conventional prefix | GitHub login |
 |---|---|---|---|
-| `services/**` | Track A | `perf(geo):` `feat(concurrency):` `feat(saga):` `feat(telemetry):` | `tarunkonde05-hub` |
+| `services/**` (Go: matching-engine, booking-orchestrator, telemetry-gateway) | Track A | `perf(geo):` `feat(concurrency):` `feat(saga):` `feat(telemetry):` `feat(crdt):` | `tarunkonde05-hub` |
 | `deploy/**` | Track A | `infra(k8s):` `infra(docker):` | `tarunkonde05-hub` |
-| `tests/load/**` | Track A | `test(k6):` `test(integration):` | `tarunkonde05-hub` |
-| `contracts/**` | Track B | `spec(api):` `spec(event):` | `Vedantk910` |
-| `docs/PRD.md` | Track B | `docs(prd):` | `Vedantk910` |
-| `docs/adr/**` | Track B | `docs(adr):` | `Vedantk910` |
-| `analytics/**` | Track B | `model(pricing):` `model(econ):` | `Vedantk910` |
-| `.scratch/**`, `CLAUDE.md`, `.claude/**`, root files | Shared (Track C) | `chore:`, `docs:`, `infra:`, any valid prefix | Either |
+| `tests/load/**` (k6, integration) | Track A | `test(k6):` `test(integration):` | `tarunkonde05-hub` |
+| `contracts/**` (OpenAPI, Kafka events, escrow state machine) | Track B | `spec(api):` `spec(event):` `spec(escrow):` | `Vedantk910` |
+| `docs/PRD.md`, `docs/adr/**` | Track B | `docs(prd):` `docs(adr):` | `Vedantk910` |
+| `analytics/**` (pricing.py, kpis.py) | Track B | `model(pricing):` `model(econ):` `model(kpi):` | `Vedantk910` |
+| `ARCHITECTURE.md` | Shared (Track C) — annotated by both; Lead 1 owns diagrams, Lead 2 owns tables | `docs(arch):` | Either |
+| `.scratch/**`, `CLAUDE.md`, `.claude/**`, `.gitignore`, root files | Shared (Track C) | `chore:`, `docs:`, `infra:`, any valid prefix | Either |
+
+A commit is **blocked** if its author does not match the track required by the staged paths. A commit touching **multiple** track-specific paths is also blocked (mixed-track) — split it into separate commits.
 
 A commit is **blocked** if its author does not match the track required by the staged paths. A commit touching **multiple** track-specific paths is also blocked (mixed-track) — split it into separate commits.
 

@@ -1,0 +1,172 @@
+openapi: 3.1.0
+info:
+  title: KhetiRental v2.0 API
+  version: 2.0.0
+  description: |
+    Two-sided agritech machinery sharing + milestone escrow.
+    Contract seam owned by Lead 2 (Product); implemented against by Lead 1
+    (systems). All mutating endpoints require `Idempotency-Key` so a rural
+    2G retry is safe.
+servers:
+  - url: https://api.khetirental.in/v1
+tags:
+  - name: matching
+  - name: bookings
+  - name: escrow
+
+paths:
+  /machines/near:
+    get:
+      tags: [matching]
+      operationId: matchNear
+      summary: O(1) H3 spatial query for equipment in a k-ring
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema: { type: number, format: double, minimum: -90, maximum: 90 }
+        - name: lng
+          in: query
+          required: true
+          schema: { type: number, format: double, minimum: -180, maximum: 180 }
+        - name: radius_km
+          in: query
+          schema: { type: number, default: 5.0 }
+        - name: hp
+          in: query
+          schema: { type: number, default: 45 }
+        - name: k
+          in: query
+          description: H3 k-ring depth (1..5)
+          schema: { type: integer, minimum: 1, maximum: 5, default: 2 }
+      responses:
+        '200':
+          description: ranked candidates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NearResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/bookings:
+    post:
+      tags: [bookings]
+      operationId: createBooking
+      summary: Start the booking saga (reserves inventory, opens escrow hold)
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BookingCreate' }
+      responses:
+        '202':
+          description: accepted; booking is being orchestrated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Booking' }
+        '409':
+          description: duplicate idempotency key or machine not available
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /v1/escrow/{booking_id}/settle:
+    post:
+      tags: [escrow]
+      operationId: settleEscrow
+      summary: Trigger settlement after the post-return audit gate passes
+      parameters:
+        - name: booking_id
+          in: path
+          required: true
+          schema: { type: string }
+        - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: settlement executed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Settlement' }
+        '409':
+          description: booking not in a settle-able state (dispute open, etc.)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Client-generated UUID. Required on all mutating calls.
+      schema: { type: string, format: uuid }
+  responses:
+    ServerError:
+      description: internal error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    NearResponse:
+      type: object
+      required: [candidates, took_ms]
+      properties:
+        candidates:
+          type: array
+          items: { $ref: '#/components/schemas/Candidate' }
+        took_ms: { type: number }
+    Candidate:
+      type: object
+      required: [id, dist_km, score]
+      properties:
+        id: { type: string }
+        dist_km: { type: number }
+        score: { type: number }
+        hp: { type: number }
+        reputation: { type: number, minimum: 0, maximum: 1 }
+    BookingCreate:
+      type: object
+      required: [machine_id, renter_id, hours]
+      properties:
+        machine_id: { type: string }
+        renter_id: { type: string }
+        hours: { type: integer, minimum: 1 }
+    Booking:
+      type: object
+      required: [booking_id, state]
+      properties:
+        booking_id: { type: string }
+        state:
+          type: string
+          enum:
+            - PENDING
+            - INVENTORY_RESERVED
+            - ESCROW_AUTHORIZED
+            - DISPATCHED
+            - TELEMATICS_ACTIVE
+            - POST_RETURN_AUDIT
+            - SETTLED
+            - FAILED_PAYMENT_RELEASED
+            - FAILED_INVENTORY
+    Settlement:
+      type: object
+      required: [booking_id, owner_share, renter_refund, platform_take_rate]
+      properties:
+        booking_id: { type: string }
+        owner_share: { type: number }
+        renter_refund: { type: number }
+        platform_take_rate: { type: number, minimum: 0.12, maximum: 0.15 }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
