@@ -6,35 +6,12 @@
 // publisher goroutine (or Debezium CDC) polls outbox_events and produces to
 // Kafka with at-least-once delivery. Consumers atomically insert into
 // processed_inbox_messages in the same transaction as their state update,
-// which gives idempotent replay.
+// which gives idempotent replay. Schema: deploy/sql/002_outbox_inbox.sql.
 package events
 
 import (
 	"time"
 )
-
-// OutboxDDL is the PostgreSQL schema for the outbox + inbox tables.
-const OutboxDDL = `
-CREATE TABLE IF NOT EXISTS outbox_events (
-    id              BIGSERIAL PRIMARY KEY,
-    aggregate_type  TEXT NOT NULL,
-    aggregate_id    TEXT NOT NULL,
-    stream          TEXT NOT NULL,
-    topic           TEXT NOT NULL,
-    data            BYTEA NOT NULL,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
-    published_at    TIMESTAMPTZ
-);
-CREATE INDEX IF NOT EXISTS idx_outbox_unpublished
-    ON outbox_events (created_at) WHERE published_at IS NULL;
-
-CREATE TABLE IF NOT EXISTS processed_inbox_messages (
-    topic           TEXT NOT NULL,
-    message_id      TEXT NOT NULL,
-    processed_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
-    PRIMARY KEY (topic, message_id)
-);
-`
 
 // Publisher drains unpublished outbox rows to Kafka with at-least-once
 // delivery, marking published_at only after the broker acks.

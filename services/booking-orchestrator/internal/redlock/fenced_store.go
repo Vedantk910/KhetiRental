@@ -31,32 +31,12 @@ type FencedBookingStore interface {
 	TransitionState(ctx context.Context, bookingID string, newState string, expectedFencing uint64) (int, error)
 }
 
-// SQLFencedBookingStore is a reference DDL + logic sketch for the
-// PostgreSQL implementation. It is not a live driver; it documents the
-// exact SQL the production store runs, so Lead 1 can wire it to a real
-// pgx pool in deploy/.
-type SQLFencedBookingStore struct {
-	// DDL for the bookings table (run once at migration).
-	SchemaDDL string
-}
+// SQLFencedBookingStore documents the exact SQL the production PostgreSQL
+// store runs against the bookings table (schema: deploy/sql/001_bookings.sql).
+type SQLFencedBookingStore struct{}
 
-// NewSQLFencedBookingStore returns the store with its migration DDL.
-func NewSQLFencedBookingStore() *SQLFencedBookingStore {
-	return &SQLFencedBookingStore{
-		SchemaDDL: `
-CREATE TABLE IF NOT EXISTS bookings (
-    booking_id      TEXT PRIMARY KEY,
-    state           TEXT NOT NULL,
-    fencing_token   BIGINT NOT NULL,
-    payload         JSONB NOT NULL,
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
-);
--- The fencing token is only ever increased, so this index also backs
--- the optimistic-concurrency WHERE clause in TransitionState.
-CREATE INDEX IF NOT EXISTS idx_bookings_fencing ON bookings (fencing_token);
-`,
-	}
-}
+// NewSQLFencedBookingStore returns the reference SQL store.
+func NewSQLFencedBookingStore() *SQLFencedBookingStore { return &SQLFencedBookingStore{} }
 
 // TransitionSQL returns the optimistic-concurrency UPDATE that the store
 // executes on every state transition. expectedFencing is the caller's

@@ -29,8 +29,8 @@ import (
 type Lock struct {
 	mu        sync.Mutex
 	key       string
-	token     string    // random UUID-ish token, used for the Lua release
-	fencing   uint64    // monotonic fencing token from Redis INCR
+	token     string // random UUID-ish token, used for the Lua release
+	fencing   uint64 // monotonic fencing token from Redis INCR
 	nodes     []*redis.Client
 	quorum    int
 	ttl       time.Duration

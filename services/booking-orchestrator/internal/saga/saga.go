@@ -11,9 +11,12 @@
 // the same transaction as their state update.
 //
 // Forward path:
-//   ReserveInventory -> AuthorizeEscrowDeposit -> DispatchNotification
+//
+//	ReserveInventory -> AuthorizeEscrowDeposit -> DispatchNotification
+//
 // Compensating path (if escrow auth fails or times out at 30 s SLA):
-//   emit CompensateInventoryReservation, transition to FAILED_PAYMENT_RELEASED.
+//
+//	emit CompensateInventoryReservation, transition to FAILED_PAYMENT_RELEASED.
 package saga
 
 import (
@@ -26,22 +29,22 @@ import (
 )
 
 // EscrowAuthSLA is the maximum time the escrow provider may take to
-// authorize the deposit before the saga compensates.
-const EscrowAuthSLA = 30 * time.Second
+// authorize the deposit before the saga compensates. A var so tests can shorten it.
+var EscrowAuthSLA = 30 * time.Second
 
 // BookingState is a booking's lifecycle state.
 type BookingState string
 
 const (
-	StatePending             BookingState = "PENDING"
-	StateInventoryReserved   BookingState = "INVENTORY_RESERVED"
-	StateEscrowAuthorized    BookingState = "ESCROW_AUTHORIZED"
-	StateDispatched          BookingState = "DISPATCHED"
-	StateTelematicsActive    BookingState = "TELEMATICS_ACTIVE"
-	StatePostReturnAudit     BookingState = "POST_RETURN_AUDIT"
-	StateSettled             BookingState = "SETTLED"
-	StateFailedPayment       BookingState = "FAILED_PAYMENT_RELEASED"
-	StateFailedInventory     BookingState = "FAILED_INVENTORY"
+	StatePending           BookingState = "PENDING"
+	StateInventoryReserved BookingState = "INVENTORY_RESERVED"
+	StateEscrowAuthorized  BookingState = "ESCROW_AUTHORIZED"
+	StateDispatched        BookingState = "DISPATCHED"
+	StateTelematicsActive  BookingState = "TELEMATICS_ACTIVE"
+	StatePostReturnAudit   BookingState = "POST_RETURN_AUDIT"
+	StateSettled           BookingState = "SETTLED"
+	StateFailedPayment     BookingState = "FAILED_PAYMENT_RELEASED"
+	StateFailedInventory   BookingState = "FAILED_INVENTORY"
 )
 
 // Event is the Kafka message envelope.
@@ -97,10 +100,15 @@ type Notifier interface {
 	Dispatch(ctx context.Context, bookingID string) error
 }
 
+// Fencer supplies the fencing token of the held lock (*redlock.Lock).
+type Fencer interface {
+	Fencing() uint64
+}
+
 // Orchestrator runs the saga for a single booking.
 type Orchestrator struct {
 	store     redlock.FencedBookingStore
-	lock      *redlock.Lock
+	lock      Fencer
 	inventory InventoryManager
 	escrow    EscrowAuthorizer
 	notify    Notifier
@@ -110,7 +118,7 @@ type Orchestrator struct {
 // NewOrchestrator wires an orchestrator for one booking under a held lock.
 func NewOrchestrator(
 	store redlock.FencedBookingStore,
-	lock *redlock.Lock,
+	lock Fencer,
 	inventory InventoryManager,
 	escrow EscrowAuthorizer,
 	notify Notifier,
