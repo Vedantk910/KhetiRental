@@ -12,7 +12,7 @@ p99 < 25 ms. The two candidate designs:
 - **PostGIS** `ST_DWithin` on a Postgres geog point column — exact, but each
   query is a B-tree/GiST scan that degrades under high concurrency on the same
   write-heavy cluster.
-- **Uber H3** hex cells in Redis — O(1) multi-key `SMEMBERS` over a k-ring.
+- **Uber H3** hex cells in Redis — O(1) multi-key `HGETALL` pipeline over a k-ring (one hash per cell, ranking attributes inline).
 
 ## Decision
 Use **H3 at Res 7/8/9** with the spatial index in Redis (`machines:h3:<cell>`),
@@ -32,7 +32,7 @@ read path.
   *candidate generation*.
 
 ## Consequences
-- We must keep Redis sets in sync with machine location updates (done by the
+- We must keep the per-cell Redis hashes in sync with machine location updates (done by the
   matching engine's `Index`/`Unindex`).
 - Approximate radius: a k-ring is a hex tile ring, not a perfect circle; the
   k derived from `radius_km / edge_length` over-covers by up to one cell.
