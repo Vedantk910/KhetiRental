@@ -22,7 +22,8 @@ track_of() {
     $P/app/api/machines/* | $P/app/dossier/track-a-* | $P/e2e/h3-*) echo A ;;
     $P/lib/pricing-* | $P/lib/escrow-* | $P/components/pricing-* | \
     $P/components/escrow-* | $P/app/marketplace/* | $P/app/api/bookings/* | \
-    $P/app/api/escrow/* | $P/app/dossier/track-b-* | $P/e2e/marketplace* | \
+    $P/app/api/escrow/* | $P/app/dossier/track-b-* | $P/app/pricing/* | \
+    $P/app/escrow/* | $P/e2e/marketplace* | \
     $P/e2e/pricing* | $P/e2e/escrow*) echo B ;;
     $P/*) echo shared ;;
     services/* | deploy/* | tests/load/* | .github/workflows/*) echo A ;;
