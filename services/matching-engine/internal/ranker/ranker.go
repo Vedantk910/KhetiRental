@@ -17,8 +17,8 @@ import (
 
 // Weights must sum to 1.0 (validated in New).
 type Weights struct {
-	Distance float64
-	HP       float64
+	Distance   float64
+	HP         float64
 	Reputation float64
 }
 
@@ -28,23 +28,23 @@ var DefaultWeights = Weights{Distance: 0.5, HP: 0.3, Reputation: 0.2}
 
 // Candidate is a machine in the k-ring.
 type Candidate struct {
-	ID           string
-	Location     h3geo.LatLon
-	HorsePower   float64
+	ID              string
+	Location        h3geo.LatLon
+	HorsePower      float64
 	OwnerReputation float64 // 0..1
 }
 
 // Scored is a candidate plus its ranker output.
 type Scored struct {
 	Candidate
-	Score float64
+	Score  float64
 	DistKm float64
 }
 
 // Ranker scores and sorts candidates by score desc.
 type Ranker struct {
-	w    Weights
-	τ    float64 // distance decay constant (km)
+	w     Weights
+	τ     float64 // distance decay constant (km)
 	ReqHP float64
 }
 

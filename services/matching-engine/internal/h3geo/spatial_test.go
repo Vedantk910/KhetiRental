@@ -9,8 +9,8 @@ import (
 // the anchor cell is always present at index 0.
 func TestNeighboursFromLatLon(t *testing.T) {
 	cases := []struct {
-		res Res
-		k   int
+		res      Res
+		k        int
 		expected int
 	}{
 		{Res8, 1, 7},  // anchor + 6 neighbours
@@ -83,5 +83,17 @@ func TestHaversineKm(t *testing.T) {
 	d := HaversineKm(a, b)
 	if math.Abs(d-23.5) > 3.0 {
 		t.Fatalf("haversine: got %.2f, want ~23.5 km", d)
+	}
+}
+
+func TestParse4(t *testing.T) {
+	f, ok := parse4("26.8467,75.816,45,0.9")
+	if !ok || f != [4]float64{26.8467, 75.816, 45, 0.9} {
+		t.Fatalf("parse4 good input: got %v ok=%v", f, ok)
+	}
+	for _, bad := range []string{"", "1,2,3", "1,2,3,4,5", "1,x,3,4"} {
+		if _, ok := parse4(bad); ok {
+			t.Fatalf("parse4(%q) accepted malformed value", bad)
+		}
 	}
 }

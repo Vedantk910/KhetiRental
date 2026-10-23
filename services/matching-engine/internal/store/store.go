@@ -1,16 +1,17 @@
 // Package store is the HTTP handler for the matching engine.
 //
 // Endpoints:
-//   GET /machines/near?lat=&lng=&radius_km=&hp=&k=
-//       → JSON: { candidates: [ { id, dist_km, score, hp, reputation } ] }
 //
-//   POST /machines/index
-//       body: { id, lat, lng, hp, reputation, ring_k }
-//       → 204 on success
+//	GET /machines/near?lat=&lng=&radius_km=&hp=&k=&limit=
+//	    → JSON: { candidates: [ { id, dist_km, score, hp, reputation } ] }
 //
-//   DELETE /machines/unindex
-//       body: { id, lat, lng, ring_k }
-//       → 204 on success
+//	POST /machines/index
+//	    body: { id, lat, lng, hp, reputation }
+//	    → 204 on success
+//
+//	DELETE /machines/unindex
+//	    body: { id, lat, lng }
+//	    → 204 on success
 package store
 
 import (
@@ -50,23 +51,23 @@ func (h *Handler) Mux() *http.ServeMux {
 // --- request / response shapes --------------------------------------------
 
 type MachineRecord struct {
-	ID   string  `json:"id"`
-	Lat  float64 `json:"lat"`
-	Lng  float64 `json:"lng"`
-	HP   float64 `json:"hp"`
-	Rep  float64 `json:"reputation"` // 0..1
+	ID  string  `json:"id"`
+	Lat float64 `json:"lat"`
+	Lng float64 `json:"lng"`
+	HP  float64 `json:"hp"`
+	Rep float64 `json:"reputation"` // 0..1
 }
 
 type NearResp struct {
 	Candidates []CandidateJSON `json:"candidates"`
-	TookMs     float64        `json:"took_ms"`
+	TookMs     float64         `json:"took_ms"`
 }
 
 type CandidateJSON struct {
-	ID       string  `json:"id"`
-	DistKm   float64 `json:"dist_km"`
-	Score    float64 `json:"score"`
-	Hp       float64 `json:"hp"`
+	ID         string  `json:"id"`
+	DistKm     float64 `json:"dist_km"`
+	Score      float64 `json:"score"`
+	Hp         float64 `json:"hp"`
 	Reputation float64 `json:"reputation"`
 }
 
@@ -88,10 +89,16 @@ func (h *Handler) handleNear(w http.ResponseWriter, r *http.Request) {
 			radius = f
 		}
 	}
-	reqHP := 0.0
+	reqHP := 45.0
 	if s := q.Get("hp"); s != "" {
 		if f, err := strconv.ParseFloat(s, 64); err == nil {
 			reqHP = f
+		}
+	}
+	limit := 20
+	if s := q.Get("limit"); s != "" {
+		if n, err := strconv.Atoi(s); err == nil && n >= 1 && n <= 100 {
+			limit = n
 		}
 	}
 	k := 2
@@ -114,18 +121,20 @@ func (h *Handler) handleNear(w http.ResponseWriter, r *http.Request) {
 	useK := intMin(k, kByRadius)
 
 	start := time.Now()
-	ids, err := h.store.Near(r.Context(), h3geo.LatLon{Lat: lat, Lng: lng}, useK)
+	origin := h3geo.LatLon{Lat: lat, Lng: lng}
+	machines, err := h.store.Near(r.Context(), origin, useK)
 	if err != nil {
 		httpError(w, 500, "h3 lookup failed: "+err.Error())
 		return
 	}
 
-	// In production this would hydrate machine records from a secondary store
-	// (e.g. Redis hash machines:detail:<id>); here we emit a minimal record
-	// for the candidates we found, with HP/Rep 0.0 as placeholder.
-	cands := make([]ranker.Candidate, 0, len(ids))
-	for _, id := range ids {
-		cands = append(cands, ranker.Candidate{ID: id, Location: h3geo.LatLon{Lat: lat, Lng: lng}})
+	cands := make([]ranker.Candidate, 0, len(machines))
+	for _, m := range machines {
+		// The k-ring is a hexagonal superset of the radius; trim its corners.
+		if h3geo.HaversineKm(origin, m.Location) > radius {
+			continue
+		}
+		cands = append(cands, ranker.Candidate{ID: m.ID, Location: m.Location, HorsePower: m.HP, OwnerReputation: m.Rep})
 	}
 
 	rk, err := ranker.New(ranker.DefaultWeights, reqHP)
@@ -133,14 +142,17 @@ func (h *Handler) handleNear(w http.ResponseWriter, r *http.Request) {
 		httpError(w, 500, "ranker init failed: "+err.Error())
 		return
 	}
-	scores := rk.Rank(cands, h3geo.LatLon{Lat: lat, Lng: lng})
+	scores := rk.Rank(cands, origin)
+	if len(scores) > limit {
+		scores = scores[:limit] // Rank sorts by score desc
+	}
 
 	out := NearResp{
 		TookMs: float64(time.Since(start).Nanoseconds()) / 1e6,
 	}
 	for _, s := range scores {
 		out.Candidates = append(out.Candidates, CandidateJSON{
-			ID: s.ID, DistKm: s.DistKm, Score: s.Score,
+			ID: s.ID, DistKm: s.DistKm, Score: s.Score, Hp: s.HorsePower, Reputation: s.OwnerReputation,
 		})
 	}
 
@@ -154,7 +166,7 @@ func (h *Handler) handleIndex(w http.ResponseWriter, r *http.Request) {
 		httpError(w, 400, "body must be JSON with id, lat, lng")
 		return
 	}
-	if err := h.store.Index(r.Context(), rec.ID, h3geo.LatLon{Lat: rec.Lat, Lng: rec.Lng}, 1); err != nil {
+	if err := h.store.Index(r.Context(), h3geo.Machine{ID: rec.ID, Location: h3geo.LatLon{Lat: rec.Lat, Lng: rec.Lng}, HP: rec.HP, Rep: rec.Rep}); err != nil {
 		httpError(w, 500, "index failed: "+err.Error())
 		return
 	}
@@ -167,7 +179,7 @@ func (h *Handler) handleUnindex(w http.ResponseWriter, r *http.Request) {
 		httpError(w, 400, "body must be JSON with id, lat, lng")
 		return
 	}
-	if err := h.store.Unindex(r.Context(), rec.ID, h3geo.LatLon{Lat: rec.Lat, Lng: rec.Lng}, 1); err != nil {
+	if err := h.store.Unindex(r.Context(), rec.ID, h3geo.LatLon{Lat: rec.Lat, Lng: rec.Lng}); err != nil {
 		httpError(w, 500, "unindex failed: "+err.Error())
 		return
 	}

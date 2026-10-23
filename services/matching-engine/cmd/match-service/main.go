@@ -24,8 +24,8 @@ import (
 
 func main() {
 	redisAddr := env("REDIS_ADDR", "127.0.0.1:6379")
-	listen    := env("LISTEN", ":8080")
-	resStr    := env("H3_RES", "8")
+	listen := env("LISTEN", ":8080")
+	resStr := env("H3_RES", "8")
 
 	res, err := strconv.Atoi(resStr)
 	if err != nil || (res != 7 && res != 8 && res != 9) {

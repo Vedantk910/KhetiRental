@@ -7,6 +7,8 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"strconv"
+	"strings"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/uber/h3-go/v4"
@@ -68,11 +70,12 @@ func (c Cell) Centroid() (LatLon, error) {
 
 // --- Redis backend -------------------------------------------------------
 
-// RedisStore indexes machines into H3 cell sets.
-// Key: machines:h3:<cellUint64>   value: machineID
+// RedisStore indexes machines into one Redis hash per H3 cell.
+// Key: machines:h3:<cellUint64>   field: machineID   value: "lat,lng,hp,rep"
 //
-// Write path: on machine location update, add/remove the machine ID.
-// Read path: Pipeline of SMEMBERS over the k-ring. Amortised O(1).
+// Write path: HSET/HDEL on the machine's own cell only.
+// Read path: one pipeline of HGETALL over the k-ring (max 91 keys at k=5);
+// ranking attributes come back inline, so there is no second round trip.
 type RedisStore struct {
 	rdb *redis.Client
 	res Res
@@ -83,67 +86,77 @@ func NewRedisStore(rdb *redis.Client, res Res) *RedisStore {
 	return &RedisStore{rdb: rdb, res: res}
 }
 
-// Index adds a machine to the H3 cell set(s) it occupies (k-ring of radius k).
-func (s *RedisStore) Index(ctx context.Context, machineID string, ll LatLon, k int) error {
-	_, ring, err := NeighboursFromLatLon(ll, s.res, k)
+// Machine is an indexed machine with its ranking attributes.
+type Machine struct {
+	ID       string
+	Location LatLon
+	HP, Rep  float64
+}
+
+func (s *RedisStore) cellOf(ll LatLon) (Cell, error) {
+	c, err := h3.LatLngToCell(h3.NewLatLng(ll.Lat, ll.Lng), int(s.res))
+	if err != nil {
+		return 0, fmt.Errorf("h3geo: latlon->cell: %w", err)
+	}
+	return Cell(c), nil
+}
+
+// Index stores m in the H3 cell it occupies. Proximity comes from the k-ring
+// on the read path (Near), so the write path touches exactly one key.
+func (s *RedisStore) Index(ctx context.Context, m Machine) error {
+	cell, err := s.cellOf(m.Location)
 	if err != nil {
 		return err
 	}
-	pipe := s.rdb.Pipeline()
-	for _, cell := range ring {
-		pipe.SAdd(ctx, s.key(cell), machineID)
-	}
-	_, err = pipe.Exec(ctx)
-	return err
+	v := fmt.Sprintf("%g,%g,%g,%g", m.Location.Lat, m.Location.Lng, m.HP, m.Rep)
+	return s.rdb.HSet(ctx, s.key(cell), m.ID, v).Err()
 }
 
-// Near returns the machine IDs in the k-ring around ll. Amortised O(1)
-// because k <= 5 keeps the pipeline small (max 37 keys at k=5).
-func (s *RedisStore) Near(ctx context.Context, ll LatLon, k int) ([]string, error) {
+// Unindex removes a machine from the cell at ll.
+func (s *RedisStore) Unindex(ctx context.Context, machineID string, ll LatLon) error {
+	cell, err := s.cellOf(ll)
+	if err != nil {
+		return err
+	}
+	return s.rdb.HDel(ctx, s.key(cell), machineID).Err()
+}
+
+// Near returns every machine indexed in the k-ring around ll.
+func (s *RedisStore) Near(ctx context.Context, ll LatLon, k int) ([]Machine, error) {
 	_, ring, err := NeighboursFromLatLon(ll, s.res, k)
 	if err != nil {
 		return nil, err
 	}
 	pipe := s.rdb.Pipeline()
-	for _, cell := range ring {
-		pipe.SMembers(ctx, s.key(cell))
+	cmds := make([]*redis.MapStringStringCmd, len(ring))
+	for i, cell := range ring {
+		cmds[i] = pipe.HGetAll(ctx, s.key(cell))
 	}
-	cmds, err := pipe.Exec(ctx)
-	if err != nil {
+	if _, err := pipe.Exec(ctx); err != nil && err != redis.Nil {
 		return nil, err
 	}
-	seen := make(map[string]struct{})
+	var out []Machine
 	for _, cmd := range cmds {
-		if cmd.Err() == redis.Nil || cmd.Err() != nil {
-			continue
+		for id, v := range cmd.Val() {
+			if f, ok := parse4(v); ok {
+				out = append(out, Machine{ID: id, Location: LatLon{f[0], f[1]}, HP: f[2], Rep: f[3]})
+			}
 		}
-		ids, err := cmd.Result()
-		if err != nil {
-			continue
-		}
-		for _, id := range ids {
-			seen[id] = struct{}{}
-		}
-	}
-	out := make([]string, 0, len(seen))
-	for id := range seen {
-		out = append(out, id)
 	}
 	return out, nil
 }
 
-// Unindex removes a machine from every cell in its k-ring.
-func (s *RedisStore) Unindex(ctx context.Context, machineID string, ll LatLon, k int) error {
-	_, ring, err := NeighboursFromLatLon(ll, s.res, k)
-	if err != nil {
-		return err
+// parse4 decodes the "lat,lng,hp,rep" value written by Index.
+func parse4(v string) (f [4]float64, ok bool) {
+	for i := range f {
+		var part string
+		part, v, _ = strings.Cut(v, ",")
+		var err error
+		if f[i], err = strconv.ParseFloat(part, 64); err != nil {
+			return f, false
+		}
 	}
-	pipe := s.rdb.Pipeline()
-	for _, cell := range ring {
-		pipe.SRem(ctx, s.key(cell), machineID)
-	}
-	_, err = pipe.Exec(ctx)
-	return err
+	return f, v == ""
 }
 
 func (s *RedisStore) key(c Cell) string {
