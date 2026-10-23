@@ -39,6 +39,10 @@ paths:
           in: query
           description: H3 k-ring depth (1..5)
           schema: { type: integer, minimum: 1, maximum: 5, default: 2 }
+        - name: limit
+          in: query
+          description: max ranked candidates returned (top-N by score)
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
       responses:
         '200':
           description: ranked candidates
@@ -121,6 +125,7 @@ components:
       properties:
         candidates:
           type: array
+          maxItems: 100
           items: { $ref: '#/components/schemas/Candidate' }
         took_ms: { type: number }
     Candidate:
