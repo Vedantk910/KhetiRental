@@ -7,6 +7,9 @@ Place Dockerfiles per service and a `docker-compose.yml` that wires:
 - `telemetry-gateway`  → redis (CRDT state), kafka (telemetry.events)
 - `escrow-service`     → postgres, kafka
 
+Database migrations live in `deploy/sql/` (run `deploy/sql/test_migrations.sh`
+against a Postgres to verify them).
+
 K8s manifests go in `deploy/k8s/` (stateful workloads for postgres, redis
 cluster, kafka; deployments for the stateless services).
 
