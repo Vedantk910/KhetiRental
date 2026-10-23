@@ -36,4 +36,19 @@ try ok      b@example.com ARCHITECTURE.md
 try blocked z@example.com services/x.go
 try ok      a@example.com services/x.go README.md
 
+# Client portal: ownership follows the domain, not the folder.
+P=services/client-portal
+try ok      a@example.com $P/components/h3-map.tsx $P/app/architecture/h3-spatial/page.tsx $P/lib/h3-dispatch.ts
+try ok      a@example.com $P/app/api/machines/near/route.ts $P/app/dossier/track-a-systems/page.tsx $P/e2e/h3-sandbox.spec.ts
+try blocked b@example.com $P/components/h3-map.tsx
+try ok      b@example.com $P/lib/pricing-engine.ts $P/lib/pricing-engine.test.ts $P/components/pricing-calculator.tsx
+try ok      b@example.com $P/lib/escrow-machine.ts $P/components/escrow-state-machine.tsx $P/app/marketplace/search/page.tsx
+try ok      b@example.com $P/app/api/bookings/route.ts $P/app/dossier/track-b-product/page.tsx $P/e2e/marketplace.spec.ts
+try blocked a@example.com $P/lib/pricing-engine.ts
+try blocked b@example.com $P/components/h3-map.tsx $P/lib/pricing-engine.ts
+try ok      a@example.com $P/package.json $P/app/layout.tsx $P/components/navbar.tsx
+try ok      b@example.com $P/package.json $P/app/page.tsx $P/tailwind.config.ts
+try ok      a@example.com .github/workflows/deploy-portal.yml
+try blocked b@example.com .github/workflows/deploy-portal.yml
+
 [ "$fail" = 0 ] && echo "PASS commit-guard" || { echo "FAIL commit-guard"; exit 1; }
