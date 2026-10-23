@@ -3,6 +3,9 @@
 1. docs/PRD.md carries every section the prd-contract-architect skill requires
    and references every escrow dispute rule D-01..D-07.
 2. Every relative Markdown link in the repo's docs resolves to a real file.
+3. The booking state set is identical in contracts/openapi.yaml, the saga's
+   BookingState constants and the bookings CHECK in deploy/sql (all three
+   tracks' copies of the contract).
 Exits non-zero on any failure.
 """
 
@@ -51,8 +54,28 @@ def check_links() -> list[str]:
     return errs
 
 
+def booking_states() -> dict[str, set[str]]:
+    api = (ROOT / "contracts/openapi.yaml").read_text()
+    block = api.split("    Booking:\n", 1)[1].split("    Settlement:", 1)[0]
+    go = (ROOT / "services/booking-orchestrator/internal/saga/saga.go").read_text()
+    sql = " ".join(p.read_text() for p in sorted((ROOT / "deploy/sql").glob("[0-9]*.sql")))
+    # The newest CHECK on bookings.state wins (later migrations replace it).
+    checks = re.findall(r"state\s+IN\s*\(([^)]*)\)", sql)
+    return {
+        "contracts/openapi.yaml": set(re.findall(r"^\s+- ([A-Z_]+)$", block, re.M)),
+        "saga.go BookingState": set(re.findall(r'BookingState = "([A-Z_]+)"', go)),
+        "deploy/sql bookings CHECK": set(re.findall(r"'([A-Z_]+)'", checks[-1])) if checks else set(),
+    }
+
+
+def check_state_enums() -> list[str]:
+    sets = booking_states()
+    union = set().union(*sets.values())
+    return [f"{name} is missing booking states: {sorted(union - s)}" for name, s in sets.items() if union - s]
+
+
 if __name__ == "__main__":
-    errors = check_prd() + check_links()
+    errors = check_prd() + check_links() + check_state_enums()
     for e in errors:
         print("  FAIL", e)
     print("FAIL docs" if errors else "PASS docs")

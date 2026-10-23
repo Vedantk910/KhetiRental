@@ -161,6 +161,14 @@ components:
             - SETTLED
             - FAILED_PAYMENT_RELEASED
             - FAILED_INVENTORY
+            - DISPUTE_OPEN
+            - SUSPENDED_BREAKDOWN
+            - NO_SHOW_PENDING
+          description: >
+            DISPUTE_OPEN: a D-01..D-05 rule fired; settlement is blocked and the
+            deposit may be frozen. SUSPENDED_BREAKDOWN: D-08, billing stopped at
+            the last verified engine hour. NO_SHOW_PENDING: D-06, no sync since
+            dispatch; no refund until the first sync or 72 h.
     Settlement:
       type: object
       required: [booking_id, owner_share, renter_refund, platform_take_rate]
