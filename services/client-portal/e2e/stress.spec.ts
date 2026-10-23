@@ -33,7 +33,7 @@ test("5 parallel users hammer the shell", async ({ browser }) => {
 
       // resize back and forth
       for (let i = 0; i < 4; i++) {
-        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.setViewportSize({ width: 1440, height: 800 }); // desktop nav from 1360 px
         await menuConsistent(page);
         await expect(page.locator('nav a[href="/pricing"]:visible').first()).toBeVisible();
         await page.setViewportSize({ width: 375, height: 812 });

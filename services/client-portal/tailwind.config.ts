@@ -13,6 +13,7 @@ export default {
         muted: "var(--muted)",
         line: "var(--line)",
       },
+      screens: { nav: "1360px" },
       fontFamily: { sans: ["var(--font-sans)", "system-ui", "sans-serif"] },
     },
   },

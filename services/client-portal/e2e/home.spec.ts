@@ -39,3 +39,13 @@ test("mobile: menu button reveals links, no horizontal scroll", async ({ page })
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
 });
+
+for (const width of [1024, 1280, 1440]) {
+  test(`no horizontal scroll at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    for (const path of ["/", "/pricing", "/escrow"]) {
+      await page.goto(path);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), path).toBe(true);
+    }
+  });
+}

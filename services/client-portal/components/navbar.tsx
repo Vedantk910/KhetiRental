@@ -32,7 +32,7 @@ export function Navbar() {
       }
     };
     // Close if the viewport grows past the mobile breakpoint, so state never lingers hidden.
-    const mq = window.matchMedia("(min-width: 1024px)");
+    const mq = window.matchMedia("(min-width: 1360px)");
     const onMq = () => mq.matches && setOpen(false);
     document.addEventListener("keydown", onKey);
     mq.addEventListener("change", onMq);
@@ -50,7 +50,7 @@ export function Navbar() {
       aria-current={pathname === l.href ? "page" : undefined}
       onClick={() => setOpen(false)}
       className={cn(
-        "rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-surface hover:text-fg aria-[current=page]:bg-primary aria-[current=page]:text-primary-fg",
+        "whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-muted hover:bg-surface hover:text-fg aria-[current=page]:bg-primary aria-[current=page]:text-primary-fg",
         extra,
       )}
     >
@@ -60,16 +60,16 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/95 backdrop-blur">
-      <nav aria-label="Primary" className="mx-auto max-w-7xl px-4">
-      <div className="flex items-center gap-3 py-3">
-        <Link href="/" className="flex items-center gap-2 font-bold text-fg">
+      <nav aria-label="Primary" className="mx-auto max-w-screen-2xl px-4">
+      <div className="flex items-center gap-2 py-3">
+        <Link href="/" className="flex items-center gap-2 whitespace-nowrap font-bold text-fg">
           <Sprout aria-hidden className="h-6 w-6 text-primary" />
           <span>KhetiRental v2.0</span>
         </Link>
-        <span className="rounded-full border border-soil px-2.5 py-0.5 text-xs font-semibold text-soil">Demo mode</span>
+        <span className="whitespace-nowrap rounded-full border border-soil px-2.5 py-0.5 text-xs font-semibold text-soil">Demo mode</span>
 
-        <div className="mx-auto hidden items-center gap-1 lg:flex">{PAGES.map((l) => link(l))}</div>
-        <div className="hidden items-center gap-1 rounded-lg border border-line p-1 lg:flex">{TRACKS.map((l) => link(l))}</div>
+        <div className="mx-auto hidden items-center gap-1 nav:flex">{PAGES.map((l) => link(l))}</div>
+        <div className="hidden items-center gap-1 rounded-lg border border-line p-1 nav:flex">{TRACKS.map((l) => link(l))}</div>
 
         <button
           ref={btn}
@@ -78,12 +78,12 @@ export function Navbar() {
           aria-expanded={open}
           aria-controls="mobile-menu"
           onClick={() => setOpen((o) => !o)}
-          className="ml-auto rounded-md border border-line p-2 lg:hidden"
+          className="ml-auto rounded-md border border-line p-2 nav:hidden"
         >
           {open ? <X aria-hidden className="h-5 w-5" /> : <Menu aria-hidden className="h-5 w-5" />}
         </button>
       </div>
-      <div id="mobile-menu" hidden={!open} className="border-t border-line py-3 lg:hidden">
+      <div id="mobile-menu" hidden={!open} className="border-t border-line py-3 nav:hidden">
         <div className="flex flex-col gap-1">
           {[...PAGES, ...TRACKS].map((l) => link(l))}
         </div>

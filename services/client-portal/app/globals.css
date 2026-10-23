@@ -12,6 +12,10 @@
   --fg: #0f172a;
   --muted: #475569;
   --line: #cbd5e1;
+  /* Chart identity colours, validated (dataviz skill): CVD ΔE ≥ 22 light. */
+  --viz-1: #047857;
+  --viz-2: #1d4ed8;
+  --viz-3: #b45309;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -24,6 +28,9 @@
     --fg: #f1f5f9;
     --muted: #94a3b8;
     --line: #1e293b;
+    --viz-1: #059669;
+    --viz-2: #3b82f6;
+    --viz-3: #d97706;
     color-scheme: dark;
   }
 }
