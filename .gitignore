@@ -42,10 +42,8 @@ dist/
 *.swp
 *.swo
 
-# ── Graphify build output (churns on every rebuild per project CLAUDE.md) ─
-# NOTE: per CLAUDE.md, graphify-out/graph.json is expected to change on every
-# build. If you WANT to track it, remove this line and the rule above it.
-# graphify-out/
+# ── Graphify build output (local code map; rewritten whole on every rebuild) ─
+graphify-out/
 
 # ── Scratch / agent work files ─────────────────────────────────────────────
 # Keep .scratch/ tracked (it's the issue tracker).
