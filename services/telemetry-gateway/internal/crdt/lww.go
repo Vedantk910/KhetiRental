@@ -24,8 +24,8 @@ import (
 
 // Clock is a logical timestamp: Lamport count + node id tie-breaker.
 type Clock struct {
-	Lamport uint64
-	NodeID  string
+	Lamport uint64 `json:"lamport"`
+	NodeID  string `json:"node"`
 }
 
 // After reports whether c is strictly later than o.
@@ -48,10 +48,10 @@ func (c Clock) Max(o Clock) Clock {
 // A LWW-Element-Set keeps both an "added" and a "removed" clock per key;
 // the element is present iff added.After(removed).
 type Element struct {
-	Key     string
-	Value   string
-	Added   Clock
-	Removed Clock
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+	Added   Clock  `json:"added"`
+	Removed Clock  `json:"removed"`
 }
 
 // Present reports whether the element is currently in the set.
@@ -128,15 +128,12 @@ func (s *LWWElementSet) Merge(remote map[string]Element) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	for key, rel := range remote {
+		// Advance the local clock past every observed remote clock so the next
+		// local Add/Remove is causally after it (Lamport receive rule).
+		s.lamport = max(s.lamport, rel.Added.Lamport, rel.Removed.Lamport)
 		local, ok := s.elements[key]
 		if !ok {
 			s.elements[key] = rel
-			if rel.Added.Lamport > s.lamport {
-				s.lamport = rel.Added.Lamport
-			}
-			if rel.Removed.Lamport > s.lamport {
-				s.lamport = rel.Removed.Lamport
-			}
 			continue
 		}
 		if rel.Added.After(local.Added) {

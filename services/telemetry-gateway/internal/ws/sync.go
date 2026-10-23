@@ -22,7 +22,6 @@ package ws
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -33,8 +32,8 @@ import (
 
 // MergeRequest is a client → server frame carrying a CRDT merge.
 type MergeRequest struct {
-	Op       string                `json:"op"` // "merge"
-	Node     string                `json:"node"`
+	Op       string                  `json:"op"` // "merge"
+	Node     string                  `json:"node"`
 	Elements map[string]crdt.Element `json:"elements"`
 }
 
@@ -51,8 +50,8 @@ type Ack struct {
 
 // SnapshotResponse is a server → client frame carrying the full set.
 type SnapshotResponse struct {
-	Op       string                `json:"op"` // "snapshot"
-	Node     string                `json:"node"`
+	Op       string                  `json:"op"` // "snapshot"
+	Node     string                  `json:"node"`
 	Elements map[string]crdt.Element `json:"elements"`
 }
 
@@ -107,10 +106,7 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			// 2G/3G drop → clean close; the client reconnects and resyncs.
 			return
 		}
-		var frame struct {
-			MergeRequest
-			SnapshotRequest
-		}
+		var frame MergeRequest // snapshot_request only carries "op", which MergeRequest also decodes
 		if err := json.Unmarshal(raw, &frame); err != nil {
 			_ = conn.WriteJSON(map[string]string{"op": "error", "msg": "bad frame: " + err.Error()})
 			continue
@@ -142,5 +138,3 @@ func currentLamport(s *crdt.LWWElementSet) uint64 {
 	}
 	return max
 }
-
-var _ = fmt.Sprintf

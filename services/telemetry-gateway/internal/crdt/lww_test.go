@@ -13,8 +13,8 @@ func TestConvergentTwoNodes(t *testing.T) {
 	a.Add("engine_hours", "120.5")
 	b.Add("engine_hours", "120.5")
 
-	_ = a.Merge(b.Snapshot())
-	_ = b.Merge(a.Snapshot())
+	a.Merge(b.Snapshot())
+	b.Merge(a.Snapshot())
 
 	va, _ := a.ValueAt("engine_hours")
 	vb, _ := b.ValueAt("engine_hours")
@@ -70,5 +70,17 @@ func TestIdempotentMerge(t *testing.T) {
 	v, ok := s.ValueAt("k")
 	if !ok || v != "v" {
 		t.Fatalf("idempotent merge broke value: got %q ok=%v", v, ok)
+	}
+}
+
+// TestLocalWriteAfterMergeWins confirms Merge advances the Lamport clock, so a
+// local write made after receiving a remote frame is causally newer than it.
+func TestLocalWriteAfterMergeWins(t *testing.T) {
+	s := NewLWWElementSet("a")
+	s.Add("fuel_level", "80")
+	s.Merge(map[string]Element{"fuel_level": {Key: "fuel_level", Value: "60", Added: Clock{Lamport: 10, NodeID: "z"}}})
+	s.Add("fuel_level", "55")
+	if v, _ := s.ValueAt("fuel_level"); v != "55" {
+		t.Fatalf("local write after merge lost: got %q want 55", v)
 	}
 }

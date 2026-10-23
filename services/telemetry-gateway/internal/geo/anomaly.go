@@ -29,10 +29,10 @@ type Parcel struct {
 
 // MachinePoint is one telemetry observation.
 type MachinePoint struct {
-	Lat       float64
-	Lng      float64
-	ECUHours    float64 // engine-hour meter (CAN-bus)
-	GPSTravelH  float64 // hours implied by GPS travel log
+	Lat        float64
+	Lng        float64
+	ECUHours   float64 // engine-hour meter (CAN-bus)
+	GPSTravelH float64 // hours implied by GPS travel log
 }
 
 // Breach reports whether the machine is outside the registered parcel.
