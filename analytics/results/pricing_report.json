@@ -1,6 +1,6 @@
 {
   "diesel_price_inr": 91.0,
-  "priced_on": "2026-10-22",
+  "priced_on": "2026-10-24",
   "items": [
     {
       "machine_id": "M-101",
@@ -36,9 +36,9 @@
     }
   ],
   "utilization_expansion_case": {
-    "note": "250h -> 620h owner payback for a 45 HP tractor (acquisition 6.5L, net-to-owner = hourly_rate - platform take-rate)",
-    "net_hourly_to_owner_inr": 910.85,
-    "payback_at_250h": 2.85,
-    "payback_at_620h": 1.15
+    "note": "250h -> 620h owner payback for M-101 (45 HP, acquisition 640,000 INR); net-to-owner = (hourly_rate - fuel pass-through) x (1 - 13.5% take-rate)",
+    "net_hourly_to_owner_inr": 595.99,
+    "payback_at_250h": 4.3,
+    "payback_at_620h": 1.73
   }
 }

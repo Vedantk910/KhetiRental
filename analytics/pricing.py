@@ -152,6 +152,16 @@ def batch_price(machines: Iterable[Machine], diesel_price_inr: float) -> list[Pr
     return [hourly_rate(m, diesel_price_inr) for m in machines]
 
 
+def net_hourly_to_owner(pb: PriceBreakdown, take_rate: float = 0.135) -> float:
+    """Owner's net income per billed hour.
+
+    The fuel component is a zero-margin diesel pass-through the owner spends
+    (ADR-0004), so only base + wear are income; the platform take-rate
+    (12-15 %, midpoint 13.5 %) is deducted from that.
+    """
+    return _round2((pb.hourly_rate_inr - pb.fuel_component) * (1 - take_rate))
+
+
 def payback_years(acquisition_cost: float, net_hourly_to_owner: float,
                   annual_hours: float) -> float:
     """Simple payback: acquisition / (net hourly revenue * annual hours).
@@ -187,24 +197,19 @@ def main() -> int:
         Machine("M-104", "35", 2, 3_90_000, "indore", "loam", "off_season"),
     ]
 
+    case = fleet[0]
+    net = net_hourly_to_owner(hourly_rate(case, diesel))
     report = {
         "diesel_price_inr": diesel,
         "priced_on": date.today().isoformat(),
         "items": [pb.as_dict() for pb in batch_price(fleet, diesel)],
         "utilization_expansion_case": {
-            "note": "250h -> 620h owner payback for a 45 HP tractor "
-                   "(acquisition 6.5L, net-to-owner = hourly_rate - platform take-rate)",
-            "net_hourly_to_owner_inr": _round2(
-                hourly_rate(fleet[0], diesel).hourly_rate_inr * (1 - 0.135)
-            ),
-            "payback_at_250h": round(
-                payback_years(6_50_000,
-                              _round2(hourly_rate(fleet[0], diesel).hourly_rate_inr * 0.865),
-                              250), 2),
-            "payback_at_620h": round(
-                payback_years(6_50_000,
-                              _round2(hourly_rate(fleet[0], diesel).hourly_rate_inr * 0.865),
-                              620), 2),
+            "note": f"250h -> 620h owner payback for {case.machine_id} (45 HP, acquisition "
+                    f"{case.acquisition_cost_inr:,.0f} INR); net-to-owner = (hourly_rate - fuel "
+                    "pass-through) x (1 - 13.5% take-rate)",
+            "net_hourly_to_owner_inr": net,
+            "payback_at_250h": round(payback_years(case.acquisition_cost_inr, net, 250), 2),
+            "payback_at_620h": round(payback_years(case.acquisition_cost_inr, net, 620), 2),
         },
     }
     dest = out / "pricing_report.json"
