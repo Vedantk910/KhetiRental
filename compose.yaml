@@ -1,0 +1,23 @@
+# Local services. `docker compose up -d` starts Postgres + PostGIS for the
+# website. Redis is only for the Go showcase: `docker compose --profile showcase up -d`.
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: kheti
+      POSTGRES_PASSWORD: kheti
+      POSTGRES_DB: kheti
+    ports: ["5432:5432"]
+    volumes: ["db-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kheti -d kheti"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    profiles: ["showcase"]
+    ports: ["6379:6379"]
+
+volumes:
+  db-data:

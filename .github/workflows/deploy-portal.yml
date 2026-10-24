@@ -3,7 +3,7 @@ name: Deploy portal
 on:
   push:
     branches: [main]
-    paths: ["services/client-portal/**"]
+    paths: ["apps/web/**"]
   workflow_dispatch:
 
 permissions:
@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 20
     defaults:
       run:
-        working-directory: services/client-portal
+        working-directory: apps/web
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: services/client-portal/package-lock.json
+          cache-dependency-path: apps/web/package-lock.json
       - run: npm ci
       - run: npm run lint
       - run: npm test
