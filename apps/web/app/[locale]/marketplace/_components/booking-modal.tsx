@@ -95,7 +95,7 @@ export function BookingModal(props: {
     busy.current = true;
     setStatus({ kind: "submitting" });
     try {
-      const res = await fetch("/api/bookings", {
+      const res = await fetch("/api/demo/bookings", {
         method: "POST",
         headers: { "content-type": "application/json", "Idempotency-Key": key },
         body: JSON.stringify({

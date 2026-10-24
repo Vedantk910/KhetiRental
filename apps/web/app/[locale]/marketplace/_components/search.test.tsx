@@ -19,7 +19,7 @@ beforeEach(() => {
   fetchMock = vi.fn((url: string, init?: RequestInit) => {
     if (url.startsWith("/api/machines/near"))
       return Promise.resolve(new Response(JSON.stringify(near), { status: 200 }));
-    if (url === "/api/bookings")
+    if (url === "/api/demo/bookings")
       return Promise.resolve(
         new Response(JSON.stringify({ booking_id: "bk_1", state: "ESCROW_AUTHORIZED" }), { status: 202 }),
       );
@@ -131,7 +131,7 @@ describe("booking modal", () => {
   it("submits once with an Idempotency-Key even when clicked repeatedly", async () => {
     let release!: () => void;
     fetchMock.mockImplementation(async (url: string) => {
-      if (url === "/api/bookings") {
+      if (url === "/api/demo/bookings") {
         await new Promise<void>((r) => (release = r));
         return new Response(JSON.stringify({ booking_id: "bk_1", state: "ESCROW_AUTHORIZED" }), {
           status: 202,
@@ -143,7 +143,7 @@ describe("booking modal", () => {
     const btn = within(dialog).getByRole("button", { name: "Authorise escrow" });
     await user.tripleClick(btn);
     await user.click(btn);
-    const posts = fetchMock.mock.calls.filter((c) => c[0] === "/api/bookings");
+    const posts = fetchMock.mock.calls.filter((c) => c[0] === "/api/demo/bookings");
     expect(posts).toHaveLength(1);
     expect((posts[0][1]?.headers as Record<string, string>)["Idempotency-Key"]).toMatch(/^[0-9a-f-]{36}$/);
     release();
@@ -153,7 +153,7 @@ describe("booking modal", () => {
   it("explains a 409 and allows trying again with the same key", async () => {
     fetchMock.mockImplementation((url: string) =>
       Promise.resolve(
-        url === "/api/bookings"
+        url === "/api/demo/bookings"
           ? new Response(JSON.stringify({ code: "machine_unavailable", message: "x" }), { status: 409 })
           : new Response(JSON.stringify(near), { status: 200 }),
       ),
@@ -163,10 +163,10 @@ describe("booking modal", () => {
     expect(await within(dialog).findByRole("alert")).toHaveTextContent(/already booked/i);
     await user.click(within(dialog).getByRole("button", { name: "Authorise escrow" }));
     await waitFor(() => {
-      expect(fetchMock.mock.calls.filter((c) => c[0] === "/api/bookings")).toHaveLength(2);
+      expect(fetchMock.mock.calls.filter((c) => c[0] === "/api/demo/bookings")).toHaveLength(2);
     });
     const keys = fetchMock.mock.calls
-      .filter((c) => c[0] === "/api/bookings")
+      .filter((c) => c[0] === "/api/demo/bookings")
       .map((c) => (c[1]?.headers as Record<string, string>)["Idempotency-Key"]);
     expect(new Set(keys).size).toBe(1);
   });
@@ -178,6 +178,6 @@ describe("booking modal", () => {
     await user.type(hours, "0");
     expect(within(dialog).getByRole("button", { name: "Authorise escrow" })).toBeDisabled();
     expect(hours).toHaveAttribute("aria-invalid", "true");
-    expect(fetchMock.mock.calls.filter((c) => c[0] === "/api/bookings")).toHaveLength(0);
+    expect(fetchMock.mock.calls.filter((c) => c[0] === "/api/demo/bookings")).toHaveLength(0);
   });
 });

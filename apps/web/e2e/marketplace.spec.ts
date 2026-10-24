@@ -83,7 +83,7 @@ test("5 parallel farmers spam filters and Authorise: one booking each action, on
       const page = await ctx.newPage();
       const errors = watchErrors(page);
       let posts = 0;
-      page.on("request", (r) => r.url().endsWith("/api/bookings") && r.method() === "POST" && posts++);
+      page.on("request", (r) => r.url().endsWith("/api/demo/bookings") && r.method() === "POST" && posts++);
       await stubNear(page);
       await page.goto("/en/marketplace/search");
       await expect(page.getByRole("button", { name: /Book John Deere 5050 D/ })).toBeVisible();
