@@ -15,7 +15,6 @@ credentials*
 
 # ── Local caches & write buffers ───────────────────────────────────────────
 .claude/.cc-writes/
-.claude/verify-skills.py
 .claude/settings.local.json
 
 # ── OS junk ─────────────────────────────────────────────────────────────────

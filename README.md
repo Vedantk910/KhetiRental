@@ -62,7 +62,7 @@ The load test ran on one laptop with k6, the service and Redis co-located. Treat
 
 ## Quick start
 
-Prerequisites: Go 1.22, Node 20, Python 3, Redis on port 6390 and Postgres 17 on port 5440. Integration tests skip when Redis or Postgres is unreachable.
+Prerequisites: Go 1.22, Node 24 (Vitest 5 needs 22.12 or later), Python 3, Redis on port 6390 and Postgres 17 on port 5440. Integration tests skip when Redis or Postgres is unreachable.
 
 ```bash
 ./test-all.sh                       # every unit and integration suite
