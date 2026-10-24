@@ -16,7 +16,7 @@ test("home loads with navbar and all nav links, no console errors", async ({ pag
   page.on("pageerror", (e) => errors.push(e.message));
 
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "KhetiRental v2.0" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /tractors for small farms/i })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Primary" })).toBeVisible();
   await expect(page.getByText("Demo mode")).toBeVisible();
   for (const href of HREFS) {
@@ -43,7 +43,7 @@ test("mobile: menu button reveals links, no horizontal scroll", async ({ page })
 for (const width of [1024, 1280, 1440]) {
   test(`no horizontal scroll at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
-    for (const path of ["/", "/pricing", "/escrow"]) {
+    for (const path of ["/", "/pricing", "/escrow", "/architecture/h3-spatial"]) {
       await page.goto(path);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), path).toBe(true);
     }

@@ -46,6 +46,8 @@ try ok      b@example.com $P/lib/escrow-machine.ts $P/components/escrow-state-ma
 try ok      b@example.com $P/app/api/bookings/route.ts $P/app/dossier/track-b-product/page.tsx $P/e2e/marketplace.spec.ts
 try blocked a@example.com $P/lib/pricing-engine.ts
 try ok      b@example.com $P/app/pricing/page.tsx $P/app/escrow/page.tsx
+try ok      b@example.com $P/lib/marketplace-bookings.ts $P/lib/marketplace-quote.test.ts
+try blocked a@example.com $P/lib/marketplace-fleet.ts
 try blocked a@example.com $P/app/escrow/page.tsx
 try blocked b@example.com $P/components/h3-map.tsx $P/lib/pricing-engine.ts
 try ok      a@example.com $P/package.json $P/app/layout.tsx $P/components/navbar.tsx

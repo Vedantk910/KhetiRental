@@ -46,7 +46,6 @@ export function Navbar() {
     <Link
       key={l.href}
       href={l.href}
-      prefetch={false}
       aria-current={pathname === l.href ? "page" : undefined}
       onClick={() => setOpen(false)}
       className={cn(

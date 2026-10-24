@@ -20,7 +20,7 @@ track_of() {
     # product dossier; the rest of the shell (config, layout, navbar) is shared.
     $P/components/h3-* | $P/lib/h3-* | $P/app/architecture/h3-spatial/* | \
     $P/app/api/machines/* | $P/app/dossier/track-a-* | $P/e2e/h3-*) echo A ;;
-    $P/lib/pricing-* | $P/lib/escrow-* | $P/components/pricing-* | \
+    $P/lib/pricing-* | $P/lib/escrow-* | $P/lib/marketplace-* | $P/components/pricing-* | \
     $P/components/escrow-* | $P/app/marketplace/* | $P/app/api/bookings/* | \
     $P/app/api/escrow/* | $P/app/dossier/track-b-* | $P/app/pricing/* | \
     $P/app/escrow/* | $P/e2e/marketplace* | \
