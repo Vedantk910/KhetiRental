@@ -55,13 +55,16 @@ export type EscrowEvent =
 
 export const totalPaise = (l: Ledger) => l.escrow + l.owner + l.platform + l.renterRefund;
 
-export function createEscrow(t: { hourlyRateInr: number; contractedHours: number; takeRate: number }): EscrowState {
+/** depositFloorInr: the HP-tier floor (contract §5); the deposit is max(15 % of rental, floor). */
+export function createEscrow(t: { hourlyRateInr: number; contractedHours: number; takeRate: number; depositFloorInr?: number }): EscrowState {
   if (!(Number.isFinite(t.hourlyRateInr) && t.hourlyRateInr > 0)) throw new RangeError("hourlyRateInr must be > 0");
   if (!(Number.isInteger(t.contractedHours) && t.contractedHours > 0)) throw new RangeError("contractedHours must be a positive integer");
   if (!(t.takeRate >= 0.12 && t.takeRate <= 0.15)) throw new RangeError("takeRate must be within 12-15 %");
+  const floor = t.depositFloorInr ?? 0;
+  if (!(Number.isFinite(floor) && floor >= 0)) throw new RangeError("depositFloorInr must be a finite amount ≥ 0");
   const hourlyRatePaise = Math.round(t.hourlyRateInr * 100);
   const basePaise = hourlyRatePaise * t.contractedHours;
-  const depositPaise = Math.round(basePaise * DEPOSIT_RATE);
+  const depositPaise = Math.max(Math.round(basePaise * DEPOSIT_RATE), Math.round(floor * 100));
   const held = basePaise + depositPaise;
   return {
     stage: "PRE_AUTH",

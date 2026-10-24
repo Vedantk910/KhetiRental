@@ -29,6 +29,20 @@ describe("pre-authorisation", () => {
     expect(s.renterPaidPaise).toBe(1_150_000);
   });
 
+  it("applies the HP-tier deposit floor when it exceeds 15 % (contract §5)", () => {
+    const s = createEscrow({ hourlyRateInr: 1000, contractedHours: 10, takeRate: 0.135, depositFloorInr: 3200 });
+    expect(s.depositPaise).toBe(320_000);
+    expect(s.renterPaidPaise).toBe(1_320_000);
+    const low = createEscrow({ hourlyRateInr: 1000, contractedHours: 10, takeRate: 0.135, depositFloorInr: 500 });
+    expect(low.depositPaise).toBe(150_000);
+  });
+
+  it("rejects a hostile deposit floor", () => {
+    for (const f of [-1, Number.NaN, Number.POSITIVE_INFINITY]) {
+      expect(() => createEscrow({ hourlyRateInr: 1000, contractedHours: 10, takeRate: 0.135, depositFloorInr: f })).toThrow();
+    }
+  });
+
   it("rejects invalid terms", () => {
     expect(() => createEscrow({ hourlyRateInr: -1, contractedHours: 10, takeRate: 0.135 })).toThrow();
     expect(() => createEscrow({ hourlyRateInr: 1000, contractedHours: 0, takeRate: 0.135 })).toThrow();
@@ -196,8 +210,8 @@ describe("multi-actor adversarial properties", () => {
 
   it("conserves money and never pays out mid-dispute", () => {
     fc.assert(
-      fc.property(fc.array(event, { maxLength: 40 }), (events) => {
-        let s: EscrowState = fresh();
+      fc.property(fc.array(event, { maxLength: 40 }), fc.integer({ min: 0, max: 20_000 }), (events, floor) => {
+        let s: EscrowState = createEscrow({ hourlyRateInr: 1000, contractedHours: 10, takeRate: 0.135, depositFloorInr: floor });
         for (const e of events) {
           const prev = s;
           s = escrowReducer(s, e);

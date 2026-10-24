@@ -101,7 +101,7 @@ export function PricingCalculator() {
 
             <div className="rounded-xl border border-line bg-surface p-5">
               <h3 className="font-semibold">KhetiRental rate vs informal local broker rate (₹/h)</h3>
-              <div className="mt-3 h-56">
+              <div className="mt-3 h-56 overflow-hidden">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={[
                     { name: "KhetiRental", rate: result.rate!.total, fill: "var(--viz-1)" },
