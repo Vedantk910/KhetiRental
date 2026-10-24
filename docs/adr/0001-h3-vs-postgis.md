@@ -21,7 +21,7 @@ read path.
 
 ## Rationale
 - H3 gives a **uniform, integer-keyed, tileable** index: a radius query is a
-  fixed number of keys (k-ring ≤ 5 → ≤ 37 keys), so the read is a single
+  fixed number of keys (k-ring ≤ 5 → ≤ 91 keys), so the read is a single
   Redis pipeline, independent of how many machines exist total — the core
   property that lets p99 stay flat at 5k VUs.
 - A GiST/PostGIS scan cost grows with the dataset and with concurrent

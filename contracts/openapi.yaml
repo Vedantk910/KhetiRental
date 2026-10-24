@@ -72,7 +72,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Booking' }
         '409':
-          description: duplicate idempotency key or machine not available
+          description: idempotency key reused with a different body, machine unknown or not listed, or the machine is already booked for an overlapping window
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
@@ -96,6 +96,11 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Settlement' }
+        '404':
+          description: no booking with that id
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
         '409':
           description: booking not in a settle-able state (dispute open, etc.)
           content:
@@ -144,6 +149,14 @@ components:
         machine_id: { type: string }
         renter_id: { type: string }
         hours: { type: integer, minimum: 1 }
+        start_at:
+          type: string
+          format: date-time
+          description: requested start; overlapping windows on the same machine are rejected with 409
+        activity:
+          type: string
+          enum: [Plowing, Sowing, Harvesting]
+          description: crop activity; selects the season band used for pricing (default Sowing)
     Booking:
       type: object
       required: [booking_id, state]
