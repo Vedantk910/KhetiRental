@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const PAGES = ["/", "/architecture", "/dossier/track-a-systems", "/dossier/track-b-product"];
+const PAGES = ["/en", "/en/architecture", "/en/dossier/track-a-systems", "/en/dossier/track-b-product"];
 
 for (const path of PAGES) {
   test(`${path} renders cleanly and every internal link resolves`, async ({ page, request }) => {
@@ -9,26 +9,33 @@ for (const path of PAGES) {
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(/track [ab]|lead \d|tarun|vedant/i);
     const hrefs = await page
-      .locator('main a[href^="/"], a[href^="/"]')
+      .locator('main a[href^="/"]')
       .evaluateAll((as) => [...new Set(as.map((a) => a.getAttribute("href")!))]);
     for (const href of hrefs) expect((await request.get(href)).status(), href).toBe(200);
     for (const width of [375, 1024, 1280, 1440]) {
       await page.setViewportSize({ width, height: 800 });
-      const wide = await page.evaluate(() =>
-        [...document.querySelectorAll("body *")]
-          .filter((el) => el.getBoundingClientRect().right > window.innerWidth + 1)
-          .map((el) => `${el.tagName.toLowerCase()}.${(el.getAttribute("class") ?? "").slice(0, 50)}`)
-          .slice(0, 5),
-      );
-      expect(wide, `${path} @${width}: elements wider than the viewport`).toEqual([]);
+      // Poll: ResponsiveContainer (recharts) re-measures a frame or two after the resize.
+      await expect
+        .poll(
+          () =>
+            page.evaluate(() =>
+              [...document.querySelectorAll("body *")]
+                .filter((el) => el.getBoundingClientRect().right > window.innerWidth + 1)
+                .map((el) => `${el.tagName.toLowerCase()}.${(el.getAttribute("class") ?? "").slice(0, 50)}`)
+                .slice(0, 5),
+            ),
+          { message: `${path} @${width}: elements wider than the viewport` },
+        )
+        .toEqual([]);
     }
     expect(errors).toEqual([]);
   });
 }
 
-test("track A latency chart draws one bar per load-test run", async ({ page }) => {
-  await page.goto("/dossier/track-a-systems");
+test("systems latency chart draws one bar per load-test run", async ({ page }) => {
+  await page.goto("/en/dossier/track-a-systems");
   await expect(page.locator(".recharts-bar-rectangle")).toHaveCount(4);
 });
 

@@ -65,6 +65,9 @@ try ok      a@example.com $P/components/ui/button.tsx $P/app/layout.tsx
 try ok      b@example.com $P/components/ui/button.tsx scripts/check-agent-tooling.sh
 # The old services/ tree is gone; a stray path there is not Track A any more.
 try ok      b@example.com services/client-portal/lib/pricing-engine.ts $P/lib/pricing-engine.ts
+# Locale-prefixed routes keep their domain owner.
+try blocked a@example.com "$P/app/[locale]/marketplace/search/page.tsx"
+try blocked b@example.com "$P/app/[locale]/architecture/h3-spatial/page.tsx"
 try ok      a@example.com .github/workflows/deploy-portal.yml
 try blocked b@example.com .github/workflows/deploy-portal.yml
 

@@ -8,8 +8,10 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],
   webServer: {
     command: `npx next start -p ${PORT}`,
-    url: `http://localhost:${PORT}`,
+    url: `http://localhost:${PORT}/en`,
     reuseExistingServer: false,
     timeout: 60_000,
+    // The /dev/ui gallery is off in production builds unless this is set.
+    env: { ENABLE_DEV_UI: "1" },
   },
 });

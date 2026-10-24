@@ -11,5 +11,7 @@ export default defineConfig({
     include: ["**/*.test.{ts,tsx}"],
     exclude: ["node_modules/**", "e2e/**", ".next/**"],
     globals: true,
+    // next-intl imports `next/navigation` without an extension; let Vite resolve it.
+    server: { deps: { inline: ["next-intl"] } },
   },
 });

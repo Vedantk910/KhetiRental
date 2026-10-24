@@ -9,3 +9,12 @@ describe("cn", () => {
     expect(cn("px-2 py-1", "px-4")).toBe("py-1 px-4");
   });
 });
+
+describe("cn with Mitti tokens", () => {
+  it("keeps a Mitti font size next to a colour", () => {
+    expect(cn("text-label text-action-on")).toBe("text-label text-action-on");
+  });
+  it("later Mitti font size wins", () => {
+    expect(cn("text-body", "text-label")).toBe("text-label");
+  });
+});

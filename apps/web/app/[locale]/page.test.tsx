@@ -15,7 +15,7 @@ describe("Home", () => {
     }
   });
 
-  it("links to both track dossiers", () => {
+  it("links to both dossiers", () => {
     render(<Home />);
     expect(screen.getByRole("link", { name: /systems dossier/i })).toHaveAttribute(
       "href",
@@ -25,5 +25,10 @@ describe("Home", () => {
       "href",
       "/dossier/track-b-product",
     );
+  });
+
+  it("never mentions the team work split", () => {
+    render(<Home />);
+    expect(document.body.textContent).not.toMatch(/track [ab]|lead \d|tarun|vedant/i);
   });
 });

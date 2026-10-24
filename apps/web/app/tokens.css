@@ -1,0 +1,150 @@
+/* app/tokens.css — Mitti design tokens (UI-SPEC §2.4). Channels (no rgb()) so Tailwind opacity works. */
+:root {
+  --n-50: 250 248 244;
+  --n-100: 243 238 230;
+  --n-200: 229 221 209;
+  --n-300: 207 196 180;
+  --n-400: 163 150 132;
+  --n-500: 124 112 98;
+  --n-600: 94 84 74;
+  --n-700: 72 63 55;
+  --n-800: 51 44 38;
+  --n-900: 33 28 24;
+  --n-950: 19 16 13;
+  --neel-50: 238 241 251;
+  --neel-100: 220 227 247;
+  --neel-300: 141 162 227;
+  --neel-500: 58 86 197;
+  --neel-600: 44 68 168;
+  --neel-700: 34 53 133;
+  --neel-800: 27 42 102;
+  --neel-900: 20 31 74;
+  --sarson-100: 255 244 204;
+  --sarson-300: 255 212 92;
+  --sarson-400: 251 192 45;
+  --sarson-600: 201 138 0;
+  --sarson-700: 143 95 0;
+
+  /* semantic (light) */
+  --bg: var(--n-50);
+  --surface: 255 255 255;
+  --surface-muted: var(--n-100);
+  --text: var(--n-950);
+  --text-muted: var(--n-700);
+  --text-subtle: var(--n-600);
+  --border-control: var(--n-500);
+  --border-subtle: var(--n-200);
+  /* chip-border: UI-SPEC §2.1 role, missing from the §2.4 code block */
+  --chip-border: var(--n-300);
+  --action: var(--neel-700);
+  --action-hover: var(--neel-800);
+  --action-pressed: var(--neel-900);
+  --on-action: 255 255 255;
+  --link: var(--neel-700);
+  --selected: var(--sarson-300);
+  --on-selected: var(--n-950);
+  --selected-border: var(--neel-700);
+  --focus: var(--neel-900);
+  --focus-halo: var(--sarson-300);
+  --success: 30 123 60;
+  --success-bg: 231 244 234;
+  --warning: 180 80 10;
+  --warning-bg: 253 238 226;
+  --danger: 180 35 24;
+  --danger-bg: 253 236 234;
+  --info: 44 68 168;
+  --info-bg: 234 239 251;
+  --overlay: 19 16 13;
+
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-pill: 999px;
+  --shadow-sheet: 0 -8px 24px rgb(19 16 13 / 0.14);
+  /* UI-SPEC §2.3 (sticky bottom bars cast upward); §2.4 code had 0 2px */
+  --shadow-raised: 0 -2px 8px rgb(19 16 13 / 0.08);
+  --tap: 48px;
+  --tap-lg: 56px;
+  color-scheme: light;
+}
+
+/* Dark values are listed twice: the OS preference, and the manual data-theme toggle. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: var(--n-950);
+    --surface: var(--n-900);
+    --surface-muted: 43 37 32;
+    --text: var(--n-100);
+    --text-muted: var(--n-300);
+    --text-subtle: var(--n-400);
+    --border-control: var(--n-500);
+    --border-subtle: 51 44 38;
+    --chip-border: var(--n-600);
+    --action: var(--sarson-400);
+    --action-hover: var(--sarson-300);
+    --action-pressed: var(--sarson-600);
+    --on-action: var(--n-950);
+    --link: var(--neel-300);
+    --focus: var(--sarson-300);
+    --focus-halo: var(--neel-500);
+    /* *-bg dark values: UI-SPEC §2.1 (the §2.4 block kept the light ones, which fail contrast in dark) */
+    --success: 108 203 138;
+    --success-bg: 31 51 38;
+    --warning: 245 158 91;
+    --warning-bg: 58 42 28;
+    --danger: 249 112 102;
+    --danger-bg: 58 31 28;
+    --info: 141 162 227;
+    --info-bg: 30 36 64;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: var(--n-950);
+  --surface: var(--n-900);
+  --surface-muted: 43 37 32;
+  --text: var(--n-100);
+  --text-muted: var(--n-300);
+  --text-subtle: var(--n-400);
+  --border-control: var(--n-500);
+  --border-subtle: 51 44 38;
+  --chip-border: var(--n-600);
+  --action: var(--sarson-400);
+  --action-hover: var(--sarson-300);
+  --action-pressed: var(--sarson-600);
+  --on-action: var(--n-950);
+  --link: var(--neel-300);
+  --focus: var(--sarson-300);
+  --focus-halo: var(--neel-500);
+  --success: 108 203 138;
+  --success-bg: 31 51 38;
+  --warning: 245 158 91;
+  --warning-bg: 58 42 28;
+  --danger: 249 112 102;
+  --danger-bg: 58 31 28;
+  --info: 141 162 227;
+  --info-bg: 30 36 64;
+  color-scheme: dark;
+}
+
+html {
+  font-size: 100%;
+}
+body {
+  background: rgb(var(--bg));
+  color: rgb(var(--text));
+  font: 400 1.125rem/1.667 var(--font-ui);
+}
+:focus-visible {
+  outline: 3px solid rgb(var(--focus));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgb(var(--focus-halo) / 0.6);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,18 +1,16 @@
 import Link from "next/link";
 import { EVIDENCE } from "@/lib/evidence";
 
-const TRACKS = [
+const DOSSIERS = [
   {
     href: "/dossier/track-a-systems",
     cta: "Open the systems dossier",
-    who: "Track A, Tarun Konde",
     what: "Distributed systems",
     body: "H3 spatial matching in Go and Redis, Redlock with fencing tokens, a saga with a transactional outbox, offline-first telemetry sync and the 5,000-user load test.",
   },
   {
     href: "/dossier/track-b-product",
     cta: "Open the product dossier",
-    who: "Track B, Vedant Konde",
     what: "Product, risk and pricing",
     body: "The PRD and API contracts, the 3-stage milestone escrow and its dispute rules, the risk audit, and the depreciation pricing model behind every rate.",
   },
@@ -80,10 +78,9 @@ export default function Home() {
       </section>
 
       <section className="mt-14 grid gap-5 md:grid-cols-2">
-        {TRACKS.map((t) => (
+        {DOSSIERS.map((t) => (
           <article key={t.href} className="flex flex-col border-l-4 border-primary bg-surface p-6">
-            <p className="text-sm text-muted">{t.who}</p>
-            <h2 className="mt-1 text-2xl font-semibold">{t.what}</h2>
+            <h2 className="text-2xl font-semibold">{t.what}</h2>
             <p className="mt-3 flex-1 text-muted">{t.body}</p>
             <Link href={t.href} className="mt-5 font-semibold text-primary underline underline-offset-4">
               {t.cta}

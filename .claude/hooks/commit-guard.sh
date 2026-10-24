@@ -14,7 +14,9 @@ b_email="$(git config track.b.email || true)"
 
 P=apps/web
 track_of() {
-  case "$1" in
+  # Locale-prefixed routes (app/[locale]/X) belong to the same owner as app/X.
+  local f=${1/\/app\/\[locale\]\//\/app\/}
+  case "$f" in
     # Client portal: ownership follows the domain. Track A = H3/matching,
     # systems dossier; Track B = pricing, escrow/payments, marketplace,
     # product dossier; the rest of the shell (config, layout, navbar) is shared.

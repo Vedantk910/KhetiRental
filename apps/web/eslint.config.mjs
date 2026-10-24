@@ -37,6 +37,8 @@ const config = tseslint.config(
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
+      // `await act(async () => ...)` flushes React 19 updates even when the body is synchronous.
+      "@typescript-eslint/require-await": "off",
     },
   },
 );

@@ -20,12 +20,14 @@
     "h3-js": "4.5.0",
     "lucide-react": "1.61.0",
     "next": "15.5.28",
+    "next-intl": "4.14.9",
     "react": "19.1.10",
     "react-dom": "19.1.10",
     "recharts": "3.10.1",
     "tailwind-merge": "2.6.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@eslint/eslintrc": "3.3.7",
     "@playwright/test": "1.64.1",
     "@testing-library/dom": "10.4.2",
@@ -41,6 +43,7 @@
     "eslint-config-next": "15.5.28",
     "eslint-plugin-jsx-a11y": "6.10.2",
     "fast-check": "3.23.2",
+    "intl-messageformat": "11.2.15",
     "jsdom": "30.1.3",
     "knip": "6.43.0",
     "lefthook": "2.2.2",
