@@ -2,7 +2,7 @@
 
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-emerald.svg)](https://khetirental.vercel.app)
 
-KhetiRental is a marketplace for renting tractors and other farm machinery by the hour. Small farmers cannot buy a tractor and today rent through informal brokers who set the price and leave no record when something goes wrong. Owners leave machines idle because renting to strangers is risky. v2.0 adds three things the informal market lacks: nearby-machine search on Uber H3 cells backed by Redis, a three-stage milestone escrow with nine dispute rules, and itemised cost-based pricing. It is built by two people on separate tracks, with a commit hook that enforces who may touch which files.
+KhetiRental is a marketplace for renting tractors and other farm machinery by the hour. Small farmers cannot buy a tractor and today rent through informal brokers who set the price and leave no record when something goes wrong. Owners leave machines idle because renting to strangers is risky. v2.0 adds three things the informal market lacks: nearby-machine search on Uber H3 cells backed by Redis, a three-stage milestone escrow with nine dispute rules, and itemised cost-based pricing.
 
 > The badge and the links below point to `https://khetirental.vercel.app`. That address goes live only after the repository owner imports the repo on Vercel (see [Deploying to Vercel](../README.md#deploy)).
 
@@ -16,8 +16,8 @@ KhetiRental is a marketplace for renting tractors and other farm machinery by th
 | [/pricing](https://khetirental.vercel.app/pricing) | Itemised hourly price |
 | [/escrow](https://khetirental.vercel.app/escrow) | Three-stage escrow simulator |
 | [/architecture](https://khetirental.vercel.app/architecture) | System architecture |
-| [/dossier/track-a-systems](https://khetirental.vercel.app/dossier/track-a-systems) | Track A systems dossier |
-| [/dossier/track-b-product](https://khetirental.vercel.app/dossier/track-b-product) | Track B product dossier |
+| [/dossier/track-a-systems](https://khetirental.vercel.app/dossier/track-a-systems) | Systems dossier |
+| [/dossier/track-b-product](https://khetirental.vercel.app/dossier/track-b-product) | Product dossier |
 
 ## Headline numbers
 
@@ -32,17 +32,6 @@ Each figure is taken from `apps/web/lib/evidence.ts`, which names its source fil
 
 The load test ran on one laptop with k6, the service and Redis co-located. Treat it as a single-host measurement, not a production benchmark.
 
-## Zero-Leak Dual-Track Ownership Matrix
-
-`.claude/hooks/commit-guard.sh` rejects any commit that mixes tracks or is authored by the wrong person. Track emails are read from `git config track.a.email` and `track.b.email`.
-
-| Area | Track A: tarunkonde05-hub | Track B: Vedantk910 | Shared |
-|---|---|---|---|
-| Backend | Go services (`showcase/go/matching-engine`, `booking-orchestrator`, `telemetry-gateway`), H3 matching, Redis/Redlock, Kafka/saga | | |
-| Infra and tests | `showcase/deploy/`, `showcase/tests/load/`, `.github/workflows/` | | |
-| Product and risk | | `showcase/docs/PRD.md`, `showcase/contracts/`, `showcase/docs/adr/`, `showcase/analytics/`; escrow, payments, risk, pricing | |
-| Client portal | H3 sandbox, machines API, systems dossier | Pricing, escrow, marketplace, bookings API, product dossier | Portal shell: config, layout, navbar |
-| Repo-wide | | | Root files, `.claude/`, `.scratch/`, `showcase/ARCHITECTURE.md` |
 
 ## Repository map
 

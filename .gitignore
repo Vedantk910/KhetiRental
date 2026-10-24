@@ -56,3 +56,13 @@ apps/web/.uploads/
 node_modules/
 vendor/
 target/
+
+# ── Local git/agent tooling (kept on this machine, not part of the project) ─
+.claude/skills/
+.claude/verify-skills.py
+.claude/hooks/commit-guard.sh
+.claude/hooks/test_commit_guard.sh
+.claude/launch.json
+.scratch/khetirental-git-setup/
+docs/commit-sequence.md
+scripts/check-agent-tooling.sh

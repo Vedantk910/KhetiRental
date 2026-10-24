@@ -7,7 +7,7 @@ the dossier pages and a test keeps the two identical
 
 ---
 
-## Track A — Tarun Konde (distributed systems)
+## Tarun Konde (distributed systems)
 
 **Project line:** KhetiRental v2.0 — agricultural machinery marketplace with milestone escrow | Go, Redis, PostgreSQL, Uber H3, Kafka (outbox), k6
 
@@ -23,7 +23,7 @@ the dossier pages and a test keeps the two identical
 
 ---
 
-## Track B — Vedant Konde (product, risk and pricing)
+## Vedant Konde (product, risk and pricing)
 
 **Project line:** KhetiRental v2.0 — agricultural machinery marketplace with milestone escrow | PRD, OpenAPI 3.1, ADRs, escrow and dispute design, pricing model
 

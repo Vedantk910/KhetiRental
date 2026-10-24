@@ -4,11 +4,11 @@ pre-commit:
   parallel: true
   commands:
     commit-guard:
-      run: .claude/hooks/commit-guard.sh
+      run: test ! -x .claude/hooks/commit-guard.sh || .claude/hooks/commit-guard.sh
     eslint:
       root: apps/web/
       glob: "*.{ts,tsx}"
-      run: npx eslint --fix {staged_files}
+      run: npx eslint --fix --no-warn-ignored {staged_files}
       stage_fixed: true
     prettier:
       root: apps/web/

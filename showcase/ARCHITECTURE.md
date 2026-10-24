@@ -37,15 +37,15 @@
 
 ## C4 — Containers
 
-| Container | Tech | Owner | Responsibilities |
-|---|---|---|---|
-| `showcase/go/matching-engine` | Go 1.22, uber/h3-go/v4, go-redis/v9 | **Lead 1** | O(1) spatial queries via H3 k-rings; multi-criteria ranking |
-| `showcase/go/booking-orchestrator` | Go, go-redis/v9 (Redlock); Kafka producer behind the `Producer` interface (client not yet wired) | **Lead 1** | Saga state machine, outbox, compensations, fencing tokens |
-| `showcase/go/telemetry-gateway` | Go, gorilla/websocket, CRDT (LWW-Element-Set) | **Lead 1** | 2G/3G-tolerant offline sync, geofence + hour-tampering alerts |
-| `showcase/contracts/` (OpenAPI 3.1 + Kafka event schemas) | YAML/JSON | **Lead 2** | Single seam between Lead 1 services and Lead 2 risk model |
-| `showcase/analytics/pricing.py`, `showcase/analytics/kpis.py` | Python 3.12 | **Lead 2** | Dynamic depreciation pricing; Liquidity / TTF / EUR |
-| `showcase/docs/adr/` | Markdown | **Lead 2** | H3-vs-PostGIS, Saga-vs-2PC, 3-stage escrow, dynamic pricing |
-| `showcase/deploy/sql/` | PostgreSQL 17 (+ TimescaleDB when installed) | **Lead 1** | Migrations: bookings, outbox/inbox, telemetry hypertable; `test_migrations.sh` |
+| Container | Tech | Responsibilities |
+|---|---|---|
+| `showcase/go/matching-engine` | Go 1.22, uber/h3-go/v4, go-redis/v9 | O(1) spatial queries via H3 k-rings; multi-criteria ranking |
+| `showcase/go/booking-orchestrator` | Go, go-redis/v9 (Redlock); Kafka producer behind the `Producer` interface (client not yet wired) | Saga state machine, outbox, compensations, fencing tokens |
+| `showcase/go/telemetry-gateway` | Go, gorilla/websocket, CRDT (LWW-Element-Set) | 2G/3G-tolerant offline sync, geofence + hour-tampering alerts |
+| `showcase/contracts/` (OpenAPI 3.1 + Kafka event schemas) | YAML/JSON | Single seam between the services and the risk model |
+| `showcase/analytics/pricing.py`, `showcase/analytics/kpis.py` | Python 3.12 | Dynamic depreciation pricing; Liquidity / TTF / EUR |
+| `showcase/docs/adr/` | Markdown | H3-vs-PostGIS, Saga-vs-2PC, 3-stage escrow, dynamic pricing |
+| `showcase/deploy/sql/` | PostgreSQL 17 (+ TimescaleDB when installed) | Migrations: bookings, outbox/inbox, telemetry hypertable; `test_migrations.sh` |
 
 > **Planned, not yet implemented:** the API Gateway and `escrow-service` containers shown in the context diagram. Escrow rules live in `showcase/contracts/escrow-state-machine.md`; the gateway role is currently played by each service's own HTTP mux.
 
@@ -74,10 +74,6 @@
 | `telemetry.events` | telemetry-gateway | escrow (hour validation), analytics (EUR) |
 | `escrow.events` | escrow service | orchestrator (settlement completion), analytics |
 | `pricing.events` | analytics | matching-engine (rank boost for cheaper machines) |
-
-## Implementation order (10+ commits per lead)
-
-Full sequence in [`.scratch/khetirental-git-setup/PLAN.md`](../.scratch/khetirental-git-setup/PLAN.md). Each lead's next commit should follow the conventional prefixes in `.claude/skills/git-guardrails-dual-track/SKILL.md` (Track A: `perf(geo):`, `feat(concurrency):`, `infra(k8s):`, `test(k6):`; Track B: `docs(prd):`, `spec(api):`, `model(pricing):`, `feat(escrow-ui):`).
 
 ## Load-testing target (see `showcase/tests/load/k6/full_flow.js`)
 
