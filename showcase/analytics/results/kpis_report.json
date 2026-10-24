@@ -1,0 +1,16 @@
+{
+  "liquidity_index_by_district": {
+    "8.2e15": 0.2919,
+    "8.2e16": 0.0304
+  },
+  "time_to_fulfill_median_min": 40.0,
+  "fleet_utilization_pct": 5.972,
+  "per_machine_eur_pct": [
+    5.278,
+    5.556,
+    5.833,
+    6.111,
+    6.389,
+    6.667
+  ]
+}

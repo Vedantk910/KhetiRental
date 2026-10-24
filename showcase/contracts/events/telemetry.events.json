@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "telemetry.events.json",
+  "title": "TelemetryEvent",
+  "description": "Kafka topic: telemetry.events. Producer: telemetry-gateway. Consumers: escrow (run-hour validation, P2 gate), analytics (EUR).",
+  "type": "object",
+  "required": ["machine_id", "observed_at", "lat", "lng", "ecu_hours"],
+  "properties": {
+    "machine_id": { "type": "string" },
+    "observed_at": { "type": "integer", "description": "unix millis" },
+    "lat": { "type": "number" },
+    "lng": { "type": "number" },
+    "ecu_hours": { "type": "number", "description": "CAN-bus engine-hour meter reading" },
+    "gps_travel_hours": { "type": "number", "description": "hours implied by GPS travel log" },
+    "fuel_level_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "anomaly_flags": {
+      "type": "array",
+      "items": { "enum": ["GEOFENCE_BREACH", "HOUR_TAMPER", "FUEL_MISMATCH"] }
+    }
+  }
+}
