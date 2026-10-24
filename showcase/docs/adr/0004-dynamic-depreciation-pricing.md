@@ -1,7 +1,6 @@
 # ADR-0004: Dynamic depreciation pricing vs fixed tariff
 
 - **Status:** Accepted
-- **Decider:** Lead 2 (marketplace economics)
 - **Date:** 2026-06
 
 ## Context

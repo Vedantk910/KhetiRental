@@ -1,6 +1,5 @@
 """KhetiRental dynamic depreciation pricing engine.
 
-Owner: Lead 2 (Product & Risk / Pricing & Marketplace Economics).
 
 Mathematical formulation
 ------------------------
@@ -88,7 +87,7 @@ class Machine:
 
 @dataclass
 class PriceBreakdown:
-    """Itemised price so Lead 2 / a PM can audit each component."""
+    """Itemised price so a PM can audit each component."""
     machine_id: str
     base_component: float
     wear_component: float

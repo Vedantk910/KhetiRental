@@ -4,7 +4,7 @@ info:
   version: 2.0.0
   description: |
     Two-sided agritech machinery sharing + milestone escrow.
-    Contract seam owned by Lead 2 (Product); implemented against by Lead 1
+    Contract seam between the product rules and the services.
     (systems). All mutating endpoints require `Idempotency-Key` so a rural
     2G retry is safe.
 servers:

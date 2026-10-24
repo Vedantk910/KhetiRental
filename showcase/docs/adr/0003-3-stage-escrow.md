@@ -1,7 +1,6 @@
 # ADR-0003: 3-Stage milestone escrow vs instant-capture payment
 
 - **Status:** Accepted
-- **Decider:** Lead 2 (product/risk)
 - **Date:** 2026-06
 
 ## Context
@@ -31,7 +30,7 @@ Release of funds is **gated on verifiable milestones**, not on time.
 
 ## Consequences
 - The escrow service is the *risk* service: its state machine is product
-  surface (dispute pages), so Lead 2 owns the thresholds and Lead 1 owns the
-  enforcement mechanics.
+  surface (dispute pages), so the contract owns the thresholds and the
+  orchestrator owns the enforcement mechanics.
 - Settle-at-time (instant capture) is faster but strictly dominated on risk;
   we accept the operational cost of running the gates.

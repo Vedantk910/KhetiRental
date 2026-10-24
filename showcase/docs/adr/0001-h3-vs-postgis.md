@@ -1,7 +1,6 @@
 # ADR-0001: Uber H3 hexagonal indexing vs PostGIS for spatial matching
 
 - **Status:** Accepted
-- **Decider:** Lead 1 (systems) — ratified by Lead 2
 - **Date:** 2026-06
 
 ## Context

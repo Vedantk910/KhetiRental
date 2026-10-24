@@ -1,7 +1,6 @@
 # ADR-0002: Kafka Saga (orchestrated) vs 2PC for cross-service booking
 
 - **Status:** Accepted
-- **Decider:** Lead 1 — risk-reviewed by Lead 2
 - **Date:** 2026-06
 
 ## Context

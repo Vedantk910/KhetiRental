@@ -1,6 +1,5 @@
 """KhetiRental marketplace KPIs & governance.
 
-Owner: Lead 2 (Product & Risk / Marketplace Economics).
 
 Three headline KPIs are defined with their *exact* formulas so both leads
 share one source of truth, and so a PM / quant reviewer can audit them:
@@ -106,7 +105,7 @@ def utilization_rate_pct(machine: MachineUtilization) -> float:
 
     Denominator is the *available* hours over the active window (24 h/day),
     which overstates a purely agricultural asset that is not 24/7. The
-    product view (Lead 2) normalizes this by a day-part factor elsewhere;
+    product view normalizes this by a day-part factor elsewhere;
     here we return the raw asset-busy rate.
     """
     if machine.active_days <= 0:

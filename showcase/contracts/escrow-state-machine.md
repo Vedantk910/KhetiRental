@@ -1,8 +1,8 @@
 # 3-Stage Milestone Escrow Protocol
 
-> **Owner: Lead 2 (Product & Risk Architecture).** This is a product/risk
-> contract, not an implementation spec. Lead 1 builds the state machine in
-> `showcase/go/booking-orchestrator/`; Lead 2 owns the state definitions,
+> This is a product/risk contract, not an implementation spec. The state
+> machine is built in `showcase/go/booking-orchestrator/`; this file owns the
+> state definitions,
 > gate criteria, deposit policy and the dispute-detection rules in this file.
 >
 > The protocol converts a marketplace "promise" into a **conditional escrow**:
@@ -232,11 +232,11 @@ the owner's share and recorded in `analytics` for KPI tracking
 
 ---
 
-## 6. Contract / event boundary (for Lead 1)
+## 6. Contract / event boundary
 
-Lead 1 implements this in `showcase/go/booking-orchestrator` as a saga. The
+The booking orchestrator implements this in `showcase/go/booking-orchestrator` as a saga. The
 state enum and gate predicates in this file are the **contract**; the
 booking state set must stay identical across `showcase/contracts/openapi.yaml`, the
 saga constants and the `bookings` CHECK (enforced by `docs/check_docs.py`).
-Lead 2 owns the rule thresholds; Lead 1 owns the enforcement mechanics.
-Any change to a gate threshold or state is a Lead 2 change, reviewed via ADR.
+This file sets the rule thresholds; the orchestrator enforces them. Any
+change to a gate threshold or state is made here first and recorded in an ADR.

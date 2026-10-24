@@ -1,8 +1,9 @@
-# Shared data schemas (contract between Lead 1 and Lead 2)
+# Shared data schemas
 
-These are the JSON/Go data models both leads consume. **Lead 2 owns the
-shape** (field semantics, validation rules); **Lead 1 owns the
-implementation** (Go types, Postgres columns, TimescaleDB hypertables).
+These are the JSON/Go data models the contracts and the services share.
+This file defines the **shape** (field semantics, validation rules); the
+services define the **implementation** (Go types, Postgres columns,
+TimescaleDB hypertables).
 
 ## Machine
 ```json

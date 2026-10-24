@@ -1,7 +1,6 @@
 # KhetiRental v2.0 — Product Requirements Document
 
-- **Owner:** Lead 2, Vedant Konde (Product & Risk Architecture) · **Status:** v2.0, approved for pilot build · **Updated:** 2026-10-24
-- **Engineering counterpart:** Lead 1, Tarun Konde (Distributed Systems)
+- **Status:** v2.0, approved for pilot build · **Updated:** 2026-10-24
 - **Implements against:** [`showcase/contracts/openapi.yaml`](../contracts/openapi.yaml), [`showcase/contracts/escrow-state-machine.md`](../contracts/escrow-state-machine.md), [`showcase/contracts/events/`](../contracts/events/booking.events.json)
 - **Decisions:** [ADR-0001 H3 vs PostGIS](adr/0001-h3-vs-postgis.md) · [ADR-0002 Kafka saga vs 2PC](adr/0002-kafka-saga-vs-2pc.md) · [ADR-0003 3-stage escrow](adr/0003-3-stage-escrow.md) · [ADR-0004 Dynamic depreciation pricing](adr/0004-dynamic-depreciation-pricing.md)
 - **Risk audit:** [`showcase/docs/audit/phase1-invariant-audit.md`](audit/phase1-invariant-audit.md) — its remediations are folded into §5, §7 and §10 of this document.
@@ -336,7 +335,7 @@ Formulas live in [`showcase/analytics/kpis.py`](../analytics/kpis.py) and are co
 
 | Milestone | Scope | Exit criterion |
 |---|---|---|
-| M0 — Hardening (done 2026-10-24) | Audit remediations 1–12 (Track A) and contract fixes 13–22 (Track B) | All 20 `TestAudit_*` tests green; state sets identical across contract, code and database |
+| M0 — Hardening (done 2026-10-24) | Audit remediations 1–12 (services) and contract fixes 13–22 (contracts and product) | All 20 `TestAudit_*` tests green; state sets identical across contract, code and database |
 | M1 — Closed pilot | 2 districts, 1 CHC each, 20 machines, assisted onboarding | 100 settled bookings; dispute rate measured |
 | M2 — Open pilot | Self-serve listing with D-07 at listing; D-08/D-09 live | Liquidity Index ≥ 0.25 in both districts |
 | M3 — Scale | 10 districts; deposit floors recalibrated on claim data | Auto-resolution ≥ 70 %; 0 ledger breaks |
@@ -345,32 +344,32 @@ Formulas live in [`showcase/analytics/kpis.py`](../analytics/kpis.py) and are co
 
 ## 10. Audit Remediation Register
 
-Source: [`showcase/docs/audit/phase1-invariant-audit.md`](audit/phase1-invariant-audit.md). Owner: **A** = Track A (systems), **B** = Track B (product and risk).
+Source: [`showcase/docs/audit/phase1-invariant-audit.md`](audit/phase1-invariant-audit.md).
 
-| # | Remediation | Owner | Status |
-|---|---|---|---|
-| 1 | Fencing predicate `fencing_token <= $token` | A | Done |
-| 2 | Saga aborts on 0 rows affected | A | Done |
-| 3 | Outbox row in the same transaction as the state change | A | Done |
-| 4 | Guarded, idempotent compensation | A | Done |
-| 5 | Void escrow on every compensating path; late approval compensates | A | Done |
-| 6 | Owner-checked heartbeat with lost-lock signal | A | Done |
-| 7 | Validity-time check after quorum | A | Done |
-| 8 | Fencing token minted after winning, from Postgres | A | Done |
-| 9 | Orchestrator owns the lock lifecycle | A | Done |
-| 10 | Telemetry track retained; D-01 over time | A | Done |
-| 11 | D-01 measured from the parcel edge | A | Done |
-| 12 | Deterministic D-02 boundary | A | Done |
-| 13 | `DISPUTE_OPEN`, `SUSPENDED_BREAKDOWN`, `NO_SHOW_PENDING` in contract, code and database | A + B | Done (one state set enforced across OpenAPI, event schema, saga and SQL by `docs/check_docs.py`) |
-| 14 | One deposit definition | B | Done |
-| 15 | One geofence definition | B | Done |
-| 16 | D-01b GPS spoof rule | B | Specified |
-| 17 | D-02 monotonic and stationary-work amendments | B | Specified |
-| 18 | D-06 safe under 2G blackouts | B | Specified |
-| 19 | D-07 at listing | B | Specified |
-| 20 | D-08 mid-lease breakdown | B | Specified |
-| 21 | D-09 weather pause | B | Specified |
-| 22 | 72 h dispute SLA | B | Specified |
+| # | Remediation | Status |
+|---|---|---|
+| 1 | Fencing predicate `fencing_token <= $token` | Done |
+| 2 | Saga aborts on 0 rows affected | Done |
+| 3 | Outbox row in the same transaction as the state change | Done |
+| 4 | Guarded, idempotent compensation | Done |
+| 5 | Void escrow on every compensating path; late approval compensates | Done |
+| 6 | Owner-checked heartbeat with lost-lock signal | Done |
+| 7 | Validity-time check after quorum | Done |
+| 8 | Fencing token minted after winning, from Postgres | Done |
+| 9 | Orchestrator owns the lock lifecycle | Done |
+| 10 | Telemetry track retained; D-01 over time | Done |
+| 11 | D-01 measured from the parcel edge | Done |
+| 12 | Deterministic D-02 boundary | Done |
+| 13 | `DISPUTE_OPEN`, `SUSPENDED_BREAKDOWN`, `NO_SHOW_PENDING` in contract, code and database | Done (one state set enforced across OpenAPI, event schema, saga and SQL by `docs/check_docs.py`) |
+| 14 | One deposit definition | Done |
+| 15 | One geofence definition | Done |
+| 16 | D-01b GPS spoof rule | Specified |
+| 17 | D-02 monotonic and stationary-work amendments | Specified |
+| 18 | D-06 safe under 2G blackouts | Specified |
+| 19 | D-07 at listing | Specified |
+| 20 | D-08 mid-lease breakdown | Specified |
+| 21 | D-09 weather pause | Specified |
+| 22 | 72 h dispute SLA | Specified |
 
 ---
 
