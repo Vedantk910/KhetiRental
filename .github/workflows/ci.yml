@@ -82,6 +82,22 @@ jobs:
   portal:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Postgres 16 + PostGIS for the website (D-13). Integration tests clone throwaway databases
+    # from template_postgis, which this image creates; the e2e run uses its own kheti_e2e database.
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: kheti
+          POSTGRES_PASSWORD: kheti
+          POSTGRES_DB: kheti
+        options: >-
+          --health-cmd "pg_isready -U kheti -d kheti" --health-interval 5s
+          --health-timeout 3s --health-retries 10
+    env:
+      DATABASE_URL: postgres://kheti:kheti@localhost:5432/kheti
+      AUTH_SECRET: ci-only-secret-not-for-production
     defaults:
       run:
         working-directory: apps/web
@@ -93,6 +109,8 @@ jobs:
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
       - run: npm ci
+      - run: npm run db:migrate
+      - run: npm run db:seed
       - run: npm run lint
       - run: npm run format:check
       - run: npm run typecheck
