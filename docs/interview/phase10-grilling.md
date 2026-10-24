@@ -2,8 +2,8 @@
 
 Prepared for MiM / MBA admissions interviews and consulting case rounds.
 Interviewer persona: admissions director (HEC Paris) / senior partner
-(McKinsey). Every number is from [`docs/PRD.md`](../PRD.md),
-[`analytics/results/pricing_report.json`](../../analytics/results/pricing_report.json)
+(McKinsey). Every number is from [`showcase/docs/PRD.md`](../../showcase/docs/PRD.md),
+[`showcase/analytics/results/pricing_report.json`](../../showcase/analytics/results/pricing_report.json)
 or the portal's escrow engine; assumptions are named as assumptions.
 
 How to use this: say the answer in your own words in under 90 seconds,
@@ -116,7 +116,7 @@ drought year in four that loses 40 % of hours:
 So the honest compression is **9.0 years to 3.3 years**, and an owner needs
 about **422 rented hours in a normal year** to repay a ₹6.4 lakh tractor
 inside a 5-year loan once droughts and costs are counted
-(`analytics/pricing.py`, `owner_cash_case`).
+(`showcase/analytics/pricing.py`, `owner_cash_case`).
 
 What I'd tell the owner buying a second tractor:
 

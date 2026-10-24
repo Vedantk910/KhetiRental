@@ -1,11 +1,11 @@
 """Doc integrity check (run: python3 docs/check_docs.py).
 
-1. docs/PRD.md carries every section the prd-contract-architect skill requires
+1. showcase/docs/PRD.md carries every section the prd-contract-architect skill requires
    and references every escrow dispute rule D-01..D-07.
 2. Every relative Markdown link in the repo's docs resolves to a real file.
-3. The booking state set is identical in contracts/openapi.yaml, the Kafka
+3. The booking state set is identical in showcase/contracts/openapi.yaml, the Kafka
    booking event schema, the saga's BookingState constants and the bookings
-   CHECK in deploy/sql (every copy of the contract).
+   CHECK in showcase/deploy/sql (every copy of the contract).
 Exits non-zero on any failure.
 """
 
@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PRD = ROOT / "docs" / "PRD.md"
+PRD = ROOT / "showcase" / "docs" / "PRD.md"
 
 REQUIRED_PRD_HEADINGS = [
     "Executive Summary",
@@ -27,13 +27,13 @@ REQUIRED_PRD_HEADINGS = [
     "Success Metrics",
     "Open Questions",
 ]
-DOC_GLOBS = ["*.md", "docs/**/*.md", "contracts/**/*.md", "deploy/**/*.md"]
+DOC_GLOBS = ["*.md", "docs/**/*.md", "showcase/**/*.md"]
 LINK = re.compile(r"\[[^\]]*\]\(([^)\s#]+)(?:#[^)]*)?\)")
 
 
 def check_prd() -> list[str]:
     if not PRD.exists():
-        return ["docs/PRD.md missing"]
+        return ["showcase/docs/PRD.md missing"]
     text = PRD.read_text()
     headings = [l for l in text.splitlines() if l.startswith("#")]
     errs = [f"PRD missing section: {h}" for h in REQUIRED_PRD_HEADINGS
@@ -56,18 +56,18 @@ def check_links() -> list[str]:
 
 
 def booking_states() -> dict[str, set[str]]:
-    api = (ROOT / "contracts/openapi.yaml").read_text()
+    api = (ROOT / "showcase/contracts/openapi.yaml").read_text()
     block = api.split("    Booking:\n", 1)[1].split("    Settlement:", 1)[0]
-    go = (ROOT / "services/booking-orchestrator/internal/saga/saga.go").read_text()
-    sql = " ".join(p.read_text() for p in sorted((ROOT / "deploy/sql").glob("[0-9]*.sql")))
+    go = (ROOT / "showcase/go/booking-orchestrator/internal/saga/saga.go").read_text()
+    sql = " ".join(p.read_text() for p in sorted((ROOT / "showcase/deploy/sql").glob("[0-9]*.sql")))
     # The newest CHECK on bookings.state wins (later migrations replace it).
     checks = re.findall(r"state\s+IN\s*\(([^)]*)\)", sql)
-    events = json.loads((ROOT / "contracts/events/booking.events.json").read_text())
+    events = json.loads((ROOT / "showcase/contracts/events/booking.events.json").read_text())
     return {
-        "contracts/openapi.yaml": set(re.findall(r"^\s+- ([A-Z_]+)$", block, re.M)),
-        "contracts/events/booking.events.json": set(events["properties"]["state"]["enum"]),
+        "showcase/contracts/openapi.yaml": set(re.findall(r"^\s+- ([A-Z_]+)$", block, re.M)),
+        "showcase/contracts/events/booking.events.json": set(events["properties"]["state"]["enum"]),
         "saga.go BookingState": set(re.findall(r'BookingState = "([A-Z_]+)"', go)),
-        "deploy/sql bookings CHECK": set(re.findall(r"'([A-Z_]+)'", checks[-1])) if checks else set(),
+        "showcase/deploy/sql bookings CHECK": set(re.findall(r"'([A-Z_]+)'", checks[-1])) if checks else set(),
     }
 
 

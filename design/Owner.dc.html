@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Owner dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#223585}a:hover{color:#1B2A66}
+</style>
+</helmet>
+<div style="width: 390px; height: 1000px; box-sizing: border-box; background: #FAF8F4; color: #13100D; font-family: Mukta, 'Noto Sans Devanagari', sans-serif; display: flex; flex-direction: column">
+<header style="padding: 16px; background: #223585; color: #FFFFFF; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center"><strong style="font-size: 22px">Namaste, Ramesh</strong><button style="height: 40px; padding: 0 14px; border-radius: 999px; border: 2px solid #8DA2E3; background: transparent; color: #FFFFFF; font: 700 16px Mukta, sans-serif">हिंदी ▾</button></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div style="display: flex; flex-direction: column; padding: 10px; border-radius: 10px; background: #1B2A66"><span style="font-size: 14px; color: #DCE3F7">This month</span><strong style="font-size: 22px">₹18,400</strong></div>
+<div style="display: flex; flex-direction: column; padding: 10px; border-radius: 10px; background: #1B2A66"><span style="font-size: 14px; color: #DCE3F7">Paid to you</span><strong style="font-size: 22px">₹12,000</strong></div>
+<div style="display: flex; flex-direction: column; padding: 10px; border-radius: 10px; background: #1B2A66"><span style="font-size: 14px; color: #DCE3F7">Coming</span><strong style="font-size: 22px; color: #FFD45C">₹6,400</strong></div>
+</div>
+</header>
+
+<main style="padding: 16px; display: flex; flex-direction: column; gap: 18px">
+<section style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 22px">New requests ({{count}})</h2>
+<sc-if value="{{none}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 18px; color: #483F37">No new requests. We'll SMS you when one comes.</p></sc-if>
+<sc-for list="{{reqs}}" as="r" hint-placeholder-count="2">
+<article style="background: #FFFFFF; border: 2px solid #FBC02D; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between"><strong style="font-size: 18px">{{r.who}}</strong><span style="font-size: 14px; font-weight: 700; color: #B4500A">Reply in {{r.left}}</span></div>
+<span style="font-size: 16px; color: #483F37">{{r.what}}</span>
+<strong style="font-size: 22px">{{r.amount}}</strong>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 4px">
+<button onClick="{{r.accept}}" style="height: 52px; border-radius: 10px; border: none; background: #1E7B3C; color: #FFFFFF; font: 700 18px Mukta, sans-serif">Accept</button>
+<button onClick="{{r.decline}}" style="height: 52px; border-radius: 10px; border: 2px solid #7C7062; background: #FFFFFF; font: 700 18px Mukta, sans-serif; color: #13100D">Decline</button>
+</div>
+</article>
+</sc-for>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 22px">November</h2><span style="font-size: 14px; color: #483F37">Tap a day to block it</span></div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{cal}}" as="c" hint-placeholder-count="21">
+<button style="height: 40px; border-radius: 8px; border: none; background: {{c.bg}}; color: {{c.fg}}; font: 700 14px Mukta, sans-serif">{{c.n}}</button>
+</sc-for>
+</div>
+<div style="display: flex; gap: 14px; font-size: 14px; color: #483F37"><span>■ <span style="color: #223585">Booked</span></span><span>■ <span style="color: #1E7B3C">Free</span></span><span>■ Blocked</span></div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center"><h2 style="margin: 0; font-size: 22px">My machines (2)</h2><a href="ListMachine.dc.html" style="font-weight: 700; font-size: 16px">+ Add</a></div>
+<div style="background: #FFFFFF; border: 1px solid #E5DDD1; border-radius: 16px; padding: 12px; display: flex; justify-content: space-between; align-items: center">
+<div style="display: flex; flex-direction: column"><strong style="font-size: 18px">Swaraj 744 FE</strong><span style="font-size: 16px; color: #483F37">₹1,400 / acre · live</span></div>
+<button style="height: 44px; padding: 0 14px; border-radius: 10px; border: 2px solid #7C7062; background: #FFFFFF; font: 700 16px Mukta, sans-serif">Edit</button>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { done: [] }; }
+  renderVals() {
+    const all = [
+      { id: 'a', who: 'Sunil P. · 2.5 acres · 4 km', what: 'Mon 2 – Wed 4 Nov · rotavating', amount: '₹2,840', left: '1 h 40 m' },
+      { id: 'b', who: 'Asha M. · 6 acres · 7 km', what: 'Sat 7 Nov · ploughing', amount: '₹8,400', left: '55 m' }
+    ];
+    const reqs = all.filter((r) => !this.state.done.includes(r.id)).map((r) => ({
+      ...r,
+      accept: () => this.setState({ done: [...this.state.done, r.id] }),
+      decline: () => this.setState({ done: [...this.state.done, r.id] })
+    }));
+    const booked = [2, 3, 4, 14], blocked = [8, 15];
+    const cal = Array.from({ length: 21 }, (_, i) => {
+      const n = i + 1;
+      const b = booked.includes(n), k = blocked.includes(n);
+      return { n: String(n), bg: b ? '#223585' : k ? '#CFC4B4' : '#E7F4EA', fg: b ? '#FFFFFF' : '#13100D' };
+    });
+    return { reqs, count: reqs.length, none: reqs.length === 0, cal };
+  }
+}
+</script>
+</body>
+</html>

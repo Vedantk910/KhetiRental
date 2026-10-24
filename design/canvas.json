@@ -1,0 +1,22 @@
+{"v":3,"createdOnFiles":{"v":1,"at":"2026-10-24T07:35:00Z"},"title":"KhetiRental redesign","launch":{"view":"canvas"},"pages":[],
+"boards":{
+"Main.dc.html":{"x":0,"y":0,"w":390,"h":3120,"title":"0 · Welcome (live field) + story","is_interactive":true},
+"Login.dc.html":{"x":470,"y":0,"w":390,"h":844,"title":"0b · Log in / Sign up","is_interactive":true},
+"Search.dc.html":{"x":940,"y":0,"w":390,"h":844,"title":"1 · Search","is_interactive":true},
+"Results.dc.html":{"x":1410,"y":0,"w":390,"h":1180,"title":"2 · Results","is_interactive":true},
+"Detail.dc.html":{"x":1880,"y":0,"w":390,"h":1180,"title":"3 · Machine detail","is_interactive":true},
+"Booking.dc.html":{"x":2350,"y":0,"w":390,"h":844,"title":"4 · Booking (3 steps + payment)","is_interactive":true},
+"Booked.dc.html":{"x":2820,"y":0,"w":390,"h":844,"title":"5 · My bookings","is_interactive":true},
+"ListMachine.dc.html":{"x":940,"y":1600,"w":390,"h":844,"title":"Owner · List machine (price step)","is_interactive":true},
+"Owner.dc.html":{"x":1410,"y":1600,"w":390,"h":1000,"title":"Owner · Dashboard","is_interactive":true}
+},
+"order":["Main.dc.html","Login.dc.html","Search.dc.html","Results.dc.html","Detail.dc.html","Booking.dc.html","Booked.dc.html","ListMachine.dc.html","Owner.dc.html"],
+"notes":{
+"t0":{"x":0,"y":-300,"text":"Start: welcome → log in","kind":"title1","maxW":860},
+"t1":{"x":940,"y":-300,"text":"Farmer app: search → results → detail → book → my bookings","kind":"title1","maxW":2270},
+"t2":{"x":940,"y":1300,"text":"Owner app","kind":"title1","maxW":860},
+"s0":{"x":-420,"y":0,"w":360,"text":"Live background: the tractor drives across the field, wheels turn, the ploughed strip grows behind it, clouds drift, crops sway. Open Tweaks on this artboard to change tractor speed, time of day (morning / noon / evening) and turn the tractor off. Phones with reduced motion get a still scene.","fill":"yellow","size":"s"},
+"s1":{"x":-420,"y":900,"w":360,"text":"Story below the hero: each section fades up as it scrolls in, the year strip fills, the ₹6.4 lakh bar shrinks. Desktop and fast phones also get the rotating 3D tractor in the 'buy vs rent' scene.","fill":"orange","size":"s"},
+"s2":{"x":-420,"y":1500,"w":360,"text":"The मराठी / हिंदी / English switch at the top works: it changes the headline, intro, buttons and section titles.","fill":"blue","size":"s"}
+},
+"designSystems":[]}

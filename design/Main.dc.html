@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KhetiRental welcome</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&amp;family=Mukta:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#223585}a:hover{color:#1B2A66}
+@keyframes kr-round{0%{transform:translate(-10px,0) scaleX(1)}44%{transform:translate(225px,0) scaleX(1)}50%{transform:translate(232px,70px) scaleX(-1)}94%{transform:translate(-3px,70px) scaleX(-1)}100%{transform:translate(-10px,0) scaleX(1)}}
+@keyframes kr-plough1{0%{transform:scaleX(0);opacity:1}44%{transform:scaleX(1);opacity:1}93%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
+@keyframes kr-plough2{0%,50%{transform:scaleX(0);opacity:1}94%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
+@keyframes kr-spin{to{transform:rotate(360deg)}}
+@keyframes kr-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes kr-cloud{from{transform:translateX(-120px)}to{transform:translateX(420px)}}
+@keyframes kr-sway{0%,100%{transform:skewX(-4deg)}50%{transform:skewX(5deg)}}
+@keyframes kr-sun{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes kr-puff{0%{opacity:.7;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(-26px,-22px) scale(1.6)}}
+@keyframes kr-up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+.kr-drive{transform-origin:center;animation:kr-round ease-in-out infinite}
+.kr-plough1{transform-origin:left center;animation:kr-plough1 ease-in-out infinite}
+.kr-plough2{transform-origin:right center;animation:kr-plough2 ease-in-out infinite}
+.kr-wheel{transform-box:fill-box;transform-origin:center;animation:kr-spin .9s linear infinite}
+.kr-body{animation:kr-bob .5s ease-in-out infinite}
+.kr-cloud{animation:kr-cloud linear infinite}
+.kr-sway{transform-origin:bottom center;animation:kr-sway 3s ease-in-out infinite}
+.kr-sun{transform-box:fill-box;transform-origin:center;animation:kr-sun 6s ease-in-out infinite}
+.kr-puff{transform-box:fill-box;transform-origin:center;animation:kr-puff 1.2s ease-out infinite}
+@supports (animation-timeline: view()){.kr-reveal{animation:kr-up linear both;animation-timeline:view();animation-range:entry 0% entry 60%}}
+@media (prefers-reduced-motion: reduce){.kr-drive,.kr-plough1,.kr-plough2,.kr-wheel,.kr-body,.kr-cloud,.kr-sway,.kr-sun,.kr-puff,.kr-reveal{animation:none !important}}
+</style>
+</helmet>
+<div lang="{{lang}}" style="width: 390px; height: 3120px; box-sizing: border-box; background: #FAF8F4; color: #13100D; font-family: Mukta, 'Noto Sans Devanagari', sans-serif; display: flex; flex-direction: column">
+
+<section style="position: relative; height: 844px; overflow: hidden; background: {{sky}}">
+<svg width="390" height="844" viewBox="0 0 390 844" aria-hidden="true" style="position: absolute; inset: 0">
+<circle class="kr-sun" cx="300" cy="{{sunY}}" r="38" fill="{{sun}}"></circle>
+<g class="kr-cloud" style="animation-duration: 38s"><ellipse cx="40" cy="74" rx="44" ry="16" fill="#FFFFFF" opacity="0.85"></ellipse><ellipse cx="70" cy="64" rx="30" ry="14" fill="#FFFFFF" opacity="0.85"></ellipse></g>
+<g class="kr-cloud" style="animation-duration: 55s; animation-delay: -20s"><ellipse cx="60" cy="284" rx="40" ry="14" fill="#FFFFFF" opacity="0.7"></ellipse><ellipse cx="86" cy="276" rx="24" ry="11" fill="#FFFFFF" opacity="0.7"></ellipse></g>
+<path d="M0 330 C70 290 140 300 210 320 S330 290 390 305 V420 H0 Z" fill="{{hill1}}"></path>
+<path d="M0 360 C90 335 170 350 260 345 S360 330 390 340 V440 H0 Z" fill="{{hill2}}"></path>
+<rect x="0" y="400" width="390" height="444" fill="#C9A86A"></rect>
+<path d="M0 440 H390 M0 480 H390 M0 525 H390 M0 575 H390 M0 630 H390 M0 690 H390" stroke="#B08A4C" stroke-width="3"></path>
+</svg>
+
+<div style="position: absolute; left: 0; right: 0; top: 404px; height: 34px; display: flex; justify-content: space-around; align-items: flex-end">
+<sc-for list="{{crops}}" as="c" hint-placeholder-count="16"><span class="kr-sway" style="display: block; width: 6px; height: {{c.h}}px; border-radius: 3px 3px 0 0; background: #4E7A2E; animation-delay: {{c.d}}s"></span></sc-for>
+</div>
+
+<div class="kr-plough1" style="position: absolute; left: 0; top: 500px; width: 390px; height: 28px; border-radius: 4px; background: #6B4A26; animation-duration: {{dur}}s"></div>
+<div class="kr-plough2" style="position: absolute; left: 0; top: 570px; width: 390px; height: 28px; border-radius: 4px; background: #6B4A26; animation-duration: {{dur}}s"></div>
+
+<sc-if value="{{showTractor}}" hint-placeholder-val="{{ true }}">
+<div class="kr-drive" style="position: absolute; left: 0; top: 420px; width: 170px; height: 110px; animation-duration: {{dur}}s">
+<svg width="170" height="110" viewBox="0 0 170 110" aria-hidden="true">
+<circle class="kr-puff" cx="96" cy="14" r="7" fill="#CFC4B4"></circle>
+<circle class="kr-puff" cx="96" cy="14" r="6" fill="#CFC4B4" style="animation-delay: .6s"></circle>
+<g class="kr-body">
+<rect x="20" y="66" width="34" height="10" rx="2" fill="#483F37"></rect>
+<rect x="54" y="48" width="86" height="30" rx="6" fill="#223585"></rect>
+<path d="M88 48 V20 H124 L132 48" fill="#FFD45C" stroke="#13100D" stroke-width="4" stroke-linejoin="round"></path>
+<rect x="92" y="18" width="5" height="18" fill="#13100D"></rect>
+</g>
+<g class="kr-wheel"><circle cx="76" cy="80" r="26" fill="#13100D"></circle><circle cx="76" cy="80" r="10" fill="#FBC02D"></circle><path d="M76 56 V104 M52 80 H100" stroke="#483F37" stroke-width="4"></path></g>
+<g class="kr-wheel"><circle cx="138" cy="90" r="16" fill="#13100D"></circle><circle cx="138" cy="90" r="6" fill="#FBC02D"></circle><path d="M138 74 V106 M122 90 H154" stroke="#483F37" stroke-width="3"></path></g>
+</svg>
+</div>
+</sc-if>
+
+<div ref="{{statsRef}}" style="position: absolute; left: 0; right: 0; top: 656px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 12px">
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; text-align: center">
+<sc-for list="{{stats}}" as="s" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; align-items: center">
+<span style="font-family: 'Baloo 2', Mukta, sans-serif; font-size: 40px; line-height: 44px; color: #13100D; font-variant-numeric: tabular-nums">{{s.value}}</span>
+<span style="font-size: 14px; line-height: 18px; font-weight: 700; color: #13100D">{{s.label}}</span>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 11px; line-height: 14px; color: #332C26">Agriculture Census 2015–16 · 2025 estimates</span>
+</div>
+
+<header style="position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px">
+<div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 20px; color: #13100D; background: rgba(255,255,255,0.85); padding: 6px 12px; border-radius: 999px">
+<svg width="24" height="24" viewBox="0 0 28 28" aria-hidden="true"><circle cx="9" cy="18" r="7" fill="none" stroke="#223585" stroke-width="2.5"></circle><circle cx="22" cy="21" r="4" fill="none" stroke="#223585" stroke-width="2.5"></circle><path d="M9 11 L14 5 H20 V17" fill="none" stroke="#223585" stroke-width="2.5" stroke-linejoin="round"></path></svg>
+KhetiRental
+</div>
+<div role="group" aria-label="Language" style="display: flex; background: #FFFFFF; border-radius: 999px; padding: 3px; gap: 2px">
+<sc-for list="{{langs}}" as="l" hint-placeholder-count="3">
+<button onClick="{{l.pick}}" aria-pressed="{{l.on}}" style="height: 38px; padding: 0 10px; border-radius: 999px; border: none; background: {{l.bg}}; color: {{l.fg}}; font: 700 14px Mukta, sans-serif">{{l.label}}</button>
+</sc-for>
+</div>
+</header>
+
+<div style="position: absolute; left: 0; right: 0; top: 96px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; padding: 0 16px">
+<h1 style="margin: 0; font-family: 'Baloo 2', Mukta, sans-serif; font-size: 46px; line-height: 50px; color: #13100D; letter-spacing: -0.5px">{{t.h1}}</h1>
+<p style="margin: 0; font-size: 18px; line-height: 26px; color: #13100D; font-weight: 700">{{t.tag}}</p>
+<nav aria-label="Get started" style="margin-top: 14px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap">
+<a href="Login.dc.html" style="display: flex; align-items: center; height: 48px; padding: 0 20px; border-radius: 999px; background: #223585; color: #FFFFFF; font-weight: 700; font-size: 16px; text-decoration: none">{{t.login}}</a>
+<a href="Login.dc.html" style="display: flex; align-items: center; height: 48px; padding: 0 20px; border-radius: 999px; background: #FFD45C; color: #13100D; font-weight: 700; font-size: 16px; text-decoration: none">{{t.signup}}</a>
+<a href="#how" style="display: flex; align-items: center; height: 48px; padding: 0 18px; border-radius: 999px; background: rgba(255,255,255,0.9); color: #13100D; font-weight: 700; font-size: 16px; text-decoration: none">{{t.how}} ↓</a>
+</nav>
+</div>
+</section>
+
+<section id="how" class="kr-reveal" style="padding: 40px 16px; display: flex; flex-direction: column; gap: 16px">
+<p style="margin: 0; font-size: 14px; font-weight: 700; color: #8F5F00; letter-spacing: 1px">{{t.problem}}</p>
+<h2 style="margin: 0; font-family: 'Baloo 2', Mukta, sans-serif; font-size: 28px; line-height: 34px">{{t.s1}}</h2>
+<div style="display: grid; grid-template-columns: repeat(26, minmax(0, 1fr)); gap: 3px" aria-hidden="true">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="182"><span style="display: block; height: 10px; border-radius: 2px; background: {{d.c}}"></span></sc-for>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 22px; color: #5E544A">Each square is a day; mustard days are working days. [Replace with surveyed figures.]</p>
+</section>
+
+<section class="kr-reveal" style="padding: 40px 16px; display: flex; flex-direction: column; gap: 16px; background: #FFFFFF">
+<h2 style="margin: 0; font-family: 'Baloo 2', Mukta, sans-serif; font-size: 28px; line-height: 34px">{{t.s2}}</h2>
+<div style="height: 160px; border-radius: 16px; background: #F3EEE6; display: flex; align-items: center; justify-content: center; color: #483F37; font-size: 14px">[3D tractor turns as you scroll · still image on slow phones]</div>
+<div><div style="display: flex; justify-content: space-between; font-size: 16px"><span>Buy</span><strong>₹6,40,000</strong></div><div style="height: 18px; border-radius: 9px; background: #483F37; margin-top: 6px"></div></div>
+<div><div style="display: flex; justify-content: space-between; font-size: 16px"><span>Rent 4 hours</span><strong style="color: #1E7B3C">₹2,839</strong></div><div style="height: 18px; width: 12px; border-radius: 9px; background: #1E7B3C; margin-top: 6px"></div></div>
+</section>
+
+<section class="kr-reveal" style="padding: 40px 16px; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-family: 'Baloo 2', Mukta, sans-serif; font-size: 28px; line-height: 34px">{{t.s3}}</h2>
+<svg viewBox="0 0 358 220" width="358" height="220" role="img" aria-label="Map of a village with nearby machines and their prices">
+<rect width="358" height="220" rx="16" fill="#F3EEE6"></rect>
+<path d="M0 160 C80 140 140 180 220 150 S330 110 358 120" stroke="#8DA2E3" stroke-width="10" fill="none" opacity="0.6"></path>
+<path d="M40 0 L120 220 M0 76 H358" stroke="#CFC4B4" stroke-width="5"></path>
+<polygon points="179,90 199,102 199,126 179,138 159,126 159,102" fill="#FFD45C" stroke="#223585" stroke-width="2"></polygon>
+<polygon points="179,42 199,54 199,78 179,90 159,78 159,54" fill="none" stroke="#7C7062" stroke-width="1.5"></polygon>
+<polygon points="219,66 239,78 239,102 219,114 199,102 199,78" fill="none" stroke="#7C7062" stroke-width="1.5"></polygon>
+<circle cx="179" cy="114" r="7" fill="#223585"></circle>
+<rect x="232" y="34" width="58" height="26" rx="13" fill="#13100D"></rect><text x="261" y="52" text-anchor="middle" font-family="Mukta" font-weight="700" font-size="14" fill="#FFFFFF">₹710</text>
+<rect x="70" y="114" width="58" height="26" rx="13" fill="#13100D"></rect><text x="99" y="132" text-anchor="middle" font-family="Mukta" font-weight="700" font-size="14" fill="#FFFFFF">₹650</text>
+<rect x="250" y="150" width="62" height="26" rx="13" fill="#13100D"></rect><text x="281" y="168" text-anchor="middle" font-family="Mukta" font-weight="700" font-size="14" fill="#FFFFFF">₹1,400</text>
+</svg>
+</section>
+
+<section class="kr-reveal" style="padding: 40px 16px; display: flex; flex-direction: column; gap: 16px; background: #FFFFFF">
+<h2 style="margin: 0; font-family: 'Baloo 2', Mukta, sans-serif; font-size: 28px; line-height: 34px">{{t.s4}}</h2>
+<div style="background: #FAF8F4; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; font-size: 18px">
+<div style="display: flex; justify-content: space-between"><span>Rent: 4 h × ₹710</span><span>₹2,840</span></div>
+<div style="display: flex; justify-content: space-between"><span>Diesel</span><span style="color: #1E7B3C; font-weight: 700">Included</span></div>
+<div style="display: flex; justify-content: space-between"><span>Deposit (comes back)</span><span>₹1,950</span></div>
+<div style="display: flex; justify-content: space-between; border-top: 2px solid #13100D; padding-top: 10px; font-weight: 700; font-size: 22px"><span>You pay</span><span>₹2,840</span></div>
+</div>
+</section>
+
+<section class="kr-reveal" style="padding: 40px 16px; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-family: 'Baloo 2', Mukta, sans-serif; font-size: 28px; line-height: 34px">{{t.s5}}</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{stamps}}" as="s" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 6px; border: 2px solid #223585; border-radius: 16px; background: #FFFFFF; text-align: center">
+<div style="width: 44px; height: 44px; border-radius: 22px; background: #223585; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px">{{s.n}}</div>
+<strong style="font-size: 16px">{{s.t}}</strong>
+<span style="font-size: 14px; line-height: 20px; color: #483F37">{{s.d}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section class="kr-reveal" style="padding: 40px 16px; display: flex; flex-direction: column; gap: 16px; background: #223585; color: #FFFFFF">
+<h2 style="margin: 0; font-family: 'Baloo 2', Mukta, sans-serif; font-size: 28px; line-height: 34px">{{t.s6}}</h2>
+<p style="margin: 0; font-size: 18px; line-height: 28px; color: #DCE3F7">List it once. Choose your price and your days. You decide who to accept.</p>
+<a href="Login.dc.html" style="display: flex; align-items: center; justify-content: center; height: 56px; border-radius: 10px; background: #FBC02D; color: #13100D; font-weight: 700; font-size: 18px; text-decoration: none">{{t.list}}</a>
+</section>
+
+<section class="kr-reveal" style="padding: 40px 16px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 24px; line-height: 32px">{{t.s7}}</h2>
+<a href="tel:+911800000000" style="display: flex; align-items: center; justify-content: center; height: 56px; border-radius: 10px; border: 2px solid #13100D; color: #13100D; font-weight: 700; font-size: 18px; text-decoration: none">Call [YOUR HELPLINE]</a>
+<p style="margin: 8px 0 0; font-size: 14px; color: #5E544A">About · How we price · Privacy · Terms</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"speed":{"editor":"range","default":24,"min":10,"max":60,"step":1,"unit":"s","section":"Live field"},"timeOfDay":{"editor":"enum","options":["morning","noon","evening"],"default":"morning","section":"Live field"},"showTractor":{"editor":"boolean","default":true,"section":"Live field"},"$preview":{"width":390,"height":3120}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = { lang: 'en', k: 0 };
+    this.statsRef = (el) => {
+      if (!el || this._io || this._started) return;
+      if (typeof IntersectionObserver === 'undefined') { this.countUp(); return; }
+      this._io = new IntersectionObserver((es) => {
+        if (es.some((e) => e.isIntersecting)) { this._io.disconnect(); this.countUp(); }
+      }, { threshold: 0.35 });
+      this._io.observe(el);
+    };
+  }
+  countUp() {
+    if (this._started) return;
+    this._started = true;
+    const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { this.setState({ k: 1 }); return; }
+    const t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / 1800);
+      this.setState({ k: 1 - Math.pow(1 - p, 3) });
+      if (p < 1) this._raf = requestAnimationFrame(tick);
+    };
+    this._raf = requestAnimationFrame(tick);
+  }
+  componentWillUnmount() {
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._io) this._io.disconnect();
+  }
+  renderVals() {
+    const T = {
+      en: { h1: 'Farm, made easy.', tag: 'Rent machines from your village', h1long: 'Need a tractor? Rent one from your village.', about: 'KhetiRental connects farmers with tractors, rotavators and harvesters owned by people nearby.', sub: 'See the full price first. The owner is paid only after the work is done.', login: 'Log in', signup: 'Sign up', how: 'How it works', problem: 'THE PROBLEM', s1: 'A tractor costs ₹6–7 lakh. Most of the year, it waits in the shed.', s2: "You don't need to own it. You need it on time.", s3: "It's already near you.", s4: 'The full price, before you say yes.', s5: 'The owner is paid after the job, not before.', s6: 'Your idle tractor can earn.', s7: 'Prefer to talk?', list: 'List your tractor' },
+      hi: { h1: 'खेती, आसान।', tag: 'अपने गाँव से मशीन किराए पर लें', about: 'खेती रेंटल किसानों को पास के मालिकों के ट्रैक्टर, रोटावेटर और हार्वेस्टर से जोड़ता है।', sub: 'पहले पूरी कीमत देखें। काम पूरा होने के बाद ही मालिक को पैसे मिलते हैं।', login: 'लॉग इन', signup: 'साइन अप', how: 'कैसे काम करता है', problem: 'समस्या', s1: 'ट्रैक्टर ₹6–7 लाख का आता है। साल के ज़्यादातर दिन वह खड़ा रहता है।', s2: 'मशीन ख़रीदने की ज़रूरत नहीं। ज़रूरत है समय पर मिलने की।', s3: 'वह आपके पास ही है।', s4: 'हाँ कहने से पहले पूरी कीमत।', s5: 'मालिक को पैसे काम के बाद मिलते हैं, पहले नहीं।', s6: 'आपका खड़ा ट्रैक्टर कमाई कर सकता है।', s7: 'बात करना पसंद है?', list: 'अपना ट्रैक्टर किराए पर दें' },
+      mr: { h1: 'शेती, सोपी.', tag: 'गावातूनच यंत्रे भाड्याने घ्या', about: 'खेती रेंटल शेतकऱ्यांना जवळच्या मालकांच्या ट्रॅक्टर, रोटाव्हेटर आणि हार्वेस्टरशी जोडते.', sub: 'आधी पूर्ण किंमत पहा. काम झाल्यावरच मालकाला पैसे मिळतात.', login: 'लॉग इन', signup: 'साइन अप', how: 'कसे चालते', problem: 'अडचण', s1: 'ट्रॅक्टर ₹6–7 लाखांचा असतो. वर्षातील बहुतेक दिवस तो उभाच असतो.', s2: 'ट्रॅक्टर विकत घेण्याची गरज नाही. वेळेवर मिळणं महत्त्वाचं.', s3: 'तो तुमच्या जवळच आहे.', s4: 'होकार देण्याआधी पूर्ण किंमत.', s5: 'मालकाला पैसे कामानंतर मिळतात, आधी नाही.', s6: 'तुमचा उभा ट्रॅक्टर कमाई करू शकतो.', s7: 'बोलायला आवडेल?', list: 'तुमचा ट्रॅक्टर भाड्याने द्या' }
+    };
+    const SKY = {
+      morning: { sky: '#CFE3F2', sun: '#FBC02D', sunY: 318, hill1: '#7FA35A', hill2: '#5E8A3E' },
+      noon: { sky: '#9CC7EA', sun: '#FFD45C', sunY: 300, hill1: '#6E9A48', hill2: '#4E7A2E' },
+      evening: { sky: '#F2B78A', sun: '#E0703A', sunY: 326, hill1: '#6B7A45', hill2: '#4A5A30' }
+    };
+    const lang = this.state.lang;
+    const langs = [['mr', 'मराठी'], ['hi', 'हिंदी'], ['en', 'English']].map(([id, label]) => ({
+      label, on: lang === id ? 'true' : 'false',
+      bg: lang === id ? '#223585' : '#FFFFFF', fg: lang === id ? '#FFFFFF' : '#13100D',
+      pick: () => this.setState({ lang: id })
+    }));
+    const crops = Array.from({ length: 16 }, (_, i) => ({ h: 18 + ((i * 7) % 14), d: -(i % 5) * 0.4 }));
+    const days = Array.from({ length: 182 }, (_, i) => ({ c: (i % 12 === 3) ? '#FBC02D' : '#E5DDD1' }));
+    const S = {
+      en: { stTitle: '', a: 'small farms', b: 'hectare avg. farm', c: 'mechanised' },
+      hi: { stTitle: '', a: 'छोटे खेत', b: 'हेक्टेयर औसत खेत', c: 'मशीनीकरण' },
+      mr: { stTitle: '', a: 'लहान शेते', b: 'हेक्टर सरासरी शेत', c: 'यांत्रिकीकरण' }
+    }[lang];
+    const k = this.state.k;
+    const stats = [
+      { value: Math.round(86 * k) + '%', label: S.a },
+      { value: (1.08 * k).toFixed(2), label: S.b },
+      { value: Math.round(47 * k) + '%', label: S.c }
+    ];
+    return {
+      lang, langs, t: { ...T[lang], stTitle: S.stTitle }, crops, days, stats, statsRef: this.statsRef,
+      dur: this.props.speed ?? 24,
+      showTractor: this.props.showTractor ?? true,
+      ...SKY[this.props.timeOfDay ?? 'morning'],
+      stamps: [{ n: '1', t: 'Handover', d: 'Photo + OTP' }, { n: '2', t: 'Work', d: 'Hours counted' }, { n: '3', t: 'Return', d: 'Owner paid' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

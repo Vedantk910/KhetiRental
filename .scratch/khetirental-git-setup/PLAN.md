@@ -20,14 +20,14 @@ khetirental/
 │   ├── booking-orchestrator/       #   Go, Kafka Saga, Redlock fencing tokens
 │   ├── telemetry-gateway/          #   Go, CAN-bus + GPS ingestion, anomaly detect
 │   └── settlement-service/         #   Go, 3-stage escrow state machine
-├── deploy/                         # ── TRACK A (brother) ─────────────────
+├── showcase/deploy/                         # ── TRACK A (brother) ─────────────────
 │   ├── k8s/                        #   manifests, Helm values
 │   └── docker/                     #   Dockerfiles, compose
 ├── tests/
 │   └── load/                       # ── TRACK A (brother) ─────────────────
 │       ├── k6/                     #   k6 scripts (5k VU, p99<25ms)
 │       └── integration/            #   Go integration tests
-├── contracts/                      # ── TRACK B (vedant) ─────────────────
+├── showcase/contracts/                      # ── TRACK B (vedant) ─────────────────
 │   ├── openapi.yaml                #   OpenAPI 3.1 — all API boundary schemas
 │   └── events/                     #   Kafka event schemas (protobuf/JSON)
 ├── docs/
@@ -38,7 +38,7 @@ khetirental/
 │   │   ├── 0003-3-stage-escrow.md
 │   │   └── 0004-dynamic-depreciation.md
 │   └── architecture.md             # ── shared (both may annotate) ───────
-├── analytics/
+├── showcase/analytics/
 │   └── pricing.py                  # ── TRACK B (vedant) ─────────────────
 └── .scratch/                       # ── shared (issue tracker, both tracks)
     └── <feature-slug>/
@@ -49,12 +49,12 @@ khetirental/
 | Path | Owner | Conventional prefix | GitHub login |
 |---|---|---|---|
 | `services/**` (Go: matching-engine, booking-orchestrator, telemetry-gateway) | Track A | `perf(geo):` `feat(concurrency):` `feat(saga):` `feat(telemetry):` `feat(crdt):` | `tarunkonde05-hub` |
-| `deploy/**` | Track A | `infra(k8s):` `infra(docker):` | `tarunkonde05-hub` |
-| `tests/load/**` (k6, integration) | Track A | `test(k6):` `test(integration):` | `tarunkonde05-hub` |
-| `contracts/**` (OpenAPI, Kafka events, escrow state machine) | Track B | `spec(api):` `spec(event):` `spec(escrow):` | `Vedantk910` |
-| `docs/PRD.md`, `docs/adr/**` | Track B | `docs(prd):` `docs(adr):` | `Vedantk910` |
-| `analytics/**` (pricing.py, kpis.py) | Track B | `model(pricing):` `model(econ):` `model(kpi):` | `Vedantk910` |
-| `ARCHITECTURE.md` | Shared (Track C) — annotated by both; Lead 1 owns diagrams, Lead 2 owns tables | `docs(arch):` | Either |
+| `showcase/deploy/**` | Track A | `infra(k8s):` `infra(docker):` | `tarunkonde05-hub` |
+| `showcase/tests/load/**` (k6, integration) | Track A | `test(k6):` `test(integration):` | `tarunkonde05-hub` |
+| `showcase/contracts/**` (OpenAPI, Kafka events, escrow state machine) | Track B | `spec(api):` `spec(event):` `spec(escrow):` | `Vedantk910` |
+| `showcase/docs/PRD.md`, `showcase/docs/adr/**` | Track B | `docs(prd):` `docs(adr):` | `Vedantk910` |
+| `showcase/analytics/**` (pricing.py, kpis.py) | Track B | `model(pricing):` `model(econ):` `model(kpi):` | `Vedantk910` |
+| `showcase/ARCHITECTURE.md` | Shared (Track C) — annotated by both; Lead 1 owns diagrams, Lead 2 owns tables | `docs(arch):` | Either |
 | `.scratch/**`, `CLAUDE.md`, `.claude/**`, `.gitignore`, root files | Shared (Track C) | `chore:`, `docs:`, `infra:`, any valid prefix | Either |
 
 A commit is **blocked** if its author does not match the track required by the staged paths. A commit touching **multiple** track-specific paths is also blocked (mixed-track) — split it into separate commits.
@@ -64,35 +64,35 @@ A commit is **blocked** if its author does not match the track required by the s
 ## 3. Implementation Sequence
 
 **Phase 0 — Foundations (Track B first, unblocks Track A):**
-1. `docs/PRD.md` + `docs/adr/0001-h3-vs-postgis.md` (Track B)
-2. `contracts/openapi.yaml` v0 — service boundary skeletons, Idempotency-Key headers (Track B)
-3. `contracts/events/booking-events.schema.json` — Kafka event contract (Track B)
+1. `showcase/docs/PRD.md` + `showcase/docs/adr/0001-h3-vs-postgis.md` (Track B)
+2. `showcase/contracts/openapi.yaml` v0 — service boundary skeletons, Idempotency-Key headers (Track B)
+3. `showcase/contracts/events/booking-events.schema.json` — Kafka event contract (Track B)
 4. `git init` + first commit + push to shared repo (Track C)
 
 **Phase 1 — Core backend (Track A):**
-5. `services/matching-engine/` — H3 indexing, Redis GEO, `GET /machines/near?lat&lng&radius_m` (Track A)
-6. `services/booking-orchestrator/` — Kafka Saga, Redlock + fencing tokens, outbox pattern (Track A)
-7. `tests/load/k6/matching-engine.js` — p99<25ms at 5k VUs (Track A)
+5. `showcase/go/matching-engine/` — H3 indexing, Redis GEO, `GET /machines/near?lat&lng&radius_m` (Track A)
+6. `showcase/go/booking-orchestrator/` — Kafka Saga, Redlock + fencing tokens, outbox pattern (Track A)
+7. `showcase/tests/load/k6/matching-engine.js` — p99<25ms at 5k VUs (Track A)
 
 **Phase 2 — Telematics & Settlement (Track A):**
-8. `services/telemetry-gateway/` — CAN-bus + GPS ingest, geofence anomaly flags (Track A)
+8. `showcase/go/telemetry-gateway/` — CAN-bus + GPS ingest, geofence anomaly flags (Track A)
 9. `services/settlement-service/` — 3-stage escrow state machine (Track A)
 
 **Phase 3 — Product & Economics (Track B, in parallel with Phases 1–2):**
-10. `docs/adr/0002`–`0004` (Kafka Saga, 3-stage escrow, dynamic pricing) (Track B)
-11. `analytics/pricing.py` — depreciation model, take-rate sensitivity (Track B)
-12. `contracts/openapi.yaml` v1 — full response schemas (Track B)
+10. `showcase/docs/adr/0002`–`0004` (Kafka Saga, 3-stage escrow, dynamic pricing) (Track B)
+11. `showcase/analytics/pricing.py` — depreciation model, take-rate sensitivity (Track B)
+12. `showcase/contracts/openapi.yaml` v1 — full response schemas (Track B)
 
 **Phase 4 — Integration & Load (Track A + Track B review):**
-13. `tests/load/k6/full-flow.js` — end-to-end booking + escrow + settlement (Track A)
-14. `deploy/k8s/` + `deploy/docker/` — full stack manifests (Track A)
+13. `showcase/tests/load/k6/full-flow.js` — end-to-end booking + escrow + settlement (Track A)
+14. `showcase/deploy/k8s/` + `showcase/deploy/docker/` — full stack manifests (Track A)
 15. Load test report + ADR-0005 (if any infra decision needed) (Track A + B)
 
 ## 4. API & Event Contract Boundaries
 
-- **All service-to-service calls go through `contracts/openapi.yaml`** — Track B owns the spec; Track A implements against it. Track A cannot add endpoints without a PR to `contracts/`.
-- **All cross-service async messages go through `contracts/events/`** — Kafka event schemas are versioned; Track B defines schemas; Track A produces/consumes.
-- **Track B never touches `services/`**; **Track A never touches `docs/PRD.md`** or `analytics/`**.
+- **All service-to-service calls go through `showcase/contracts/openapi.yaml`** — Track B owns the spec; Track A implements against it. Track A cannot add endpoints without a PR to `showcase/contracts/`.
+- **All cross-service async messages go through `showcase/contracts/events/`** — Kafka event schemas are versioned; Track B defines schemas; Track A produces/consumes.
+- **Track B never touches `services/`**; **Track A never touches `showcase/docs/PRD.md`** or `showcase/analytics/`**.
 - `docs/architecture.md` is shared — both tracks may annotate; conflicts resolved by senior reviewer.
 
 ## 5. Integration, Review & Merge

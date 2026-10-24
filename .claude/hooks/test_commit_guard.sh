@@ -25,19 +25,19 @@ try() {
   if [ "$got" = "$expect" ]; then echo "  ok   $expect: $email $*"; else echo "  FAIL want $expect got $got: $email $*"; fail=1; fi
 }
 
-try ok      a@example.com services/matching-engine/x.go
-try ok      a@example.com deploy/sql/001.sql tests/load/k6/x.js
-try blocked b@example.com services/matching-engine/x.go
-try ok      b@example.com contracts/openapi.yaml docs/adr/0005.md analytics/pricing.py docs/PRD.md
-try blocked a@example.com contracts/openapi.yaml
-try blocked a@example.com services/x.go contracts/openapi.yaml
+try ok      a@example.com showcase/go/matching-engine/x.go
+try ok      a@example.com showcase/deploy/sql/001.sql showcase/tests/load/k6/x.js
+try blocked b@example.com showcase/go/matching-engine/x.go
+try ok      b@example.com showcase/contracts/openapi.yaml showcase/docs/adr/0005.md showcase/analytics/pricing.py showcase/docs/PRD.md
+try blocked a@example.com showcase/contracts/openapi.yaml
+try blocked a@example.com showcase/go/x.go showcase/contracts/openapi.yaml
 try ok      a@example.com README.md .claude/x.md
-try ok      b@example.com ARCHITECTURE.md
-try blocked z@example.com services/x.go
-try ok      a@example.com services/x.go README.md
+try ok      b@example.com showcase/ARCHITECTURE.md
+try blocked z@example.com showcase/go/x.go
+try ok      a@example.com showcase/go/x.go README.md
 
 # Client portal: ownership follows the domain, not the folder.
-P=services/client-portal
+P=apps/web
 try ok      a@example.com $P/components/h3-map.tsx $P/app/architecture/h3-spatial/page.tsx $P/lib/h3-dispatch.ts
 try ok      a@example.com $P/app/api/machines/near/route.ts $P/app/dossier/track-a-systems/page.tsx $P/e2e/h3-sandbox.spec.ts
 try blocked b@example.com $P/components/h3-map.tsx
@@ -52,6 +52,19 @@ try blocked a@example.com $P/app/escrow/page.tsx
 try blocked b@example.com $P/components/h3-map.tsx $P/lib/pricing-engine.ts
 try ok      a@example.com $P/package.json $P/app/layout.tsx $P/components/navbar.tsx
 try ok      b@example.com $P/package.json $P/app/page.tsx $P/tailwind.config.ts
+# Rebuild layout (REVIEW M0): showcase/, apps/web/server, packages/domain.
+try ok      a@example.com showcase/go/matching-engine/x.go showcase/deploy/sql/006.sql compose.yaml
+try blocked b@example.com showcase/go/booking-orchestrator/x.go
+try ok      a@example.com $P/server/db/schema.ts $P/server/auth.ts $P/server/machines.ts $P/app/api/auth/route.ts $P/middleware.ts
+try blocked b@example.com $P/server/db/schema.ts
+try ok      b@example.com $P/server/bookings.ts $P/server/payments.ts $P/server/pricing.ts $P/app/api/bookings/route.ts
+try ok      b@example.com packages/domain/pricing-engine.ts $P/messages/hi.json showcase/docs/PRD.md showcase/contracts/openapi.yaml
+try blocked a@example.com packages/domain/escrow-machine.ts
+try blocked a@example.com $P/server/db/schema.ts $P/server/bookings.ts
+try ok      a@example.com $P/components/ui/button.tsx $P/app/layout.tsx
+try ok      b@example.com $P/components/ui/button.tsx scripts/check-agent-tooling.sh
+# The old services/ tree is gone; a stray path there is not Track A any more.
+try ok      b@example.com services/client-portal/lib/pricing-engine.ts $P/lib/pricing-engine.ts
 try ok      a@example.com .github/workflows/deploy-portal.yml
 try blocked b@example.com .github/workflows/deploy-portal.yml
 

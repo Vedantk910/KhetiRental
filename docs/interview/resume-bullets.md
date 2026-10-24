@@ -3,7 +3,7 @@
 Copy-ready bullets in Google X-Y-Z form (accomplished X, measured by Y, by
 doing Z). Every number comes from this repository; the same text is shown on
 the dossier pages and a test keeps the two identical
-(`services/client-portal/lib/evidence.ts`).
+(`apps/web/lib/evidence.ts`).
 
 ---
 

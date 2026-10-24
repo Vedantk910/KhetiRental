@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Log in or sign up</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&amp;family=Mukta:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#223585}a:hover{color:#1B2A66}
+</style>
+</helmet>
+<div lang="{{lang}}" style="width: 390px; height: 844px; box-sizing: border-box; background: #FAF8F4; color: #13100D; font-family: Mukta, 'Noto Sans Devanagari', sans-serif; display: flex; flex-direction: column">
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; height: 60px; box-sizing: border-box">
+<a href="Main.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #13100D; text-decoration: none; font-size: 22px">←</a>
+<div role="group" aria-label="Language" style="display: flex; background: #FFFFFF; border: 1px solid #E5DDD1; border-radius: 999px; padding: 3px; gap: 2px">
+<sc-for list="{{langs}}" as="l" hint-placeholder-count="3">
+<button onClick="{{l.pick}}" aria-pressed="{{l.on}}" style="height: 38px; padding: 0 10px; border-radius: 999px; border: none; background: {{l.bg}}; color: {{l.fg}}; font: 700 14px Mukta, sans-serif">{{l.label}}</button>
+</sc-for>
+</div>
+</header>
+
+<main style="padding: 4px 16px 20px; display: flex; flex-direction: column; gap: 16px">
+<h1 style="margin: 0; font-family: 'Baloo 2', Mukta, sans-serif; font-size: 32px; line-height: 38px">{{t.welcome}}</h1>
+
+<div role="tablist" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #F3EEE6; border-radius: 12px; padding: 4px">
+<button role="tab" aria-selected="{{loginSel}}" onClick="{{toLogin}}" style="height: 44px; border-radius: 9px; border: none; background: {{loginBg}}; font: 700 16px Mukta, sans-serif; color: #13100D">{{t.login}}</button>
+<button role="tab" aria-selected="{{signupSel}}" onClick="{{toSignup}}" style="height: 44px; border-radius: 9px; border: none; background: {{signupBg}}; font: 700 16px Mukta, sans-serif; color: #13100D">{{t.signup}}</button>
+</div>
+
+<a href="Search.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 54px; border-radius: 10px; border: 2px solid #7C7062; background: #FFFFFF; color: #13100D; font-weight: 700; font-size: 17px; text-decoration: none">
+<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="#223585" stroke-width="2.5"></circle><path d="M12 11 H19 M18 11 A6 6 0 1 1 15.5 7" fill="none" stroke="#223585" stroke-width="2.5"></path></svg>
+{{t.google}}
+</a>
+
+<div style="display: flex; align-items: center; gap: 10px; color: #5E544A; font-size: 14px; font-weight: 700"><span style="flex: 1; height: 1px; background: #CFC4B4"></span>{{t.or}}<span style="flex: 1; height: 1px; background: #CFC4B4"></span></div>
+
+<div style="display: flex; gap: 8px">
+<button onClick="{{usePhone}}" style="flex: 1; height: 44px; border-radius: 999px; border: {{phoneBorder}}; background: {{phoneBg}}; font: 700 15px Mukta, sans-serif; color: #13100D">{{t.mobile}}</button>
+<button onClick="{{useEmail}}" style="flex: 1; height: 44px; border-radius: 999px; border: {{emailBorder}}; background: {{emailBg}}; font: 700 15px Mukta, sans-serif; color: #13100D">{{t.email}}</button>
+</div>
+
+<sc-if value="{{signup}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="nm" style="font-weight: 700; font-size: 16px">{{t.name}}</label>
+<input id="nm" style="height: 52px; padding: 0 14px; border: 2px solid #7C7062; border-radius: 10px; font: 400 18px Mukta, sans-serif; box-sizing: border-box; background: #FFFFFF">
+</div>
+</sc-if>
+
+<sc-if value="{{phone}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="mob" style="font-weight: 700; font-size: 16px">{{t.mobile}}</label>
+<div style="display: flex; gap: 8px">
+<span style="height: 52px; padding: 0 12px; border: 2px solid #7C7062; border-radius: 10px; display: flex; align-items: center; font-size: 18px; background: #FFFFFF; box-sizing: border-box">+91</span>
+<input id="mob" inputmode="numeric" placeholder="98765 43210" style="flex: 1; min-width: 0; height: 52px; padding: 0 14px; border: 2px solid #7C7062; border-radius: 10px; font: 400 18px Mukta, sans-serif; box-sizing: border-box; background: #FFFFFF">
+</div>
+<span style="font-size: 14px; color: #5E544A">{{t.otpHint}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{email}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="em" style="font-weight: 700; font-size: 16px">{{t.emailAddr}}</label>
+<input id="em" type="email" placeholder="you@example.com" style="height: 52px; padding: 0 14px; border: 2px solid #7C7062; border-radius: 10px; font: 400 18px Mukta, sans-serif; box-sizing: border-box; background: #FFFFFF">
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="pw" style="font-weight: 700; font-size: 16px">{{t.password}}</label>
+<input id="pw" type="password" style="height: 52px; padding: 0 14px; border: 2px solid #7C7062; border-radius: 10px; font: 400 18px Mukta, sans-serif; box-sizing: border-box; background: #FFFFFF">
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{signup}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-weight: 700; font-size: 16px">{{t.iwant}}</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button onClick="{{asRenter}}" style="height: 56px; border-radius: 10px; border: {{renterBorder}}; background: {{renterBg}}; font: 700 15px Mukta, sans-serif; color: #13100D">{{t.rent}}</button>
+<button onClick="{{asOwner}}" style="height: 56px; border-radius: 10px; border: {{ownerBorder}}; background: {{ownerBg}}; font: 700 15px Mukta, sans-serif; color: #13100D">{{t.own}}</button>
+</div>
+</div>
+</sc-if>
+
+<a href="{{next}}" style="display: flex; align-items: center; justify-content: center; height: 56px; border-radius: 10px; background: #223585; color: #FFFFFF; font-weight: 700; font-size: 18px; text-decoration: none">{{cta}}</a>
+<p style="margin: 0; font-size: 14px; line-height: 20px; color: #5E544A; text-align: center">{{t.terms}}</p>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { lang: 'en', mode: 'login', method: 'phone', role: 'renter' }; }
+  renderVals() {
+    const T = {
+      en: { welcome: 'Welcome to KhetiRental', login: 'Log in', signup: 'Sign up', google: 'Continue with Google', or: 'OR', mobile: 'Mobile number', email: 'Email', emailAddr: 'Email address', password: 'Password', name: 'Full name', otpHint: "We'll send a 6-digit OTP by SMS.", sendOtp: 'Send OTP', doLogin: 'Log in', create: 'Create account', iwant: 'I want to', rent: 'Rent machines', own: 'List my machines', terms: 'By continuing you agree to the Terms and Privacy Policy.' },
+      hi: { welcome: 'खेती रेंटल में स्वागत है', login: 'लॉग इन', signup: 'साइन अप', google: 'Google से जारी रखें', or: 'या', mobile: 'मोबाइल नंबर', email: 'ईमेल', emailAddr: 'ईमेल पता', password: 'पासवर्ड', name: 'पूरा नाम', otpHint: 'हम SMS से 6 अंकों का OTP भेजेंगे।', sendOtp: 'OTP भेजें', doLogin: 'लॉग इन करें', create: 'खाता बनाएँ', iwant: 'मुझे चाहिए', rent: 'मशीन किराए पर लेना', own: 'अपनी मशीन किराए पर देना', terms: 'आगे बढ़कर आप नियम और गोपनीयता नीति से सहमत होते हैं।' },
+      mr: { welcome: 'खेती रेंटलमध्ये स्वागत आहे', login: 'लॉग इन', signup: 'साइन अप', google: 'Google ने पुढे चला', or: 'किंवा', mobile: 'मोबाइल नंबर', email: 'ईमेल', emailAddr: 'ईमेल पत्ता', password: 'पासवर्ड', name: 'पूर्ण नाव', otpHint: 'आम्ही SMS ने 6 अंकी OTP पाठवू.', sendOtp: 'OTP पाठवा', doLogin: 'लॉग इन करा', create: 'खाते तयार करा', iwant: 'मला हवे आहे', rent: 'यंत्रे भाड्याने घेणे', own: 'माझी यंत्रे भाड्याने देणे', terms: 'पुढे जाऊन तुम्ही अटी आणि गोपनीयता धोरणाला संमती देता.' }
+    };
+    const s = this.state, t = T[s.lang];
+    const sel = (on) => on ? { b: '2px solid #223585', bg: '#FFD45C' } : { b: '2px solid #CFC4B4', bg: '#FFFFFF' };
+    const ph = sel(s.method === 'phone'), em = sel(s.method === 'email');
+    const rr = sel(s.role === 'renter'), ow = sel(s.role === 'owner');
+    const signup = s.mode === 'signup';
+    const langs = [['mr', 'मराठी'], ['hi', 'हिंदी'], ['en', 'English']].map(([id, label]) => ({
+      label, on: s.lang === id ? 'true' : 'false',
+      bg: s.lang === id ? '#223585' : '#FFFFFF', fg: s.lang === id ? '#FFFFFF' : '#13100D',
+      pick: () => this.setState({ lang: id })
+    }));
+    return {
+      lang: s.lang, langs, t, signup,
+      phone: s.method === 'phone', email: s.method === 'email',
+      loginSel: signup ? 'false' : 'true', signupSel: signup ? 'true' : 'false',
+      loginBg: signup ? 'transparent' : '#FFFFFF', signupBg: signup ? '#FFFFFF' : 'transparent',
+      phoneBorder: ph.b, phoneBg: ph.bg, emailBorder: em.b, emailBg: em.bg,
+      renterBorder: rr.b, renterBg: rr.bg, ownerBorder: ow.b, ownerBg: ow.bg,
+      cta: s.method === 'phone' ? t.sendOtp : (signup ? t.create : t.doLogin),
+      next: signup && s.role === 'owner' ? 'ListMachine.dc.html' : 'Search.dc.html',
+      toLogin: () => this.setState({ mode: 'login' }), toSignup: () => this.setState({ mode: 'signup' }),
+      usePhone: () => this.setState({ method: 'phone' }), useEmail: () => this.setState({ method: 'email' }),
+      asRenter: () => this.setState({ role: 'renter' }), asOwner: () => this.setState({ role: 'owner' })
+    };
+  }
+}
+</script>
+</body>
+</html>

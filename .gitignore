@@ -10,8 +10,8 @@
 id_rsa*
 *.gpg
 credentials*
-*secret*
-*token*
+service-account*.json
+!.env.example
 
 # ── Local caches & write buffers ───────────────────────────────────────────
 .claude/.cc-writes/
@@ -48,6 +48,9 @@ graphify-out/
 # Keep .scratch/ tracked (it's the issue tracker).
 # But ignore transient report files that get regenerated:
 .scratch/*/flow/report-*.json
+
+# ── Web app local data (dev photo uploads) ─────────────────────────────────
+apps/web/.uploads/
 
 # ── Build outputs ───────────────────────────────────────────────────────────
 node_modules/

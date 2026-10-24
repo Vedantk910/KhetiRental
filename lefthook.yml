@@ -1,0 +1,24 @@
+# Pre-commit checks on staged files (REVIEW D-06). Install once per clone:
+#   cd apps/web && npx lefthook install
+pre-commit:
+  parallel: true
+  commands:
+    commit-guard:
+      run: .claude/hooks/commit-guard.sh
+    eslint:
+      root: apps/web/
+      glob: "*.{ts,tsx}"
+      run: npx eslint --fix {staged_files}
+      stage_fixed: true
+    prettier:
+      root: apps/web/
+      glob: "*.{ts,tsx,js,mjs,json,css,md}"
+      run: npx prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+    typecheck:
+      root: apps/web/
+      glob: "*.{ts,tsx}"
+      run: npx tsc --noEmit -p .
+    gofmt:
+      glob: "*.go"
+      run: test -z "$(gofmt -l {staged_files})"

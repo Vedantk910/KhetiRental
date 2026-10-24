@@ -14,5 +14,5 @@ Every PRD authored under this skill must contain:
 3. 6-Stage User Journey: Search -> Escrow Pre-Auth -> Dispatch -> Telematics Active Window -> Inspection -> Settlement.
 4. Edge Case Taxonomies: 2G offline dropouts, mid-lease machinery breakdown, weather delay, dispute escalation.
 ## 2. OpenAPI 3.1 & ADR Standards
-- Contract Seam: `contracts/openapi.yaml` strictly defines all JSON schemas, mandatory Idempotency-Key headers, and error models.
-- ADRs: Document all structural trade-offs in `docs/adr/` (ADR-001: Uber H3 vs PostGIS, ADR-002: Kafka Saga vs 2PC, ADR-003: 3-Stage Escrow vs Instant Capture, ADR-004: Dynamic Depreciation Pricing).
+- Contract Seam: `showcase/contracts/openapi.yaml` strictly defines all JSON schemas, mandatory Idempotency-Key headers, and error models.
+- ADRs: Document all structural trade-offs in `showcase/docs/adr/` (ADR-001: Uber H3 vs PostGIS, ADR-002: Kafka Saga vs 2PC, ADR-003: 3-Stage Escrow vs Instant Capture, ADR-004: Dynamic Depreciation Pricing).

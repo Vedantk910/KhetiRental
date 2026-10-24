@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>List your machine: price</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#223585}a:hover{color:#1B2A66}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FAF8F4; color: #13100D; font-family: Mukta, 'Noto Sans Devanagari', sans-serif; display: flex; flex-direction: column">
+<header style="padding: 10px 16px; background: #FFFFFF; border-bottom: 1px solid #E5DDD1; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 8px">
+<a href="Main.dc.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #13100D; text-decoration: none; font-size: 22px">←</a>
+<div style="display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 700; color: #5E544A">STEP 4 OF 4</span><strong style="font-size: 20px">Set your price</strong></div>
+</div>
+<div style="display: flex; gap: 6px"><span style="flex: 1; height: 6px; border-radius: 3px; background: #223585"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #223585"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #223585"></span><span style="flex: 1; height: 6px; border-radius: 3px; background: #223585"></span></div>
+</header>
+
+<main style="padding: 18px 16px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; gap: 12px; align-items: center; padding: 12px; background: #FFFFFF; border: 1px solid #E5DDD1; border-radius: 16px">
+<div style="width: 64px; height: 64px; border-radius: 10px; background: #E5DDD1; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #483F37">[photo]</div>
+<div style="display: flex; flex-direction: column"><strong style="font-size: 18px">Swaraj 744 FE · 48 HP</strong><span style="font-size: 16px; color: #483F37">Muhana · with rotavator, trolley</span></div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0; font-weight: 700; font-size: 16px">How do you charge?</p>
+<div style="display: flex; gap: 8px">
+<sc-for list="{{units}}" as="u" hint-placeholder-count="3">
+<button onClick="{{u.pick}}" style="flex: 1; height: 48px; border-radius: 999px; border: {{u.border}}; background: {{u.bg}}; font: 700 16px Mukta, sans-serif; color: #13100D">{{u.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="price" style="font-weight: 700; font-size: 16px">Your price {{per}}</label>
+<div style="display: flex; align-items: center; border: 2px solid #7C7062; border-radius: 10px; background: #FFFFFF; height: 56px; padding: 0 14px">
+<span style="font-size: 22px; font-weight: 700; color: #483F37">₹</span>
+<input id="price" value="{{price}}" style="flex: 1; min-width: 0; border: none; outline: none; font: 700 22px Mukta, sans-serif; padding-left: 6px; background: transparent">
+</div>
+<div style="padding: 12px; border-radius: 10px; background: #FFF4CC; font-size: 16px; line-height: 24px">Similar machines near you charge <strong>{{range}}</strong>.</div>
+</div>
+
+<div style="background: #FFFFFF; border: 1px solid #E5DDD1; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 18px">
+<div style="display: flex; justify-content: space-between"><span>Farmer pays</span><span>₹{{price}}</span></div>
+<div style="display: flex; justify-content: space-between; color: #483F37"><span>Our fee (13.5 %)</span><span>− ₹{{fee}}</span></div>
+<div style="display: flex; justify-content: space-between; border-top: 2px solid #13100D; padding-top: 8px; font-weight: 700; font-size: 22px"><span>You keep</span><span style="color: #1E7B3C">₹{{keep}}</span></div>
+</div>
+
+<label style="display: flex; align-items: center; gap: 12px; min-height: 48px; font-size: 18px">
+<input type="checkbox" checked style="width: 24px; height: 24px; accent-color: #223585">
+I will drive it (operator included)
+</label>
+</main>
+
+<footer style="margin-top: auto; padding: 12px 16px 20px; background: #FFFFFF; box-shadow: 0 -2px 8px rgba(19,16,13,0.08)">
+<a href="Owner.dc.html" style="display: flex; align-items: center; justify-content: center; height: 56px; border-radius: 10px; background: #223585; color: #FFFFFF; font-weight: 700; font-size: 18px; text-decoration: none">Publish my tractor</a>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { unit: 'Per acre' }; }
+  renderVals() {
+    const P = { 'Per hour': [710, '/ hour', '₹600–₹850 an hour'], 'Per acre': [1400, '/ acre', '₹1,200–₹1,600 an acre'], 'Per day': [5200, '/ day', '₹4,500–₹6,000 a day'] };
+    const [price, per, range] = P[this.state.unit];
+    const fee = Math.round(price * 0.135);
+    const fmt = (n) => n.toLocaleString('en-IN');
+    const units = Object.keys(P).map((label) => ({
+      label,
+      border: this.state.unit === label ? '2px solid #223585' : '2px solid #CFC4B4',
+      bg: this.state.unit === label ? '#FFD45C' : '#FFFFFF',
+      pick: () => this.setState({ unit: label })
+    }));
+    return { units, price: fmt(price), per, range, fee: fmt(fee), keep: fmt(price - fee) };
+  }
+}
+</script>
+</body>
+</html>

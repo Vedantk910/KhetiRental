@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Machine detail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#223585}a:hover{color:#1B2A66}
+</style>
+</helmet>
+<div style="width: 390px; height: 1180px; box-sizing: border-box; background: #FAF8F4; color: #13100D; font-family: Mukta, 'Noto Sans Devanagari', sans-serif; display: flex; flex-direction: column">
+<div style="height: 260px; background: #E5DDD1; position: relative; display: flex; align-items: center; justify-content: center">
+<a href="Results.dc.html" aria-label="Back to results" style="position: absolute; left: 12px; top: 12px; width: 44px; height: 44px; border-radius: 22px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #13100D; text-decoration: none; font-size: 22px">←</a>
+<svg width="200" height="120" viewBox="0 0 120 70" aria-hidden="true"><rect x="30" y="18" width="56" height="22" rx="4" fill="#7C7062"></rect><path d="M54 18 V4 H76 L80 18" fill="none" stroke="#483F37" stroke-width="3"></path><circle cx="44" cy="46" r="18" fill="#483F37"></circle><circle cx="90" cy="52" r="10" fill="#483F37"></circle></svg>
+<span style="position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); padding: 2px 10px; border-radius: 999px; background: rgba(19,16,13,0.7); color: #FFFFFF; font-size: 14px">1 / 3 · [owner photos]</span>
+</div>
+
+<main style="padding: 18px 16px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-size: 30px; line-height: 38px">Swaraj 744 FE</h1>
+<span style="font-size: 18px; color: #483F37">48 HP · 2019 · 2,340 engine hours</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<span style="padding: 4px 10px; border-radius: 999px; background: #EAEFFB; color: #223585; font-weight: 700; font-size: 14px">✔ RC checked</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: #F3EEE6; font-weight: 700; font-size: 14px">★ 4.6 (23 reviews)</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: #F3EEE6; font-weight: 700; font-size: 14px">Serviced Aug 2026</span>
+</div>
+</div>
+
+<div style="background: #FFFFFF; border: 1px solid #E5DDD1; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; gap: 6px"><strong style="font-size: 28px">₹710</strong><span style="font-size: 16px; color: #483F37">/ hour</span><span style="margin-left: auto; font-size: 16px; color: #483F37">or ₹1,400 / acre</span></div>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<span style="padding: 4px 10px; border-radius: 999px; background: #E7F4EA; color: #1E7B3C; font-weight: 700; font-size: 14px">Driver included</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: #E7F4EA; color: #1E7B3C; font-weight: 700; font-size: 14px">Diesel included</span>
+</div>
+<span style="font-size: 16px">Comes with: <strong>Rotavator, Trolley</strong></span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 20px">Free days · next 14</h2>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="14">
+<div style="height: 44px; border-radius: 10px; background: {{d.bg}}; color: {{d.fg}}; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; line-height: 16px; font-weight: 700">{{d.n}}<span style="font-weight: 400; font-size: 11px">{{d.w}}</span></div>
+</sc-for>
+</div>
+<span style="font-size: 14px; color: #483F37">Green = free · grey = booked · yellow = your dates</span>
+</div>
+
+<div style="display: flex; gap: 12px; align-items: center">
+<div style="width: 52px; height: 52px; border-radius: 26px; background: #CFC4B4; display: flex; align-items: center; justify-content: center; font-weight: 700">RK</div>
+<div style="display: flex; flex-direction: column"><strong style="font-size: 18px">Ramesh K.</strong><span style="font-size: 16px; color: #483F37">Muhana · 3.5 km · on KhetiRental 3 years · replies in about 20 min</span></div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-size: 20px">What farmers say</h2>
+<p style="margin: 0; font-size: 16px; line-height: 24px; color: #332C26">“Came on time, rotavator in good shape.” <span style="color: #5E544A">— Sunil P., Oct 2026</span></p>
+<a href="Detail.dc.html" style="font-weight: 700; font-size: 16px">See all 23 reviews</a>
+</div>
+</main>
+
+<footer style="margin-top: auto; padding: 12px 16px 20px; background: #FFFFFF; box-shadow: 0 -2px 8px rgba(19,16,13,0.08); display: flex; align-items: center; gap: 12px">
+<div style="display: flex; flex-direction: column"><strong style="font-size: 20px">₹2,840</strong><span style="font-size: 14px; color: #483F37">est. for 4 hours</span></div>
+<a href="Booking.dc.html" style="flex: 1; display: flex; align-items: center; justify-content: center; height: 56px; border-radius: 10px; background: #223585; color: #FFFFFF; font-weight: 700; font-size: 18px; text-decoration: none">Book 2–4 Nov</a>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const W = ['Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr'];
+    const busy = [3, 7, 8];
+    const mine = [2, 3, 4];
+    const days = Array.from({ length: 14 }, (_, i) => {
+      const n = 31 + i > 31 ? i : 31;
+      const day = i === 0 ? 31 : i;
+      const isMine = mine.includes(day) && i > 0;
+      const isBusy = busy.includes(day) && i > 0 && !isMine;
+      return {
+        n: String(day), w: W[i % 7],
+        bg: isMine ? '#FFD45C' : isBusy ? '#E5DDD1' : '#E7F4EA',
+        fg: isBusy ? '#5E544A' : '#13100D'
+      };
+    });
+    return { days };
+  }
+}
+</script>
+</body>
+</html>
