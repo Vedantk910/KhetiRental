@@ -22,6 +22,7 @@ package ws
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sync"
 
@@ -113,7 +114,7 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		switch frame.Op {
 		case "merge":
-			set.Merge(frame.Elements)
+			set.Merge(withSamples(frame.Elements))
 			ack := Ack{Op: "ack", Lamport: currentLamport(set)}
 			_ = conn.WriteJSON(ack)
 		case "snapshot_request":
@@ -123,6 +124,24 @@ func (h *Hub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			_ = conn.WriteJSON(map[string]string{"op": "error", "msg": "unknown op"})
 		}
 	}
+}
+
+// withSamples adds a copy of each element under "<key>@<lamport>", so the
+// track survives LWW convergence and D-01 can be judged over time
+// (geo.BreachWindow) instead of on the last-known value only.
+// shortcut: samples live in memory per machine; persist them to
+// telemetry_points and trim here once the TimescaleDB writer exists.
+func withSamples(els map[string]crdt.Element) map[string]crdt.Element {
+	out := make(map[string]crdt.Element, 2*len(els))
+	for k, el := range els {
+		out[k] = el
+		if el.Added.Lamport > 0 {
+			sk := fmt.Sprintf("%s@%d", k, el.Added.Lamport)
+			el.Key = sk
+			out[sk] = el
+		}
+	}
+	return out
 }
 
 // currentLamport returns the maximum Lamport clock observed so far.

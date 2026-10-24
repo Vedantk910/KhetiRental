@@ -43,3 +43,36 @@ func TestTamper(t *testing.T) {
 		}
 	}
 }
+
+// D-01 over time: only an excursion lasting ≥ 60 s of consecutive off-parcel
+// samples (by device timestamp, any arrival order) is a breach.
+func TestBreachWindow(t *testing.T) {
+	p := Parcel{CentroidLat: 26.8467, CentroidLng: 75.8160}
+	in, out := MachinePoint{Lat: 26.8467, Lng: 75.8160}, MachinePoint{Lat: 26.8521, Lng: 75.8160}
+	track := func(outFrom, outTo int) []TimedPoint {
+		var tr []TimedPoint
+		for ts := 200; ts >= 1; ts-- { // reverse order: arrival order must not matter
+			pt := in
+			if ts >= outFrom && ts < outTo {
+				pt = out
+			}
+			tr = append(tr, TimedPoint{UnixS: int64(ts), MachinePoint: pt})
+		}
+		return tr
+	}
+	if BreachWindow(p, track(50, 65)) {
+		t.Error("15 s spoof/drift excursion flagged as D-01")
+	}
+	if !BreachWindow(p, track(100, 190)) {
+		t.Error("90 s excursion not flagged as D-01")
+	}
+	if BreachWindow(p, track(100, 159)) {
+		t.Error("59 s excursion flagged (T_grace is 60 s)")
+	}
+	if !BreachWindow(p, track(100, 161)) {
+		t.Error("60 s of consecutive off-parcel time not flagged")
+	}
+	if BreachWindow(p, nil) {
+		t.Error("empty track flagged")
+	}
+}
