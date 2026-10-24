@@ -64,8 +64,11 @@
       "source": "Agriculture Census 2015–16 · 2025 estimates",
       "sr1": "86% of farm holdings in India are small or marginal.",
       "sr2": "The average Indian farm is 1.08 hectares.",
-      "sr3": "About 47% of farm work in India is mechanised."
-    }
+      "sr3": "About 47% of farm work in India is mechanised.",
+      "label": "Key facts about Indian farms"
+    },
+    "start": "Get started",
+    "bookings": "My bookings"
   },
   "story": {
     "problem": "THE PROBLEM",
@@ -78,13 +81,21 @@
       "buy": "Buy",
       "rent": "Rent 4 hours"
     },
-    "s3": "It's already near you.",
-    "s4": "The full price, before you say yes.",
+    "s3": {
+      "title": "It's already near you.",
+      "alt": "Map of a village with nearby machines and their prices"
+    },
+    "s4": {
+      "title": "The full price, before you say yes."
+    },
     "s5": {
       "title": "The owner is paid after the job, not before.",
       "handover": "Handover",
       "work": "Work",
-      "return": "Return"
+      "return": "Return",
+      "handoverNote": "Photo + OTP",
+      "workNote": "Hours counted",
+      "returnNote": "Owner paid"
     },
     "s6": {
       "title": "Your idle tractor can earn.",
@@ -122,8 +133,25 @@
       "mobile": "Enter a 10-digit mobile number.",
       "creds": "Email or password is wrong.",
       "exists": "This email already has an account. Log in instead.",
-      "rate": "Too many tries. Wait 10 minutes and try again."
-    }
+      "rate": "Too many tries. Wait 10 minutes and try again.",
+      "name": "Enter your full name (2 to 80 letters).",
+      "email": "Enter a valid email address.",
+      "passwordShort": "Use at least 8 characters.",
+      "passwordEmpty": "Enter your password.",
+      "google": "Google sign-in did not work. Try again."
+    },
+    "tabsLabel": "Log in or sign up",
+    "methodLabel": "Sign-in method",
+    "roleLabel": "I want to",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "passwordHint": "At least 8 characters.",
+    "strength": {
+      "ok": "Good password.",
+      "strong": "Strong password."
+    },
+    "devCode": "Dev only: your code is {code}.",
+    "devLink": "Dev only: open the reset link"
   },
   "otp": {
     "title": "Enter the code",
@@ -133,12 +161,24 @@
     "resendIn": "Resend in {time}",
     "resend": "Resend code",
     "wrong": "That code is wrong. {n, plural, one {# try} other {# tries}} left.",
-    "expired": "This code has expired. Send a new one."
+    "expired": "This code has expired. Send a new one.",
+    "noAccount": "This number has no account yet. Sign up first.",
+    "digits": "Enter all 6 digits",
+    "digit": "Digit {n} of 6",
+    "group": "6-digit code",
+    "resent": "A new code was sent."
   },
   "pw": {
     "title": "Reset your password",
     "send": "Send reset link",
-    "sent": "If an account exists for this email, we've sent a link. Check your inbox."
+    "sent": "If an account exists for this email, we've sent a link. Check your inbox.",
+    "newPassword": "New password",
+    "confirm": "Confirm new password",
+    "save": "Save password",
+    "mismatch": "The two passwords don't match.",
+    "changed": "Password changed. Log in.",
+    "backToLogin": "Back to log in",
+    "askNew": "Ask for a new link"
   },
   "search": {
     "what": "What work?",

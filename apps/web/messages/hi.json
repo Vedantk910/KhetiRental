@@ -64,8 +64,11 @@
       "source": "कृषि गणना 2015–16 · 2025 अनुमान",
       "sr1": "भारत की 86% खेती की जोतें छोटी या सीमांत हैं।",
       "sr2": "भारत में औसत खेत 1.08 हेक्टेयर का है।",
-      "sr3": "भारत में लगभग 47% खेती का काम मशीनों से होता है।"
-    }
+      "sr3": "भारत में लगभग 47% खेती का काम मशीनों से होता है।",
+      "label": "TODO-translate: Key facts about Indian farms"
+    },
+    "start": "TODO-translate: Get started",
+    "bookings": "TODO-translate: My bookings"
   },
   "story": {
     "problem": "समस्या",
@@ -78,13 +81,21 @@
       "buy": "ख़रीदें",
       "rent": "4 घंटे किराया"
     },
-    "s3": "वह आपके पास ही है।",
-    "s4": "हाँ कहने से पहले पूरी कीमत।",
+    "s3": {
+      "title": "वह आपके पास ही है।",
+      "alt": "TODO-translate: Map of a village with nearby machines and their prices"
+    },
+    "s4": {
+      "title": "हाँ कहने से पहले पूरी कीमत।"
+    },
     "s5": {
       "title": "मालिक को पैसे काम के बाद मिलते हैं, पहले नहीं।",
       "handover": "सौंपना",
       "work": "काम",
-      "return": "वापसी"
+      "return": "वापसी",
+      "handoverNote": "TODO-translate: Photo + OTP",
+      "workNote": "TODO-translate: Hours counted",
+      "returnNote": "TODO-translate: Owner paid"
     },
     "s6": {
       "title": "आपका खड़ा ट्रैक्टर कमाई कर सकता है।",
@@ -122,8 +133,25 @@
       "mobile": "10 अंकों का मोबाइल नंबर डालें।",
       "creds": "ईमेल या पासवर्ड गलत है।",
       "exists": "इस ईमेल से पहले से खाता है। लॉग इन करें।",
-      "rate": "बहुत ज़्यादा कोशिशें। 10 मिनट बाद फिर कोशिश करें।"
-    }
+      "rate": "बहुत ज़्यादा कोशिशें। 10 मिनट बाद फिर कोशिश करें।",
+      "name": "TODO-translate: Enter your full name (2 to 80 letters).",
+      "email": "TODO-translate: Enter a valid email address.",
+      "passwordShort": "TODO-translate: Use at least 8 characters.",
+      "passwordEmpty": "TODO-translate: Enter your password.",
+      "google": "TODO-translate: Google sign-in did not work. Try again."
+    },
+    "tabsLabel": "TODO-translate: Log in or sign up",
+    "methodLabel": "TODO-translate: Sign-in method",
+    "roleLabel": "TODO-translate: I want to",
+    "showPassword": "TODO-translate: Show password",
+    "hidePassword": "TODO-translate: Hide password",
+    "passwordHint": "TODO-translate: At least 8 characters.",
+    "strength": {
+      "ok": "TODO-translate: Good password.",
+      "strong": "TODO-translate: Strong password."
+    },
+    "devCode": "TODO-translate: Dev only: your code is {code}.",
+    "devLink": "TODO-translate: Dev only: open the reset link"
   },
   "otp": {
     "title": "कोड डालें",
@@ -133,12 +161,24 @@
     "resendIn": "{time} में दोबारा भेजें",
     "resend": "कोड दोबारा भेजें",
     "wrong": "कोड गलत है। {n} कोशिश बाकी।",
-    "expired": "कोड की समय-सीमा खत्म। नया कोड भेजें।"
+    "expired": "कोड की समय-सीमा खत्म। नया कोड भेजें।",
+    "noAccount": "TODO-translate: This number has no account yet. Sign up first.",
+    "digits": "TODO-translate: Enter all 6 digits",
+    "digit": "TODO-translate: Digit {n} of 6",
+    "group": "TODO-translate: 6-digit code",
+    "resent": "TODO-translate: A new code was sent."
   },
   "pw": {
     "title": "पासवर्ड बदलें",
     "send": "रीसेट लिंक भेजें",
-    "sent": "अगर इस ईमेल का खाता है, तो हमने लिंक भेजा है। इनबॉक्स देखें।"
+    "sent": "अगर इस ईमेल का खाता है, तो हमने लिंक भेजा है। इनबॉक्स देखें।",
+    "newPassword": "TODO-translate: New password",
+    "confirm": "TODO-translate: Confirm new password",
+    "save": "TODO-translate: Save password",
+    "mismatch": "TODO-translate: The two passwords don't match.",
+    "changed": "TODO-translate: Password changed. Log in.",
+    "backToLogin": "TODO-translate: Back to log in",
+    "askNew": "TODO-translate: Ask for a new link"
   },
   "search": {
     "what": "कौन सा काम?",
