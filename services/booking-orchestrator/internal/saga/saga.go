@@ -22,6 +22,7 @@ package saga
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -45,6 +46,9 @@ const (
 	StateSettled           BookingState = "SETTLED"
 	StateFailedPayment     BookingState = "FAILED_PAYMENT_RELEASED"
 	StateFailedInventory   BookingState = "FAILED_INVENTORY"
+	StateDisputeOpen       BookingState = "DISPUTE_OPEN"        // D-01..D-05
+	StateSuspendedBreak    BookingState = "SUSPENDED_BREAKDOWN" // D-08
+	StateNoShowPending     BookingState = "NO_SHOW_PENDING"     // D-06 under 2G
 )
 
 // Event is the Kafka message envelope.
@@ -78,9 +82,12 @@ type OutboxEvent struct {
 	Data   []byte
 }
 
-// Producer emits outbox events to Kafka.
-type Producer interface {
-	Produce(ctx context.Context, outbox OutboxEvent) error
+// Store commits a booking transition and its outbox event in one
+// transaction: both persist or neither does (no dual write). It returns 0
+// rows when the fencing token is stale or the booking is already in that
+// state or a terminal one, which makes every transition idempotent.
+type Store interface {
+	TransitionState(ctx context.Context, bookingID, newState string, fencing uint64, ev OutboxEvent) (int, error)
 }
 
 // EscrowAuthorizer authorizes (and, on failure, compensates) escrow.
@@ -107,102 +114,104 @@ type Fencer interface {
 
 // Orchestrator runs the saga for a single booking.
 type Orchestrator struct {
-	store     redlock.FencedBookingStore
+	store     Store
 	lock      Fencer
 	inventory InventoryManager
 	escrow    EscrowAuthorizer
 	notify    Notifier
-	prod      Producer
 }
 
 // NewOrchestrator wires an orchestrator for one booking under a held lock.
-func NewOrchestrator(
-	store redlock.FencedBookingStore,
-	lock Fencer,
-	inventory InventoryManager,
-	escrow EscrowAuthorizer,
-	notify Notifier,
-	prod Producer,
-) *Orchestrator {
-	return &Orchestrator{
-		store: store, lock: lock,
-		inventory: inventory, escrow: escrow, notify: notify, prod: prod,
-	}
+func NewOrchestrator(store Store, lock Fencer, inventory InventoryManager, escrow EscrowAuthorizer, notify Notifier) *Orchestrator {
+	return &Orchestrator{store: store, lock: lock, inventory: inventory, escrow: escrow, notify: notify}
 }
 
-// Start runs the forward path up through escrow authorization. If escrow
-// fails or exceeds the SLA, the compensating path is emitted and the
-// booking transitions to FAILED_PAYMENT_RELEASED.
+// Start runs the forward path up through dispatch. If escrow fails or its
+// answer arrives after the SLA, the booking is compensated: it moves to
+// FAILED_PAYMENT_RELEASED, the machine is released and the authorisation voided.
 func (o *Orchestrator) Start(ctx context.Context, bookingID string) error {
 	// Step 1: reserve inventory.
 	if err := o.inventory.Reserve(ctx, bookingID); err != nil {
-		_, _ = o.store.TransitionState(ctx, bookingID, string(StateFailedInventory), o.lock.Fencing())
+		if serr := o.step(ctx, bookingID, StateFailedInventory, evtReserveInventory); serr != nil {
+			return errors.Join(fmt.Errorf("saga: reserve inventory: %w", err), serr)
+		}
 		return fmt.Errorf("saga: reserve inventory: %w", err)
 	}
-	if _, err := o.store.TransitionState(ctx, bookingID, string(StateInventoryReserved), o.lock.Fencing()); err != nil {
+	if err := o.step(ctx, bookingID, StateInventoryReserved, evtReserveInventory); err != nil {
 		return err
 	}
-	_ = o.emit(ctx, bookingID, evtReserveInventory, StateInventoryReserved)
 
-	// Step 2: authorize escrow under a bounded context (the 30 s SLA).
+	// Step 2: authorize escrow under a bounded context (the 30 s SLA). An
+	// answer after the deadline counts as a timeout even if it is a success.
 	authCtx, cancel := context.WithTimeout(ctx, EscrowAuthSLA)
 	defer cancel()
 	err := o.escrow.Authorize(authCtx, bookingID)
-	switch {
-	case err == nil:
-		if _, err := o.store.TransitionState(ctx, bookingID, string(StateEscrowAuthorized), o.lock.Fencing()); err != nil {
-			return err
-		}
-		_ = o.emit(ctx, bookingID, evtEscrowAuthorized, StateEscrowAuthorized)
-		// Step 3: dispatch notification.
-		if err := o.notify.Dispatch(ctx, bookingID); err != nil {
-			return fmt.Errorf("saga: dispatch notification: %w", err)
-		}
-		if _, err := o.store.TransitionState(ctx, bookingID, string(StateDispatched), o.lock.Fencing()); err != nil {
-			return err
-		}
-		_ = o.emit(ctx, bookingID, evtDispatchNotification, StateDispatched)
-		return nil
-	case authCtx.Err() == context.DeadlineExceeded:
+	if authCtx.Err() != nil {
 		return o.compensate(ctx, bookingID, "escrow auth timeout (>30s SLA)")
-	default:
+	}
+	if err != nil {
 		return o.compensate(ctx, bookingID, "escrow auth failed: "+err.Error())
 	}
+	if err := o.step(ctx, bookingID, StateEscrowAuthorized, evtEscrowAuthorized); err != nil {
+		return err
+	}
+
+	// Step 3: dispatch notification.
+	if err := o.notify.Dispatch(ctx, bookingID); err != nil {
+		return fmt.Errorf("saga: dispatch notification: %w", err)
+	}
+	return o.step(ctx, bookingID, StateDispatched, evtDispatchNotification)
 }
 
-// Compensate runs the compensating path: release the inventory hold,
-// transition to FAILED_PAYMENT_RELEASED, and emit the compensation event.
+// Compensate runs the compensating path (also the handler for a redelivered
+// compensation event): it is a no-op once the booking has been compensated.
 func (o *Orchestrator) Compensate(ctx context.Context, bookingID string, reason string) error {
 	return o.compensate(ctx, bookingID, reason)
 }
 
 func (o *Orchestrator) compensate(ctx context.Context, bookingID, reason string) error {
-	// Compensating action: release the inventory reservation.
-	if err := o.inventory.Release(ctx, bookingID); err != nil {
-		return fmt.Errorf("saga: compensate release inventory: %w", err)
+	// Guarded transition first: only the first delivery gets a row, so the
+	// side effects below run once however often the event is redelivered.
+	err := o.step(ctx, bookingID, StateFailedPayment, evtCompensateInventory)
+	if errors.Is(err, redlock.ErrStaleFencing) {
+		return nil // already compensated (or a newer holder owns the booking)
 	}
-	if _, err := o.store.TransitionState(ctx, bookingID, string(StateFailedPayment), o.lock.Fencing()); err != nil {
-		return fmt.Errorf("saga: transition to FAILED_PAYMENT_RELEASED: %w (reason: %s)", err, reason)
+	if err != nil {
+		return fmt.Errorf("saga: compensate (%s): %w", reason, err)
 	}
-	_ = o.emit(ctx, bookingID, evtCompensateInventory, StateFailedPayment)
-	return nil
+	return errors.Join(
+		wrap("compensate release inventory", o.inventory.Release(ctx, bookingID)),
+		wrap("compensate void escrow", o.escrow.Compensate(ctx, bookingID)),
+	)
 }
 
-// emit writes an event to the outbox in the same transaction as the state
-// change (the store's caller has already committed the transition; the
-// outbox row is appended atomically by the publisher reading it).
-func (o *Orchestrator) emit(ctx context.Context, bookingID string, t EventType, state BookingState) error {
-	data, _ := json.Marshal(Event{
+// step commits one state transition together with its outbox event. 0 rows
+// means the lock was lost or the step already happened: stop, no side effects.
+func (o *Orchestrator) step(ctx context.Context, bookingID string, state BookingState, t EventType) error {
+	data, err := json.Marshal(Event{
 		BookingID: bookingID,
 		Type:      t,
 		State:     state,
 		Fencing:   o.lock.Fencing(),
 		Timestamp: time.Now().UnixMilli(),
 	})
-	return o.prod.Produce(ctx, OutboxEvent{
-		AggID:  bookingID,
-		Stream: "booking",
-		Topic:  "booking.events",
-		Data:   data,
-	})
+	if err != nil {
+		return fmt.Errorf("saga: encode %s event: %w", t, err)
+	}
+	rows, err := o.store.TransitionState(ctx, bookingID, string(state), o.lock.Fencing(),
+		OutboxEvent{AggID: bookingID, Stream: "booking", Topic: "booking.events", Data: data})
+	if err != nil {
+		return fmt.Errorf("saga: transition to %s: %w", state, err)
+	}
+	if err := (&redlock.SQLFencedBookingStore{}).ApplyTransition(rows); err != nil {
+		return fmt.Errorf("saga: transition to %s: %w", state, err)
+	}
+	return nil
+}
+
+func wrap(what string, err error) error {
+	if err != nil {
+		return fmt.Errorf("saga: %s: %w", what, err)
+	}
+	return nil
 }

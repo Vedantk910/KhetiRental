@@ -9,7 +9,6 @@
 package redlock
 
 import (
-	"context"
 	"errors"
 	"fmt"
 )
@@ -19,38 +18,31 @@ import (
 // re-acquired by another process.
 var ErrStaleFencing = errors.New("fenced store: stale fencing token")
 
-// FencedBookingStore is the interface the saga uses to persist booking
-// state while honouring fencing-token validation.
-type FencedBookingStore interface {
-	// CreateBooking inserts a new row with the given initial fencing token.
-	CreateBooking(ctx context.Context, bookingID string, initialFencing uint64, payload []byte) error
-
-	// TransitionState atomically moves the booking to the next state,
-	// guarded by a fencing-token comparison (WHERE fencing_token = old).
-	// Returns rows-affected (0 if the token was stale).
-	TransitionState(ctx context.Context, bookingID string, newState string, expectedFencing uint64) (int, error)
-}
-
-// SQLFencedBookingStore documents the exact SQL the production PostgreSQL
-// store runs against the bookings table (schema: deploy/sql/001_bookings.sql).
+// SQLFencedBookingStore holds the exact SQL the PostgreSQL store
+// (internal/pgstore) runs against the bookings table.
 type SQLFencedBookingStore struct{}
 
 // NewSQLFencedBookingStore returns the reference SQL store.
 func NewSQLFencedBookingStore() *SQLFencedBookingStore { return &SQLFencedBookingStore{} }
 
-// TransitionSQL returns the optimistic-concurrency UPDATE that the store
-// executes on every state transition. expectedFencing is the caller's
-// current lock token; if another process advanced the row past it, the
-// UPDATE affects 0 rows and the caller must abort (compensate).
-func (s *SQLFencedBookingStore) TransitionSQL(bookingID, newState string, expectedFencing uint64) (string, []interface{}) {
+// TransitionSQL returns the fenced UPDATE the store executes on every state
+// transition. The holder may write while its token is at least the row's
+// (so it can transition repeatedly) and stamps the row with its token; a
+// paused holder with an older token than the row's gets 0 rows and must
+// abort. Moving to the current state, or out of a terminal one, is also 0
+// rows, so redelivered steps are no-ops. deploy/sql/004 additionally
+// forbids the token ever decreasing.
+func (s *SQLFencedBookingStore) TransitionSQL(bookingID, newState string, fencing uint64) (string, []interface{}) {
 	const q = `
 UPDATE bookings
    SET state = $1,
-       fencing_token = fencing_token + 1,
+       fencing_token = $3,
        updated_at = now()
  WHERE booking_id = $2
-   AND fencing_token = $3;`
-	return q, []interface{}{newState, bookingID, expectedFencing}
+   AND fencing_token <= $3
+   AND state <> $1
+   AND state NOT IN ('SETTLED', 'FAILED_PAYMENT_RELEASED', 'FAILED_INVENTORY');`
+	return q, []interface{}{newState, bookingID, fencing}
 }
 
 // ApplyTransition documents the check a caller performs on rows-affected.

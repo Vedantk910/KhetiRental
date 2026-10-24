@@ -138,3 +138,95 @@ func TestApplyTransitionRejectsZeroRows(t *testing.T) {
 		t.Fatalf("1 row: %v", err)
 	}
 }
+
+// A holder whose lease is taken over must be told, so it stops writing.
+func TestLostSignalsWhenQuorumCannotRenew(t *testing.T) {
+	ctx := context.Background()
+	nodes := testNodes(t)
+	opts := DefaultOptions(nodes)
+	opts.TTL, opts.Heartbeat = 300*time.Millisecond, 50*time.Millisecond
+	l, err := Acquire(ctx, "k", opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer l.Release(ctx)
+	select {
+	case <-l.Lost():
+		t.Fatal("Lost fired while the lease is healthy")
+	case <-time.After(200 * time.Millisecond):
+	}
+	for _, n := range nodes {
+		n.Set(ctx, "lock:k", "someone-else", time.Minute)
+	}
+	select {
+	case <-l.Lost():
+	case <-time.After(time.Second):
+		t.Fatal("Lost never fired after another holder took every node")
+	}
+}
+
+// Successive holders get strictly increasing tokens even when a minority of
+// nodes loses its counter between them (quorums always overlap).
+func TestFencingSurvivesMinorityCounterLoss(t *testing.T) {
+	ctx := context.Background()
+	nodes := testNodes(t)
+	var last uint64
+	for i := 0; i < 5; i++ {
+		l, err := Acquire(ctx, "k", DefaultOptions(nodes))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if l.Fencing() <= last {
+			t.Fatalf("round %d: token %d not above previous %d", i, l.Fencing(), last)
+		}
+		last = l.Fencing()
+		l.Release(ctx)
+		nodes[i%len(nodes)].FlushDB(ctx) // a different minority node forgets each round
+	}
+}
+
+// WithLock releases the lock on every path: success, error and panic.
+func TestWithLockReleasesOnEveryPath(t *testing.T) {
+	ctx := context.Background()
+	nodes := testNodes(t)
+	free := func() bool {
+		return nodes[0].Exists(ctx, "lock:k").Val() == 0 && nodes[1].Exists(ctx, "lock:k").Val() == 0
+	}
+
+	if err := WithLock(ctx, "k", DefaultOptions(nodes), func(context.Context, *Lock) error { return nil }); err != nil || !free() {
+		t.Fatalf("success path: err=%v lock free=%v", err, free())
+	}
+	boom := errors.New("authorize failed")
+	if err := WithLock(ctx, "k", DefaultOptions(nodes), func(context.Context, *Lock) error { return boom }); !errors.Is(err, boom) || !free() {
+		t.Fatalf("error path: err=%v lock free=%v", err, free())
+	}
+	func() {
+		defer func() { _ = recover() }()
+		_ = WithLock(ctx, "k", DefaultOptions(nodes), func(context.Context, *Lock) error { panic("provider SDK panicked") })
+	}()
+	if !free() {
+		t.Fatal("panic path left a ghost lock")
+	}
+}
+
+// When the lease is lost mid-work, the work's context is cancelled.
+func TestWithLockCancelsWorkWhenLost(t *testing.T) {
+	ctx := context.Background()
+	nodes := testNodes(t)
+	opts := DefaultOptions(nodes)
+	opts.TTL, opts.Heartbeat = 300*time.Millisecond, 50*time.Millisecond
+	err := WithLock(ctx, "k", opts, func(work context.Context, _ *Lock) error {
+		for _, n := range nodes {
+			n.Set(ctx, "lock:k", "someone-else", time.Minute)
+		}
+		select {
+		case <-work.Done():
+			return work.Err()
+		case <-time.After(2 * time.Second):
+			return errors.New("work kept running after the lock was lost")
+		}
+	})
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("err=%v, want context.Canceled", err)
+	}
+}

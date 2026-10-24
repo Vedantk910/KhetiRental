@@ -13,10 +13,17 @@ type fakeFencer uint64
 
 func (f fakeFencer) Fencing() uint64 { return uint64(f) }
 
-type fakeStore struct{ states []string }
+// fakeStore models the transactional store: the outbox write (via out) and
+// the state change commit together or not at all.
+type fakeStore struct {
+	states []string
+	out    *fakeDeps
+}
 
-func (s *fakeStore) CreateBooking(context.Context, string, uint64, []byte) error { return nil }
-func (s *fakeStore) TransitionState(_ context.Context, _ string, st string, _ uint64) (int, error) {
+func (s *fakeStore) TransitionState(ctx context.Context, _ string, st string, _ uint64, ev OutboxEvent) (int, error) {
+	if err := s.out.Produce(ctx, ev); err != nil {
+		return 0, err
+	}
 	s.states = append(s.states, st)
 	return 1, nil
 }
@@ -53,8 +60,8 @@ func (d *fakeDeps) Produce(_ context.Context, ev OutboxEvent) error {
 
 func run(t *testing.T, d *fakeDeps) (*fakeStore, error) {
 	t.Helper()
-	st := &fakeStore{}
-	err := NewOrchestrator(st, fakeFencer(42), d, d, d, d).Start(context.Background(), "B-1")
+	st := &fakeStore{out: d}
+	err := NewOrchestrator(st, fakeFencer(42), d, d, d).Start(context.Background(), "B-1")
 	return st, err
 }
 
@@ -84,8 +91,8 @@ func TestReserveFailureStopsSaga(t *testing.T) {
 	if want := []string{"FAILED_INVENTORY"}; !reflect.DeepEqual(st.states, want) {
 		t.Fatalf("states %v want %v", st.states, want)
 	}
-	if len(d.events) != 0 || d.dispatched {
-		t.Fatalf("saga continued after reserve failure: events=%v", d.events)
+	if want := []EventType{evtReserveInventory}; !reflect.DeepEqual(d.events, want) || d.dispatched {
+		t.Fatalf("saga continued after reserve failure, or the failure was not published: events=%v", d.events)
 	}
 }
 
@@ -116,7 +123,7 @@ func TestEscrowTimeoutCompensates(t *testing.T) {
 	if want := []string{"INVENTORY_RESERVED", "FAILED_PAYMENT_RELEASED"}; !reflect.DeepEqual(st.states, want) {
 		t.Fatalf("states %v want %v", st.states, want)
 	}
-	if !d.released {
-		t.Fatal("inventory not released after SLA timeout")
+	if !d.released || !d.escrowCompensated {
+		t.Fatalf("after SLA timeout: inventory released=%v escrow voided=%v", d.released, d.escrowCompensated)
 	}
 }

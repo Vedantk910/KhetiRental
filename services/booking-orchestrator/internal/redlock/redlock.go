@@ -19,7 +19,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -27,16 +26,16 @@ import (
 
 // Lock is a Redlock lock with a monotonic fencing token.
 type Lock struct {
-	mu        sync.Mutex
 	key       string
-	token     string // random UUID-ish token, used for the Lua release
-	fencing   uint64 // monotonic fencing token from Redis INCR
+	token     string // random token, used for the owner-checked Lua scripts
+	fencing   uint64 // monotonic per-resource fencing token
 	nodes     []*redis.Client
 	quorum    int
 	ttl       time.Duration
 	heartbeat time.Duration
 	renewal   context.CancelFunc
 	done      chan struct{}
+	lost      chan struct{}
 }
 
 // Options configures a Redlock cluster.
@@ -44,7 +43,7 @@ type Options struct {
 	Nodes      []*redis.Client
 	TTL        time.Duration // default 5s
 	Heartbeat  time.Duration // default 2s (must be < TTL)
-	FencingKey string        // default "locks:fencing:counter"
+	FencingKey string        // default "locks:fencing:counter"; one counter per locked key
 }
 
 // DefaultOptions returns sensible defaults per the skill spec.
@@ -72,57 +71,107 @@ func Acquire(ctx context.Context, key string, opts Options) (*Lock, error) {
 	if opts.Heartbeat >= opts.TTL {
 		return nil, fmt.Errorf("redlock: heartbeat (%s) must be < ttl (%s)", opts.Heartbeat, opts.TTL)
 	}
+	if opts.FencingKey == "" {
+		opts.FencingKey = "locks:fencing:counter"
+	}
 	quorum := len(opts.Nodes)/2 + 1
 	lockKey := "lock:" + key
-
-	// 1) Mint a monotonic fencing token (INCR on a shared counter). This is
-	//    the mechanism that makes stale writes detectable.
-	fenceNode := opts.Nodes[0]
-	fencing, err := fenceNode.Incr(ctx, opts.FencingKey).Result()
-	if err != nil {
-		return nil, fmt.Errorf("redlock: fencing incr: %w", err)
-	}
-
-	// 2) Acquire the per-node locks. A node is "locked" if SET NX succeeds.
 	token := randomToken()
-	acquired := 0
+	start := time.Now()
+
+	// 1) Acquire the per-node locks. A node is "locked" if SET NX succeeds;
+	//    an unreachable node simply doesn't count towards the quorum.
 	var held []*redis.Client
 	for _, n := range opts.Nodes {
-		ok, err := n.SetNX(ctx, lockKey, token, opts.TTL).Result()
-		if err == nil && ok {
-			acquired++
+		if ok, err := n.SetNX(ctx, lockKey, token, opts.TTL).Result(); err == nil && ok {
 			held = append(held, n)
 		}
 	}
-	if acquired < quorum {
+	releaseAll := func() {
 		for _, n := range held {
 			_ = releaseOne(ctx, n, lockKey, token)
 		}
-		return nil, fmt.Errorf("redlock: acquired %d/%d, need quorum %d", acquired, len(opts.Nodes), quorum)
+	}
+	if len(held) < quorum {
+		releaseAll()
+		return nil, fmt.Errorf("redlock: acquired %d/%d, need quorum %d", len(held), len(opts.Nodes), quorum)
 	}
 
-	// 3) Start the lease-renewal heartbeat.
+	// 2) Mint the fencing token only after winning, as max(counter)+1 over
+	//    the quorum we hold. Any two quorums share a node, so this exceeds
+	//    every earlier holder's token even if a minority node lost its counter.
+	fencing, err := mintFencing(ctx, held, quorum, opts.FencingKey+":"+key)
+	if err != nil {
+		releaseAll()
+		return nil, err
+	}
+
+	// 3) Validity time (Redlock): if acquiring took most of the TTL, the
+	//    first node's lease may already have expired; treat as not acquired.
+	drift := opts.TTL/100 + 2*time.Millisecond
+	if opts.TTL-time.Since(start)-drift <= 0 {
+		releaseAll()
+		return nil, fmt.Errorf("redlock: acquisition took %s, longer than ttl %s", time.Since(start), opts.TTL)
+	}
+
+	// 4) Start the lease-renewal heartbeat.
 	hbCtx, cancel := context.WithCancel(ctx)
-	done := make(chan struct{})
 	lock := &Lock{
 		key:       lockKey,
 		token:     token,
-		fencing:   uint64(fencing),
+		fencing:   fencing,
 		nodes:     held,
 		quorum:    quorum,
 		ttl:       opts.TTL,
 		heartbeat: opts.Heartbeat,
 		renewal:   cancel,
-		done:      done,
+		done:      make(chan struct{}),
+		lost:      make(chan struct{}),
 	}
 	go lock.heartbeatLoop(hbCtx)
 	return lock, nil
 }
 
+var readCounterScript = redis.NewScript(`return tonumber(redis.call("GET", KEYS[1]) or "0")`)
+
+var raiseCounterScript = redis.NewScript(`
+local v = tonumber(redis.call("GET", KEYS[1]) or "0")
+if tonumber(ARGV[1]) > v then redis.call("SET", KEYS[1], ARGV[1]) end
+return 1
+`)
+
+func mintFencing(ctx context.Context, held []*redis.Client, quorum int, counterKey string) (uint64, error) {
+	var max int64
+	for _, n := range held {
+		v, err := readCounterScript.Run(ctx, n, []string{counterKey}).Int64()
+		if err != nil {
+			return 0, fmt.Errorf("redlock: read fencing counter: %w", err)
+		}
+		if v > max {
+			max = v
+		}
+	}
+	next := max + 1
+	written := 0
+	for _, n := range held {
+		if raiseCounterScript.Run(ctx, n, []string{counterKey}, next).Err() == nil {
+			written++
+		}
+	}
+	if written < quorum {
+		return 0, fmt.Errorf("redlock: fencing token stored on %d nodes, need %d", written, quorum)
+	}
+	return uint64(next), nil
+}
+
 // Fencing returns the monotonic fencing token for this lock. The caller
-// persists it in the DB row (booking_version / fencing_token column) so a
-// later write carrying a lower token is rejected.
+// persists it in the DB row (fencing_token column) so a later write
+// carrying a lower token is rejected.
 func (l *Lock) Fencing() uint64 { return l.fencing }
+
+// Lost is closed when the heartbeat can no longer renew the lease on a
+// quorum (another holder took over, or the lease lapsed). Stop writing then.
+func (l *Lock) Lost() <-chan struct{} { return l.lost }
 
 // Release deterministically deletes the lock only if we still own it
 // (Lua guarded delete), then stops the heartbeat.
@@ -139,12 +188,41 @@ func (l *Lock) Release(ctx context.Context) {
 	}
 }
 
+// WithLock owns the lock lifecycle for one unit of work (e.g. a booking
+// saga): it acquires, runs fn with a context that is cancelled if the lease
+// is lost, and releases on every path, including a panic in fn.
+func WithLock(ctx context.Context, key string, opts Options, fn func(context.Context, *Lock) error) error {
+	l, err := Acquire(ctx, key, opts)
+	if err != nil {
+		return err
+	}
+	defer l.Release(context.WithoutCancel(ctx))
+	work, cancel := context.WithCancel(ctx)
+	defer cancel()
+	go func() {
+		select {
+		case <-l.Lost():
+			cancel()
+		case <-work.Done():
+		}
+	}()
+	return fn(work, l)
+}
+
 // ReleaseForced is used on the compensating path where the lease may have
 // already lapsed; it still attempts the guarded delete.
 func (l *Lock) ReleaseForced(ctx context.Context) { l.Release(ctx) }
 
-// heartbeatLoop renews the lease on a time.Ticker until the context is
-// cancelled. The renewal extends the TTL on every node we hold.
+var renewScript = redis.NewScript(`
+if redis.call("GET", KEYS[1]) == ARGV[1] then
+    return redis.call("PEXPIRE", KEYS[1], ARGV[2])
+else
+    return 0
+end
+`)
+
+// heartbeatLoop renews the lease on every node we still own; once fewer
+// than a quorum renew, the lock is lost and the loop stops.
 func (l *Lock) heartbeatLoop(ctx context.Context) {
 	defer close(l.done)
 	ticker := time.NewTicker(l.heartbeat)
@@ -154,10 +232,15 @@ func (l *Lock) heartbeatLoop(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
+			renewed := 0
 			for _, n := range l.nodes {
-				// Only extend if we still own the key (avoid extending a lock
-				// we lost, which would be a fencing violation).
-				_ = n.Expire(ctx, l.key, l.ttl).Err()
+				if ok, err := renewScript.Run(ctx, n, []string{l.key}, l.token, l.ttl.Milliseconds()).Int(); err == nil && ok == 1 {
+					renewed++
+				}
+			}
+			if renewed < l.quorum && ctx.Err() == nil {
+				close(l.lost)
+				return
 			}
 		}
 	}
