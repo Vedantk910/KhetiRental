@@ -14,7 +14,8 @@ const csp = [
   `connect-src 'self'${dev ? " ws: wss:" : ""}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
+  // Real Google sign-in redirects there after the sign-in form posts (D-05).
+  "form-action 'self' https://accounts.google.com",
   "object-src 'none'",
 ].join("; ");
 

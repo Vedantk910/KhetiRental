@@ -7,6 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "db:migrate": "tsx --env-file-if-exists=.env server/db/migrate.ts",
+    "db:seed": "tsx --env-file-if-exists=.env server/db/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "db:generate": "drizzle-kit generate",
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
@@ -16,15 +20,21 @@
     "knip": "knip"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "1.11.3",
+    "@node-rs/argon2": "2.2.2",
     "clsx": "2.1.1",
+    "drizzle-orm": "0.45.4",
     "h3-js": "4.5.0",
     "lucide-react": "1.61.0",
     "next": "15.5.28",
+    "next-auth": "5.0.0-beta.32",
     "next-intl": "4.14.9",
+    "postgres": "3.4.9",
     "react": "19.1.10",
     "react-dom": "19.1.10",
     "recharts": "3.10.1",
-    "tailwind-merge": "2.6.1"
+    "tailwind-merge": "2.6.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
@@ -39,6 +49,7 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "autoprefixer": "10.6.1",
+    "drizzle-kit": "0.31.11",
     "eslint": "9.39.5",
     "eslint-config-next": "15.5.28",
     "eslint-plugin-jsx-a11y": "6.10.2",
@@ -51,6 +62,7 @@
     "prettier": "3.9.10",
     "prettier-plugin-tailwindcss": "0.6.14",
     "tailwindcss": "3.4.19",
+    "tsx": "4.23.15",
     "typescript": "5.9.3",
     "typescript-eslint": "8.72.0",
     "vitest": "5.0.5"

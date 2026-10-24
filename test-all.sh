@@ -3,7 +3,9 @@
 # Redis on REDIS_TEST_ADDR (default 127.0.0.1:6390) and Postgres on
 # PGHOST:PGPORT (default 127.0.0.1:5440); they SKIP when those are absent.
 # The k6 load test is separate: see showcase/tests/load/k6/full_flow.js.
-# apps/web needs `npm ci` first. Agent-tooling checks: scripts/check-agent-tooling.sh.
+# apps/web needs `npm ci` first, and Postgres + PostGIS on WEB_DATABASE_URL (default the dev database,
+# postgres://kheti:kheti@localhost:5432/kheti). Its tests clone throwaway databases from template_postgis
+# and the e2e run builds its own kheti_e2e; the dev database's data is never read or written. Agent-tooling checks: scripts/check-agent-tooling.sh.
 set -uo pipefail
 cd "$(dirname "$0")"
 failed=()
@@ -13,7 +15,8 @@ run() {
 }
 
 # Product: the website.
-run "web" "cd apps/web && test -d node_modules && npm run -s lint && npm run -s format:check && npm run -s typecheck && npm test --silent && npm run -s build >/dev/null && npm run -s test:e2e"
+export WEB_DATABASE_URL="${WEB_DATABASE_URL:-postgres://kheti:kheti@localhost:5432/kheti}"
+run "web" "cd apps/web && test -d node_modules && export DATABASE_URL=\"\$WEB_DATABASE_URL\" && npm run -s lint && npm run -s format:check && npm run -s typecheck && npm test --silent && npm run -s build >/dev/null && npm run -s test:e2e"
 
 # Showcase: the engineering portfolio (Go services, contracts, analytics, SQL).
 for s in matching-engine booking-orchestrator telemetry-gateway; do

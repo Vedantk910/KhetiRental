@@ -4,3 +4,5 @@ next-env.d.ts
 test-results
 playwright-report
 *.tsbuildinfo
+# Local uploads in dev (machine and problem photos)
+.uploads
