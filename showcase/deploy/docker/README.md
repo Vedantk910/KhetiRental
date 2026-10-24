@@ -1,4 +1,4 @@
-# Deploy scaffolding (Lead 1: infrastructure)
+# Deploy scaffolding
 
 Place Dockerfiles per service and a `docker-compose.yml` that wires:
 

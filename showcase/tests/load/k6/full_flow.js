@@ -1,4 +1,4 @@
-// KhetiRental — harvest-surge load test (Lead 1: distributed systems / SRE).
+// KhetiRental — harvest-surge load test.
 //
 // Ramps 100 → 5,000 concurrent VUs over 60 s, sustains 120 s, ramps down 30 s
 // against the matching engine. SLA gates per the k6-telemetry-benchmark skill:
