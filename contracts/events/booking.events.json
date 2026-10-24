@@ -23,7 +23,8 @@
       "enum": [
         "PENDING", "INVENTORY_RESERVED", "ESCROW_AUTHORIZED", "DISPATCHED",
         "TELEMATICS_ACTIVE", "POST_RETURN_AUDIT", "SETTLED",
-        "FAILED_PAYMENT_RELEASED", "FAILED_INVENTORY"
+        "FAILED_PAYMENT_RELEASED", "FAILED_INVENTORY",
+        "DISPUTE_OPEN", "SUSPENDED_BREAKDOWN", "NO_SHOW_PENDING"
       ]
     },
     "fencing_token": { "type": "integer", "minimum": 0 },

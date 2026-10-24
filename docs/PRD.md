@@ -124,11 +124,11 @@ Every stage transition is an event on `booking.events` (via the transactional ou
 |---|---|---|---|
 | FR-1 | Search returns at most `limit` (default 20, max 100) machines ranked by distance decay, HP match and owner reputation, trimmed to `radius_km` | `openapi.yaml` `/machines/near`; `services/matching-engine` | Built, tested |
 | FR-2 | Every mutating call carries an `Idempotency-Key`; a replay never creates a second booking | `openapi.yaml` `IdempotencyKey`; `deploy/sql/001_bookings.sql` UNIQUE | Built, tested |
-| FR-3 | A machine is held by at most one booking at a time, even under concurrent requests and paused processes | Redlock + database fencing (`internal/redlock`) | Being fixed — audit V1, V2, V5, V6, V11, V12 |
-| FR-4 | A payment authorisation that fails or exceeds 30 s releases the machine **and voids the authorisation**; a late approval never moves the booking forward | `internal/saga` | Being fixed — audit V3, V4, V8 |
-| FR-5 | Every state change and its event commit in one database transaction (no dual write) | ADR-0002; `deploy/sql/002_outbox_inbox.sql` | Being fixed — audit V7 |
-| FR-6 | Field devices sync telemetry over WebSocket; replayed or reordered frames converge; the full track is retained | `services/telemetry-gateway` | Convergence built; track retention being fixed — audit V9 |
-| FR-7 | Dispute rules D-01..D-09 evaluate on the stored telemetry track by device timestamp | `contracts/escrow-state-machine.md` §4 | D-01/D-02 being fixed; D-01b, D-08, D-09 specified |
+| FR-3 | A machine is held by at most one booking at a time, even under concurrent requests and paused processes | Redlock + database fencing (`internal/redlock`) | Built, tested (audit V1, V2, V5, V6, V11, V12 fixed) |
+| FR-4 | A payment authorisation that fails or exceeds 30 s releases the machine **and voids the authorisation**; a late approval never moves the booking forward | `internal/saga` | Built, tested (audit V3, V4, V8 fixed) |
+| FR-5 | Every state change and its event commit in one database transaction (no dual write) | ADR-0002; `internal/pgstore` | Built, tested (audit V7 fixed) |
+| FR-6 | Field devices sync telemetry over WebSocket; replayed or reordered frames converge; the full track is retained | `services/telemetry-gateway` | Built, tested (audit V9 fixed; samples kept in memory until the TimescaleDB writer exists) |
+| FR-7 | Dispute rules D-01..D-09 evaluate on the stored telemetry track by device timestamp | `contracts/escrow-state-machine.md` §4 | D-01 (edge + 60 s window) and D-02 built and tested; D-01b, D-08, D-09 specified |
 | FR-8 | Hourly price is itemised (market, wear, diesel) and identical in every surface | `analytics/pricing.py`; `services/client-portal/lib/pricing-engine.ts` (golden-tested against the Python output) | Built, tested |
 | FR-9 | The escrow ledger always balances: held + owner + platform + refund = pre-authorisation | `services/client-portal/lib/escrow-machine.ts` (property-tested over 2,000 random multi-actor sequences) | Built, tested |
 | FR-10 | Listing requires RC ↔ owner verification before the machine can be booked | D-07 at listing | Specified |
@@ -139,7 +139,7 @@ Every stage transition is an event on `booking.events` (via the transactional ou
 |---|---|---|
 | Search latency | p95 < 10 ms, p99 < 25 ms at 5,000 VUs | Met: p95 0.66 ms, p99 2.91 ms [measured, single host] |
 | Search error rate | < 0.1 % | Met: 0.00 % [measured] |
-| Escrow auth SLA | 30 s, then compensate | Unit-tested; void-on-timeout being fixed |
+| Escrow auth SLA | 30 s, then compensate and void | Unit-tested, incl. late approvals |
 | Offline tolerance | Any frame order or replay converges | CRDT unit tests + WebSocket integration tests |
 | Concurrency safety | No double booking with 50 concurrent requesters | 50-goroutine race on real Redis: one holder at a time, 60/60 runs [measured] |
 | Accessibility | WCAG 2.1 AA text contrast; keyboard operable; 375 px without horizontal scroll | Portal colour pairs 5.2–10:1 [measured]; e2e tests at 375/1024/1280/1440 px |
@@ -334,7 +334,7 @@ Formulas live in [`analytics/kpis.py`](../analytics/kpis.py) and are computed fr
 
 | Milestone | Scope | Exit criterion |
 |---|---|---|
-| M0 — Hardening | Audit remediations 1–12 (Track A) and contract fixes 13–22 (Track B) | All `TestAudit_*` tests green; state sets identical across contract, code and database |
+| M0 — Hardening (done 2026-10-24) | Audit remediations 1–12 (Track A) and contract fixes 13–22 (Track B) | All 20 `TestAudit_*` tests green; state sets identical across contract, code and database |
 | M1 — Closed pilot | 2 districts, 1 CHC each, 20 machines, assisted onboarding | 100 settled bookings; dispute rate measured |
 | M2 — Open pilot | Self-serve listing with D-07 at listing; D-08/D-09 live | Liquidity Index ≥ 0.25 in both districts |
 | M3 — Scale | 10 districts; deposit floors recalibrated on claim data | Auto-resolution ≥ 70 %; 0 ledger breaks |
@@ -347,19 +347,19 @@ Source: [`docs/audit/phase1-invariant-audit.md`](audit/phase1-invariant-audit.md
 
 | # | Remediation | Owner | Status |
 |---|---|---|---|
-| 1 | Fencing predicate `fencing_token <= $token` | A | In progress |
-| 2 | Saga aborts on 0 rows affected | A | In progress |
-| 3 | Outbox row in the same transaction as the state change | A | In progress |
-| 4 | Guarded, idempotent compensation | A | In progress |
-| 5 | Void escrow on every compensating path; late approval compensates | A | In progress |
-| 6 | Owner-checked heartbeat with lost-lock signal | A | In progress |
-| 7 | Validity-time check after quorum | A | In progress |
-| 8 | Fencing token minted after winning, from Postgres | A | In progress |
-| 9 | Orchestrator owns the lock lifecycle | A | In progress |
-| 10 | Telemetry track retained; D-01 over time | A | In progress |
-| 11 | D-01 measured from the parcel edge | A | In progress |
-| 12 | Deterministic D-02 boundary | A | In progress |
-| 13 | `DISPUTE_OPEN`, `SUSPENDED_BREAKDOWN`, `NO_SHOW_PENDING` in contract, code and database | A + B | Contract done; code in progress |
+| 1 | Fencing predicate `fencing_token <= $token` | A | Done |
+| 2 | Saga aborts on 0 rows affected | A | Done |
+| 3 | Outbox row in the same transaction as the state change | A | Done |
+| 4 | Guarded, idempotent compensation | A | Done |
+| 5 | Void escrow on every compensating path; late approval compensates | A | Done |
+| 6 | Owner-checked heartbeat with lost-lock signal | A | Done |
+| 7 | Validity-time check after quorum | A | Done |
+| 8 | Fencing token minted after winning, from Postgres | A | Done |
+| 9 | Orchestrator owns the lock lifecycle | A | Done |
+| 10 | Telemetry track retained; D-01 over time | A | Done |
+| 11 | D-01 measured from the parcel edge | A | Done |
+| 12 | Deterministic D-02 boundary | A | Done |
+| 13 | `DISPUTE_OPEN`, `SUSPENDED_BREAKDOWN`, `NO_SHOW_PENDING` in contract, code and database | A + B | Done (one state set enforced across OpenAPI, event schema, saga and SQL by `docs/check_docs.py`) |
 | 14 | One deposit definition | B | Done |
 | 15 | One geofence definition | B | Done |
 | 16 | D-01b GPS spoof rule | B | Specified |

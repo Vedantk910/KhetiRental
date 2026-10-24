@@ -3,14 +3,15 @@
 1. docs/PRD.md carries every section the prd-contract-architect skill requires
    and references every escrow dispute rule D-01..D-07.
 2. Every relative Markdown link in the repo's docs resolves to a real file.
-3. The booking state set is identical in contracts/openapi.yaml, the saga's
-   BookingState constants and the bookings CHECK in deploy/sql (all three
-   tracks' copies of the contract).
+3. The booking state set is identical in contracts/openapi.yaml, the Kafka
+   booking event schema, the saga's BookingState constants and the bookings
+   CHECK in deploy/sql (every copy of the contract).
 Exits non-zero on any failure.
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -61,8 +62,10 @@ def booking_states() -> dict[str, set[str]]:
     sql = " ".join(p.read_text() for p in sorted((ROOT / "deploy/sql").glob("[0-9]*.sql")))
     # The newest CHECK on bookings.state wins (later migrations replace it).
     checks = re.findall(r"state\s+IN\s*\(([^)]*)\)", sql)
+    events = json.loads((ROOT / "contracts/events/booking.events.json").read_text())
     return {
         "contracts/openapi.yaml": set(re.findall(r"^\s+- ([A-Z_]+)$", block, re.M)),
+        "contracts/events/booking.events.json": set(events["properties"]["state"]["enum"]),
         "saga.go BookingState": set(re.findall(r'BookingState = "([A-Z_]+)"', go)),
         "deploy/sql bookings CHECK": set(re.findall(r"'([A-Z_]+)'", checks[-1])) if checks else set(),
     }
