@@ -1,4 +1,4 @@
-// Integration across tracks: the marketplace prices and books exactly the
+// Integration across modules: the marketplace prices and books exactly the
 // machines the matching API returns (no stubs).
 import { GET } from "@/app/api/machines/near/route";
 import { createBooking, resetStore } from "./marketplace-bookings";

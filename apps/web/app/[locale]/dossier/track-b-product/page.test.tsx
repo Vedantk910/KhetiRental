@@ -1,18 +1,18 @@
 import { render, screen, within } from "@testing-library/react";
-import TrackB from "./page";
+import ProductDossier from "./page";
 import { RESUME_BULLETS } from "@/lib/evidence";
 import { hourlyRate, netHourlyToOwner, paybackYears } from "@/lib/pricing-engine";
 
-describe("Track B dossier", () => {
+describe("Product dossier", () => {
   it("walks through all four ADRs", () => {
-    render(<TrackB />);
+    render(<ProductDossier />);
     for (const id of ["ADR-0001", "ADR-0002", "ADR-0003", "ADR-0004"]) {
       expect(screen.getByRole("heading", { name: new RegExp(id) })).toBeInTheDocument();
     }
   });
 
   it("computes the payback table from the pricing engine", () => {
-    render(<TrackB />);
+    render(<ProductDossier />);
     const table = screen.getByRole("table", { name: /payback/i });
     const rate = hourlyRate(
       { hp: "45", ageYears: 5, acquisitionCostInr: 640_000, soil: "loam", season: "harvest_compressed" },
@@ -27,8 +27,13 @@ describe("Track B dossier", () => {
   });
 
   it("carries the resume bullets and an interview defence", () => {
-    render(<TrackB />);
-    for (const b of RESUME_BULLETS.trackB) expect(screen.getByText(b)).toBeInTheDocument();
+    render(<ProductDossier />);
+    for (const b of RESUME_BULLETS.product) expect(screen.getByText(b)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /interview defence/i })).toBeInTheDocument();
+  });
+
+  it("never mentions the team work split", () => {
+    render(<ProductDossier />);
+    expect(document.body.textContent).not.toMatch(/track [ab]|lead \d|tarun|vedant/i);
   });
 });

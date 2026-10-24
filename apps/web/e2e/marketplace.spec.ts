@@ -22,7 +22,7 @@ function watchErrors(page: Page) {
 }
 
 async function openModal(page: Page, date: string) {
-  await page.goto("/marketplace/search");
+  await page.goto("/en/marketplace/search");
   await expect(page.getByRole("button", { name: /Book John Deere 5050 D/ })).toBeVisible();
   await page.getByLabel("From", { exact: true }).fill(date);
   await page.getByRole("button", { name: /Book John Deere 5050 D/ }).click();
@@ -45,7 +45,7 @@ test("farmer searches and authorises escrow", async ({ page }) => {
 
 test("unknown machine from the API is shown but not bookable", async ({ page }) => {
   await stubNear(page);
-  await page.goto("/marketplace/search");
+  await page.goto("/en/marketplace/search");
   const card = page.getByRole("listitem").filter({ hasText: "ghost-9" });
   await expect(card.getByText("Rate not available")).toBeVisible();
   await expect(card.getByRole("button")).toBeDisabled();
@@ -53,7 +53,7 @@ test("unknown machine from the API is shown but not bookable", async ({ page }) 
 
 test("owner lists a tractor, RC name mismatch is blocked, then passes", async ({ page }) => {
   const errors = watchErrors(page);
-  await page.goto("/marketplace/listing");
+  await page.goto("/en/marketplace/listing");
   await page.getByLabel("Make").fill("Mahindra");
   await page.getByLabel("Model").fill("275 DI");
   await page.getByLabel("Year bought or made").fill("2021");
@@ -85,7 +85,7 @@ test("5 parallel farmers spam filters and Authorise: one booking each action, on
       let posts = 0;
       page.on("request", (r) => r.url().endsWith("/api/bookings") && r.method() === "POST" && posts++);
       await stubNear(page);
-      await page.goto("/marketplace/search");
+      await page.goto("/en/marketplace/search");
       await expect(page.getByRole("button", { name: /Book John Deere 5050 D/ })).toBeVisible();
       for (let i = 0; i < 12; i++) {
         await page.getByLabel("Village").selectOption(i % 2 ? "Jagatpura" : "Sanganer");
@@ -118,7 +118,7 @@ test("5 parallel farmers spam filters and Authorise: one booking each action, on
 test("real API: the default village lists bookable tractors and a booking goes through", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/marketplace/search");
+  await page.goto("/en/marketplace/search");
   const books = page.getByRole("button", { name: /^Book / });
   await expect(books.first()).toBeEnabled();
   expect(await page.getByText("Rate not available").count()).toBe(0);

@@ -1,0 +1,392 @@
+{
+  "common": {
+    "brand": "KhetiRental",
+    "lang": {
+      "mr": "मराठी",
+      "hi": "हिंदी",
+      "en": "English"
+    },
+    "language": "Language",
+    "back": "Back",
+    "close": "Close",
+    "next": "Next",
+    "tryAgain": "Try again",
+    "sample": "Sample",
+    "sampleRibbon": "Sample data – machines and owners are not real yet.",
+    "langShort": {
+      "mr": "म",
+      "hi": "हि",
+      "en": "EN"
+    },
+    "skip": "Skip to main content",
+    "goHome": "Go home",
+    "loading": "Loading…",
+    "dismiss": "Dismiss"
+  },
+  "nav": {
+    "rent": "Rent",
+    "bookings": "My bookings",
+    "owner": "Owner",
+    "dashboard": "Dashboard",
+    "machines": "My machines",
+    "help": "Help",
+    "settings": "Settings",
+    "logout": "Log out",
+    "notifications": "Notifications",
+    "label": "Main",
+    "tabsLabel": "Sections"
+  },
+  "footer": {
+    "about": "About",
+    "pricing": "How we price",
+    "built": "How we built it",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "label": "Site links"
+  },
+  "units": {
+    "hour": "/ hour",
+    "acre": "/ acre",
+    "day": "/ day",
+    "withDriver": "with driver"
+  },
+  "welcome": {
+    "h1": "Farm, made easy.",
+    "tag": "Rent machines from your village",
+    "login": "Log in",
+    "signup": "Sign up",
+    "how": "How it works ↓",
+    "find": "Find machines",
+    "stats": {
+      "small": "small farms",
+      "avg": "hectare avg. farm",
+      "mech": "mechanised",
+      "source": "Agriculture Census 2015–16 · 2025 estimates",
+      "sr1": "86% of farm holdings in India are small or marginal.",
+      "sr2": "The average Indian farm is 1.08 hectares.",
+      "sr3": "About 47% of farm work in India is mechanised."
+    }
+  },
+  "story": {
+    "problem": "THE PROBLEM",
+    "s1": {
+      "title": "A tractor costs ₹6–7 lakh. Most of the year, it waits in the shed.",
+      "caption": "Each square is a day; mustard days are working days."
+    },
+    "s2": {
+      "title": "You don't need to own it. You need it on time.",
+      "buy": "Buy",
+      "rent": "Rent 4 hours"
+    },
+    "s3": "It's already near you.",
+    "s4": "The full price, before you say yes.",
+    "s5": {
+      "title": "The owner is paid after the job, not before.",
+      "handover": "Handover",
+      "work": "Work",
+      "return": "Return"
+    },
+    "s6": {
+      "title": "Your idle tractor can earn.",
+      "body": "List it once. Choose your price and your days. You decide who to accept.",
+      "cta": "List your tractor"
+    },
+    "s7": {
+      "title": "Prefer to talk?",
+      "call": "Call {phone}"
+    }
+  },
+  "login": {
+    "welcome": "Welcome to KhetiRental",
+    "tab": {
+      "login": "Log in",
+      "signup": "Sign up"
+    },
+    "google": "Continue with Google",
+    "or": "OR",
+    "mobile": "Mobile number",
+    "email": "Email",
+    "emailAddr": "Email address",
+    "password": "Password",
+    "name": "Full name",
+    "otpHint": "We'll send a 6-digit OTP by SMS.",
+    "sendOtp": "Send OTP",
+    "doLogin": "Log in",
+    "create": "Create account",
+    "iwant": "I want to",
+    "rent": "Rent machines",
+    "own": "List my machines",
+    "forgot": "Forgot password?",
+    "terms": "By continuing you agree to the {terms} and {privacy}.",
+    "err": {
+      "mobile": "Enter a 10-digit mobile number.",
+      "creds": "Email or password is wrong.",
+      "exists": "This email already has an account. Log in instead.",
+      "rate": "Too many tries. Wait 10 minutes and try again."
+    }
+  },
+  "otp": {
+    "title": "Enter the code",
+    "sent": "We sent a 6-digit code to {phone}.",
+    "change": "Change number",
+    "verify": "Verify",
+    "resendIn": "Resend in {time}",
+    "resend": "Resend code",
+    "wrong": "That code is wrong. {n, plural, one {# try} other {# tries}} left.",
+    "expired": "This code has expired. Send a new one."
+  },
+  "pw": {
+    "title": "Reset your password",
+    "send": "Send reset link",
+    "sent": "If an account exists for this email, we've sent a link. Check your inbox."
+  },
+  "search": {
+    "what": "What work?",
+    "where": "Where is your farm?",
+    "placePh": "PIN code or village",
+    "speak": "Speak your village name",
+    "locate": "Use my phone's location",
+    "locateFail": "Couldn't get your location. Type your PIN code or village instead.",
+    "when": "When?",
+    "tomorrow": "Tomorrow",
+    "week": "This week",
+    "pick": "Pick dates",
+    "days": "{n, plural, one {# day} other {# days}}",
+    "size": "Field size",
+    "optional": "(optional)",
+    "acres": "{n} acres",
+    "cta": "Find machines",
+    "need": "Choose the work and your place",
+    "moreAcres": "More acres",
+    "fewerAcres": "Fewer acres"
+  },
+  "jobs": {
+    "plough": "Plough",
+    "rotavate": "Rotavate",
+    "sow": "Sow",
+    "spray": "Spray",
+    "harvest": "Harvest",
+    "transport": "Transport"
+  },
+  "results": {
+    "change": "Change",
+    "sort": {
+      "nearest": "Nearest",
+      "cheapest": "Cheapest",
+      "top": "Top rated"
+    },
+    "map": "Map",
+    "list": "List",
+    "radius": "{km} km",
+    "withDriver": "With driver",
+    "count": "{n, plural, one {# free} other {# free}} on your dates · showing {sort} first",
+    "freeChip": "Free {dates}",
+    "busy": "BUSY ON YOUR DATES",
+    "freeFrom": "Free from {date}",
+    "away": "{km} km away · {village}",
+    "new": "New on KhetiRental",
+    "book": "Book for {dates}",
+    "more": "Show more",
+    "showing": "Showing {shown} of {total}",
+    "empty": "No machines free within {km} km on these dates.",
+    "wider": "Search up to 25 km",
+    "otherDates": "Try other dates",
+    "callUs": "Call us",
+    "notFinding": "Not finding one?",
+    "loading": "Finding machines near you…",
+    "searchArea": "Search this area"
+  },
+  "detail": {
+    "hours": "{n} engine hours",
+    "rc": "✔ RC checked",
+    "reviews": "★ {r} ({n, plural, one {# review} other {# reviews}})",
+    "serviced": "Serviced {month}",
+    "driver": "Driver included",
+    "diesel": "Diesel included",
+    "comesWith": "Comes with:",
+    "freeDays": "Free days · next 14",
+    "legend": "Green = free · grey = booked · yellow = your dates",
+    "owner": "{village} · {km} km · on KhetiRental {years} years · replies in about {min} min",
+    "say": "What farmers say",
+    "allReviews": "See all {n} reviews",
+    "est": "est. for {what}",
+    "book": "Book {dates}",
+    "pickOther": "Pick other dates"
+  },
+  "booking": {
+    "step": "STEP {n} OF 3",
+    "s1": {
+      "title": "When do you need it?",
+      "info": "Driver arrives at {time} each day. You pay only for hours used."
+    },
+    "slot": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "full": "Full day"
+    },
+    "s2": {
+      "title": "Check the price"
+    },
+    "rent": "Rent: {qty} × {rate}",
+    "diesel": "Diesel",
+    "included": "Included",
+    "deposit": "Deposit",
+    "depositNote": "(comes back after the job)",
+    "payAfter": "Pay after work",
+    "youPay": "You pay",
+    "readAloud": "Read this aloud",
+    "s3": {
+      "title": "How do you want to pay?"
+    },
+    "taken": "Just booked by someone else. Pick other dates or another machine."
+  },
+  "pay": {
+    "upi": "UPI",
+    "upiHint": "GPay, PhonePe, Paytm or any UPI app",
+    "card": "Debit / credit card",
+    "cardHint": "Visa, Mastercard, RuPay",
+    "net": "Net banking",
+    "netHint": "All major banks",
+    "cash": "Pay after work",
+    "cashHint": "Cash or UPI to the owner when the job is done",
+    "demoBanner": "Demo payment: no real money moves. Free cancellation until {deadline}.",
+    "ctaOnline": "Pay {amount} and book",
+    "ctaCash": "Confirm booking",
+    "processing": "Processing…",
+    "success": "Payment successful (demo)",
+    "failed": "Payment failed. No money was taken.",
+    "demoLabel": "DEMO – no real money moves"
+  },
+  "bookings": {
+    "title": "My bookings",
+    "sent": "Request sent to {owner}",
+    "sentBody": "{owner} usually replies in {min} minutes. We'll let you know here.",
+    "upcoming": "Upcoming ({n})",
+    "past": "Past",
+    "code": "Code {code}",
+    "call": "Call",
+    "whatsapp": "WhatsApp",
+    "cancel": "Cancel",
+    "numberLater": "Number shown after the owner accepts",
+    "report": "Report a problem",
+    "empty": "No bookings yet.",
+    "findOne": "Find a machine"
+  },
+  "status": {
+    "requested": "Waiting for owner",
+    "confirmed": "Confirmed",
+    "inProgress": "Working",
+    "completed": "Done",
+    "cancelled": "Cancelled",
+    "declined": "Declined",
+    "expired": "Expired"
+  },
+  "cancel": {
+    "title": "Cancel this booking?",
+    "yes": "Yes, cancel",
+    "keep": "Keep booking"
+  },
+  "problem": {
+    "title": "What went wrong?",
+    "noShow": "Machine didn't come",
+    "breakdown": "Broke down",
+    "damage": "Damage",
+    "overcharge": "Charged more",
+    "other": "Other",
+    "send": "Send report",
+    "sent": "Report sent. We'll call you within a day."
+  },
+  "notif": {
+    "empty": "Nothing new.",
+    "markAll": "Mark all as read"
+  },
+  "owner": {
+    "hello": "Namaste, {name}",
+    "month": "This month",
+    "paid": "Paid to you",
+    "coming": "Coming",
+    "requests": "New requests ({n})",
+    "replyIn": "Reply in {time}",
+    "accept": "Accept",
+    "decline": "Decline",
+    "accepted": "Accepted. {name} can now call you.",
+    "noRequests": "No new requests. We'll let you know when one comes.",
+    "blockHint": "Tap a day to block it",
+    "legend": "Booked · Free · Blocked",
+    "machines": "My machines ({n})",
+    "add": "+ Add",
+    "edit": "Edit",
+    "live": "live",
+    "paused": "paused"
+  },
+  "list": {
+    "step": "STEP {n} OF 4",
+    "s1": "Your machine",
+    "s2": "Photos",
+    "s3": "Where and when",
+    "s4": "Set your price",
+    "howCharge": "How do you charge?",
+    "perHour": "Per hour",
+    "perAcre": "Per acre",
+    "perDay": "Per day",
+    "yourPrice": "Your price {per}",
+    "similar": "Similar machines near you charge {range}.",
+    "farmerPays": "Farmer pays",
+    "fee": "Our fee ({pct})",
+    "keep": "You keep",
+    "drive": "I will drive it (operator included)",
+    "publish": "Publish my {machine}",
+    "live": "Your {name} is live. Farmers within 10 km can now book it.",
+    "rcPending": "Uploaded – pending review",
+    "photoTip": "Tip: daylight, whole machine in the frame.",
+    "takePhoto": "Take photo",
+    "gallery": "Choose from gallery"
+  },
+  "errors": {
+    "network": "We couldn't load this. Check your connection.",
+    "offlineSubmit": "No internet connection. Nothing was sent. Try again when you have signal.",
+    "server": "Something went wrong on our side. Try again, or call {phone}.",
+    "session": "Please log in again.",
+    "forbidden": "You can't open this page.",
+    "notFound": "We couldn't find that page."
+  },
+  "notFound": {
+    "title": "Page not found – KhetiRental"
+  },
+  "machines": {
+    "tractor": "Tractor",
+    "rotavator": "Rotavator",
+    "combine": "Combine harvester",
+    "sprayer": "Sprayer",
+    "seedDrill": "Seed drill",
+    "trolley": "Trolley",
+    "thresher": "Thresher",
+    "baler": "Baler"
+  },
+  "dev": {
+    "title": "Component gallery",
+    "intro": "Every component in every state, in the current language.",
+    "theme": "Dark theme",
+    "buttons": "Buttons",
+    "fields": "Inputs, selects and text areas",
+    "chips": "Chip groups",
+    "tiles": "Tiles",
+    "cards": "Cards",
+    "sheet": "Sheet",
+    "openSheet": "Open sheet",
+    "submitting": "Submit takes 2 seconds, close is blocked meanwhile",
+    "sticky": "Sticky bottom bar",
+    "showSticky": "Show sticky bar",
+    "stepper": "Stepper",
+    "badges": "Badges",
+    "toasts": "Toasts",
+    "empty": "Empty state and skeleton",
+    "prices": "Price rows",
+    "language": "Language switch",
+    "pictograms": "Pictograms",
+    "formats": "Formatting",
+    "loadingDemo": "Loading",
+    "disabledDemo": "Disabled with reason",
+    "multi": "Pick one or more jobs"
+  }
+}

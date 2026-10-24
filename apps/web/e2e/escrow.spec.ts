@@ -18,7 +18,7 @@ async function ledgerBalanced(page: Page) {
 }
 
 test("happy path settles with a balanced ledger", async ({ page }) => {
-  await page.goto("/escrow");
+  await page.goto("/en/escrow");
   await page.getByRole("button", { name: /authorise escrow/i }).click();
   await page.getByRole("button", { name: /complete handover/i }).click();
   await page.getByRole("button", { name: /return machine/i }).click();
@@ -28,7 +28,7 @@ test("happy path settles with a balanced ledger", async ({ page }) => {
 });
 
 test("breach freezes the deposit and blocks settlement", async ({ page }) => {
-  await page.goto("/escrow");
+  await page.goto("/en/escrow");
   await page.getByRole("button", { name: /authorise escrow/i }).click();
   await page.getByRole("button", { name: /complete handover/i }).click();
   await page.getByRole("button", { name: /simulate geofence breach/i }).click();
@@ -48,7 +48,7 @@ test("5 parallel users mashing escrow actions cannot unbalance the ledger", asyn
       const errors: string[] = [];
       page.on("pageerror", (e) => errors.push(e.message));
       page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-      await page.goto("/escrow");
+      await page.goto("/en/escrow");
       let seed = 7 + u;
       const rnd = () => (seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
       for (let i = 0; i < 60; i++) {

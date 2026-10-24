@@ -1,0 +1,392 @@
+{
+  "common": {
+    "brand": "खेती रेंटल",
+    "lang": {
+      "mr": "मराठी",
+      "hi": "हिंदी",
+      "en": "English"
+    },
+    "language": "भाषा",
+    "back": "वापस",
+    "close": "बंद करें",
+    "next": "आगे",
+    "tryAgain": "फिर कोशिश करें",
+    "sample": "नमूना",
+    "sampleRibbon": "नमूना डेटा – मशीनें और मालिक अभी असली नहीं हैं।",
+    "langShort": {
+      "mr": "म",
+      "hi": "हि",
+      "en": "EN"
+    },
+    "skip": "TODO-translate: Skip to main content",
+    "goHome": "TODO-translate: Go home",
+    "loading": "TODO-translate: Loading…",
+    "dismiss": "TODO-translate: Dismiss"
+  },
+  "nav": {
+    "rent": "किराया",
+    "bookings": "मेरी बुकिंग",
+    "owner": "मालिक",
+    "dashboard": "डैशबोर्ड",
+    "machines": "मेरी मशीनें",
+    "help": "मदद",
+    "settings": "सेटिंग्स",
+    "logout": "लॉग आउट",
+    "notifications": "सूचनाएँ",
+    "label": "TODO-translate: Main",
+    "tabsLabel": "TODO-translate: Sections"
+  },
+  "footer": {
+    "about": "हमारे बारे में",
+    "pricing": "हम कीमत कैसे तय करते हैं",
+    "built": "हमने इसे कैसे बनाया",
+    "terms": "नियम",
+    "privacy": "गोपनीयता",
+    "label": "TODO-translate: Site links"
+  },
+  "units": {
+    "hour": "/ घंटा",
+    "acre": "/ एकड़",
+    "day": "/ दिन",
+    "withDriver": "ड्राइवर के साथ"
+  },
+  "welcome": {
+    "h1": "खेती, आसान।",
+    "tag": "अपने गाँव से मशीन किराए पर लें",
+    "login": "लॉग इन",
+    "signup": "साइन अप",
+    "how": "कैसे काम करता है ↓",
+    "find": "मशीन खोजें",
+    "stats": {
+      "small": "छोटे खेत",
+      "avg": "हेक्टेयर औसत खेत",
+      "mech": "मशीनीकरण",
+      "source": "कृषि गणना 2015–16 · 2025 अनुमान",
+      "sr1": "भारत की 86% खेती की जोतें छोटी या सीमांत हैं।",
+      "sr2": "भारत में औसत खेत 1.08 हेक्टेयर का है।",
+      "sr3": "भारत में लगभग 47% खेती का काम मशीनों से होता है।"
+    }
+  },
+  "story": {
+    "problem": "समस्या",
+    "s1": {
+      "title": "ट्रैक्टर ₹6–7 लाख का आता है। साल के ज़्यादातर दिन वह खड़ा रहता है।",
+      "caption": "हर खाना एक दिन है; पीले दिन काम के दिन हैं।"
+    },
+    "s2": {
+      "title": "मशीन ख़रीदने की ज़रूरत नहीं। ज़रूरत है समय पर मिलने की।",
+      "buy": "ख़रीदें",
+      "rent": "4 घंटे किराया"
+    },
+    "s3": "वह आपके पास ही है।",
+    "s4": "हाँ कहने से पहले पूरी कीमत।",
+    "s5": {
+      "title": "मालिक को पैसे काम के बाद मिलते हैं, पहले नहीं।",
+      "handover": "सौंपना",
+      "work": "काम",
+      "return": "वापसी"
+    },
+    "s6": {
+      "title": "आपका खड़ा ट्रैक्टर कमाई कर सकता है।",
+      "body": "एक बार सूची में डालें। अपनी कीमत और दिन चुनें। किसे देना है, आप तय करें।",
+      "cta": "अपना ट्रैक्टर किराए पर दें"
+    },
+    "s7": {
+      "title": "बात करना पसंद है?",
+      "call": "{phone} पर कॉल करें"
+    }
+  },
+  "login": {
+    "welcome": "खेती रेंटल में स्वागत है",
+    "tab": {
+      "login": "लॉग इन",
+      "signup": "साइन अप"
+    },
+    "google": "Google से जारी रखें",
+    "or": "या",
+    "mobile": "मोबाइल नंबर",
+    "email": "ईमेल",
+    "emailAddr": "ईमेल पता",
+    "password": "पासवर्ड",
+    "name": "पूरा नाम",
+    "otpHint": "हम SMS से 6 अंकों का OTP भेजेंगे।",
+    "sendOtp": "OTP भेजें",
+    "doLogin": "लॉग इन करें",
+    "create": "खाता बनाएँ",
+    "iwant": "मुझे चाहिए",
+    "rent": "मशीन किराए पर लेना",
+    "own": "अपनी मशीन किराए पर देना",
+    "forgot": "पासवर्ड भूल गए?",
+    "terms": "आगे बढ़कर आप {terms} और {privacy} से सहमत होते हैं।",
+    "err": {
+      "mobile": "10 अंकों का मोबाइल नंबर डालें।",
+      "creds": "ईमेल या पासवर्ड गलत है।",
+      "exists": "इस ईमेल से पहले से खाता है। लॉग इन करें।",
+      "rate": "बहुत ज़्यादा कोशिशें। 10 मिनट बाद फिर कोशिश करें।"
+    }
+  },
+  "otp": {
+    "title": "कोड डालें",
+    "sent": "हमने {phone} पर 6 अंकों का कोड भेजा है।",
+    "change": "नंबर बदलें",
+    "verify": "पुष्टि करें",
+    "resendIn": "{time} में दोबारा भेजें",
+    "resend": "कोड दोबारा भेजें",
+    "wrong": "कोड गलत है। {n} कोशिश बाकी।",
+    "expired": "कोड की समय-सीमा खत्म। नया कोड भेजें।"
+  },
+  "pw": {
+    "title": "पासवर्ड बदलें",
+    "send": "रीसेट लिंक भेजें",
+    "sent": "अगर इस ईमेल का खाता है, तो हमने लिंक भेजा है। इनबॉक्स देखें।"
+  },
+  "search": {
+    "what": "कौन सा काम?",
+    "where": "आपका खेत कहाँ है?",
+    "placePh": "पिन कोड या गाँव",
+    "speak": "गाँव का नाम बोलें",
+    "locate": "मेरे फ़ोन की लोकेशन लें",
+    "locateFail": "लोकेशन नहीं मिली। पिन कोड या गाँव लिखें।",
+    "when": "कब?",
+    "tomorrow": "कल",
+    "week": "इस हफ़्ते",
+    "pick": "तारीख चुनें",
+    "days": "{n} दिन",
+    "size": "खेत का आकार",
+    "optional": "(वैकल्पिक)",
+    "acres": "{n} एकड़",
+    "cta": "मशीन खोजें",
+    "need": "काम और जगह चुनें",
+    "moreAcres": "TODO-translate: More acres",
+    "fewerAcres": "TODO-translate: Fewer acres"
+  },
+  "jobs": {
+    "plough": "जुताई",
+    "rotavate": "रोटावेटर",
+    "sow": "बुवाई",
+    "spray": "छिड़काव",
+    "harvest": "कटाई",
+    "transport": "ढुलाई"
+  },
+  "results": {
+    "change": "बदलें",
+    "sort": {
+      "nearest": "सबसे पास",
+      "cheapest": "सबसे सस्ता",
+      "top": "सबसे अच्छी रेटिंग"
+    },
+    "map": "नक्शा",
+    "list": "सूची",
+    "radius": "{km} किमी",
+    "withDriver": "ड्राइवर के साथ",
+    "count": "आपकी तारीखों पर {n} खाली · पहले {sort}",
+    "freeChip": "{dates} खाली",
+    "busy": "आपकी तारीखों पर व्यस्त",
+    "freeFrom": "{date} से खाली",
+    "away": "{km} किमी दूर · {village}",
+    "new": "खेती रेंटल पर नया",
+    "book": "{dates} के लिए बुक करें",
+    "more": "और दिखाएँ",
+    "showing": "{total} में से {shown}",
+    "empty": "इन तारीखों पर {km} किमी में कोई मशीन खाली नहीं।",
+    "wider": "25 किमी तक खोजें",
+    "otherDates": "दूसरी तारीखें देखें",
+    "callUs": "हमें कॉल करें",
+    "notFinding": "नहीं मिली?",
+    "loading": "पास की मशीनें खोज रहे हैं…",
+    "searchArea": "इस इलाके में खोजें"
+  },
+  "detail": {
+    "hours": "{n} इंजन घंटे",
+    "rc": "✔ RC जाँचा गया",
+    "reviews": "★ {r} ({n} समीक्षाएँ)",
+    "serviced": "{month} में सर्विस",
+    "driver": "ड्राइवर शामिल",
+    "diesel": "डीज़ल शामिल",
+    "comesWith": "साथ में:",
+    "freeDays": "खाली दिन · अगले 14",
+    "legend": "हरा = खाली · स्लेटी = बुक · पीला = आपकी तारीखें",
+    "owner": "{village} · {km} किमी · खेती रेंटल पर {years} साल · लगभग {min} मिनट में जवाब",
+    "say": "किसान क्या कहते हैं",
+    "allReviews": "सभी {n} समीक्षाएँ देखें",
+    "est": "{what} का अनुमान",
+    "book": "{dates} बुक करें",
+    "pickOther": "दूसरी तारीखें चुनें"
+  },
+  "booking": {
+    "step": "चरण {n} / 3",
+    "s1": {
+      "title": "कब चाहिए?",
+      "info": "ड्राइवर हर दिन {time} बजे आएगा। जितने घंटे काम, उतना ही भुगतान।"
+    },
+    "slot": {
+      "morning": "सुबह",
+      "afternoon": "दोपहर",
+      "full": "पूरा दिन"
+    },
+    "s2": {
+      "title": "कीमत देखें"
+    },
+    "rent": "किराया: {qty} × {rate}",
+    "diesel": "डीज़ल",
+    "included": "शामिल",
+    "deposit": "जमा राशि",
+    "depositNote": "(काम के बाद वापस)",
+    "payAfter": "काम के बाद भुगतान",
+    "youPay": "आप देंगे",
+    "readAloud": "इसे पढ़कर सुनाएँ",
+    "s3": {
+      "title": "भुगतान कैसे करेंगे?"
+    },
+    "taken": "अभी किसी और ने बुक कर लिया। दूसरी तारीख या मशीन चुनें।"
+  },
+  "pay": {
+    "upi": "UPI",
+    "upiHint": "GPay, PhonePe, Paytm या कोई भी UPI ऐप",
+    "card": "डेबिट / क्रेडिट कार्ड",
+    "cardHint": "Visa, Mastercard, RuPay",
+    "net": "नेट बैंकिंग",
+    "netHint": "सभी बड़े बैंक",
+    "cash": "काम के बाद भुगतान",
+    "cashHint": "काम पूरा होने पर मालिक को नकद या UPI",
+    "demoBanner": "डेमो भुगतान: असली पैसे नहीं कटते। {deadline} तक मुफ़्त रद्द करें।",
+    "ctaOnline": "{amount} देकर बुक करें",
+    "ctaCash": "बुकिंग पक्की करें",
+    "processing": "प्रोसेस हो रहा है…",
+    "success": "भुगतान सफल (डेमो)",
+    "failed": "भुगतान नहीं हुआ। कोई पैसा नहीं कटा।",
+    "demoLabel": "डेमो – असली पैसे नहीं"
+  },
+  "bookings": {
+    "title": "मेरी बुकिंग",
+    "sent": "{owner} को अनुरोध भेजा गया",
+    "sentBody": "{owner} आमतौर पर {min} मिनट में जवाब देते हैं। हम आपको यहाँ बताएँगे।",
+    "upcoming": "आने वाली ({n})",
+    "past": "पिछली",
+    "code": "कोड {code}",
+    "call": "कॉल",
+    "whatsapp": "WhatsApp",
+    "cancel": "रद्द करें",
+    "numberLater": "मालिक के स्वीकार करने के बाद नंबर दिखेगा",
+    "report": "समस्या बताएँ",
+    "empty": "अभी कोई बुकिंग नहीं।",
+    "findOne": "मशीन खोजें"
+  },
+  "status": {
+    "requested": "मालिक के जवाब का इंतज़ार",
+    "confirmed": "पक्की",
+    "inProgress": "काम चालू",
+    "completed": "पूरा",
+    "cancelled": "रद्द",
+    "declined": "अस्वीकार",
+    "expired": "समय समाप्त"
+  },
+  "cancel": {
+    "title": "यह बुकिंग रद्द करें?",
+    "yes": "हाँ, रद्द करें",
+    "keep": "बुकिंग रखें"
+  },
+  "problem": {
+    "title": "क्या गड़बड़ हुई?",
+    "noShow": "मशीन नहीं आई",
+    "breakdown": "खराब हो गई",
+    "damage": "नुकसान",
+    "overcharge": "ज़्यादा पैसे लिए",
+    "other": "अन्य",
+    "send": "रिपोर्ट भेजें",
+    "sent": "रिपोर्ट भेज दी। हम एक दिन में कॉल करेंगे।"
+  },
+  "notif": {
+    "empty": "कुछ नया नहीं।",
+    "markAll": "सब पढ़ा हुआ करें"
+  },
+  "owner": {
+    "hello": "नमस्ते, {name}",
+    "month": "इस महीने",
+    "paid": "आपको मिला",
+    "coming": "आने वाला",
+    "requests": "नए अनुरोध ({n})",
+    "replyIn": "{time} में जवाब दें",
+    "accept": "स्वीकार करें",
+    "decline": "मना करें",
+    "accepted": "स्वीकार किया। अब {name} आपको कॉल कर सकते हैं।",
+    "noRequests": "कोई नया अनुरोध नहीं। आने पर हम बताएँगे।",
+    "blockHint": "दिन बंद करने के लिए उस पर टैप करें",
+    "legend": "बुक · खाली · बंद",
+    "machines": "मेरी मशीनें ({n})",
+    "add": "+ जोड़ें",
+    "edit": "बदलें",
+    "live": "चालू",
+    "paused": "रुका हुआ"
+  },
+  "list": {
+    "step": "चरण {n} / 4",
+    "s1": "आपकी मशीन",
+    "s2": "फ़ोटो",
+    "s3": "कहाँ और कब",
+    "s4": "अपनी कीमत तय करें",
+    "howCharge": "आप कैसे चार्ज करते हैं?",
+    "perHour": "प्रति घंटा",
+    "perAcre": "प्रति एकड़",
+    "perDay": "प्रति दिन",
+    "yourPrice": "आपकी कीमत {per}",
+    "similar": "आपके पास ऐसी मशीनें {range} लेती हैं।",
+    "farmerPays": "किसान देगा",
+    "fee": "हमारी फ़ीस ({pct})",
+    "keep": "आपको मिलेगा",
+    "drive": "मैं खुद चलाऊँगा (ऑपरेटर शामिल)",
+    "publish": "मेरा {machine} प्रकाशित करें",
+    "live": "आपका {name} अब दिख रहा है। 10 किमी के किसान इसे बुक कर सकते हैं।",
+    "rcPending": "अपलोड हुआ – जाँच बाकी",
+    "photoTip": "सुझाव: दिन की रोशनी, पूरी मशीन फ़ोटो में।",
+    "takePhoto": "फ़ोटो लें",
+    "gallery": "गैलरी से चुनें"
+  },
+  "errors": {
+    "network": "लोड नहीं हुआ। इंटरनेट जाँचें।",
+    "offlineSubmit": "इंटरनेट नहीं है। कुछ नहीं भेजा गया। नेटवर्क आने पर फिर कोशिश करें।",
+    "server": "हमारी तरफ़ से गड़बड़ हुई। फिर कोशिश करें या {phone} पर कॉल करें।",
+    "session": "कृपया फिर से लॉग इन करें।",
+    "forbidden": "आप यह पेज नहीं खोल सकते।",
+    "notFound": "वह पेज नहीं मिला।"
+  },
+  "notFound": {
+    "title": "TODO-translate: Page not found – KhetiRental"
+  },
+  "machines": {
+    "tractor": "TODO-translate: Tractor",
+    "rotavator": "TODO-translate: Rotavator",
+    "combine": "TODO-translate: Combine harvester",
+    "sprayer": "TODO-translate: Sprayer",
+    "seedDrill": "TODO-translate: Seed drill",
+    "trolley": "TODO-translate: Trolley",
+    "thresher": "TODO-translate: Thresher",
+    "baler": "TODO-translate: Baler"
+  },
+  "dev": {
+    "title": "TODO-translate: Component gallery",
+    "intro": "TODO-translate: Every component in every state, in the current language.",
+    "theme": "TODO-translate: Dark theme",
+    "buttons": "TODO-translate: Buttons",
+    "fields": "TODO-translate: Inputs, selects and text areas",
+    "chips": "TODO-translate: Chip groups",
+    "tiles": "TODO-translate: Tiles",
+    "cards": "TODO-translate: Cards",
+    "sheet": "TODO-translate: Sheet",
+    "openSheet": "TODO-translate: Open sheet",
+    "submitting": "TODO-translate: Submit takes 2 seconds, close is blocked meanwhile",
+    "sticky": "TODO-translate: Sticky bottom bar",
+    "showSticky": "TODO-translate: Show sticky bar",
+    "stepper": "TODO-translate: Stepper",
+    "badges": "TODO-translate: Badges",
+    "toasts": "TODO-translate: Toasts",
+    "empty": "TODO-translate: Empty state and skeleton",
+    "prices": "TODO-translate: Price rows",
+    "language": "TODO-translate: Language switch",
+    "pictograms": "TODO-translate: Pictograms",
+    "formats": "TODO-translate: Formatting",
+    "loadingDemo": "TODO-translate: Loading",
+    "disabledDemo": "TODO-translate: Disabled with reason",
+    "multi": "TODO-translate: Pick one or more jobs"
+  }
+}

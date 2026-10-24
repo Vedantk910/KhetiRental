@@ -1,0 +1,392 @@
+{
+  "common": {
+    "brand": "खेती रेंटल",
+    "lang": {
+      "mr": "मराठी",
+      "hi": "हिंदी",
+      "en": "English"
+    },
+    "language": "भाषा",
+    "back": "मागे",
+    "close": "बंद करा",
+    "next": "पुढे",
+    "tryAgain": "पुन्हा प्रयत्न करा",
+    "sample": "नमुना",
+    "sampleRibbon": "नमुना माहिती – यंत्रे आणि मालक अजून खरे नाहीत.",
+    "langShort": {
+      "mr": "म",
+      "hi": "हि",
+      "en": "EN"
+    },
+    "skip": "TODO-translate: Skip to main content",
+    "goHome": "TODO-translate: Go home",
+    "loading": "TODO-translate: Loading…",
+    "dismiss": "TODO-translate: Dismiss"
+  },
+  "nav": {
+    "rent": "भाडे",
+    "bookings": "माझी बुकिंग",
+    "owner": "मालक",
+    "dashboard": "डॅशबोर्ड",
+    "machines": "माझी यंत्रे",
+    "help": "मदत",
+    "settings": "सेटिंग्ज",
+    "logout": "लॉग आउट",
+    "notifications": "सूचना",
+    "label": "TODO-translate: Main",
+    "tabsLabel": "TODO-translate: Sections"
+  },
+  "footer": {
+    "about": "आमच्याबद्दल",
+    "pricing": "आम्ही किंमत कशी ठरवतो",
+    "built": "आम्ही हे कसे बनवले",
+    "terms": "अटी",
+    "privacy": "गोपनीयता",
+    "label": "TODO-translate: Site links"
+  },
+  "units": {
+    "hour": "/ तास",
+    "acre": "/ एकर",
+    "day": "/ दिवस",
+    "withDriver": "ड्रायव्हरसह"
+  },
+  "welcome": {
+    "h1": "शेती, सोपी.",
+    "tag": "गावातूनच यंत्रे भाड्याने घ्या",
+    "login": "लॉग इन",
+    "signup": "साइन अप",
+    "how": "कसे चालते ↓",
+    "find": "यंत्रे शोधा",
+    "stats": {
+      "small": "लहान शेते",
+      "avg": "हेक्टर सरासरी शेत",
+      "mech": "यांत्रिकीकरण",
+      "source": "कृषी गणना 2015–16 · 2025 अंदाज",
+      "sr1": "भारतातील 86% शेतजमिनी लहान किंवा अत्यल्प आहेत.",
+      "sr2": "भारतातील सरासरी शेत 1.08 हेक्टरचे आहे.",
+      "sr3": "भारतात सुमारे 47% शेतीचे काम यंत्रांनी होते."
+    }
+  },
+  "story": {
+    "problem": "अडचण",
+    "s1": {
+      "title": "ट्रॅक्टर ₹6–7 लाखांचा असतो. वर्षातील बहुतेक दिवस तो उभाच असतो.",
+      "caption": "प्रत्येक चौकोन एक दिवस आहे; पिवळे दिवस कामाचे दिवस आहेत."
+    },
+    "s2": {
+      "title": "ट्रॅक्टर विकत घेण्याची गरज नाही. वेळेवर मिळणं महत्त्वाचं.",
+      "buy": "विकत घ्या",
+      "rent": "4 तास भाडे"
+    },
+    "s3": "तो तुमच्या जवळच आहे.",
+    "s4": "होकार देण्याआधी पूर्ण किंमत.",
+    "s5": {
+      "title": "मालकाला पैसे कामानंतर मिळतात, आधी नाही.",
+      "handover": "हस्तांतरण",
+      "work": "काम",
+      "return": "परत"
+    },
+    "s6": {
+      "title": "तुमचा उभा ट्रॅक्टर कमाई करू शकतो.",
+      "body": "एकदा नोंदवा. तुमची किंमत आणि दिवस निवडा. कोणाला द्यायचे ते तुम्ही ठरवा.",
+      "cta": "तुमचा ट्रॅक्टर भाड्याने द्या"
+    },
+    "s7": {
+      "title": "बोलायला आवडेल?",
+      "call": "{phone} वर कॉल करा"
+    }
+  },
+  "login": {
+    "welcome": "खेती रेंटलमध्ये स्वागत आहे",
+    "tab": {
+      "login": "लॉग इन",
+      "signup": "साइन अप"
+    },
+    "google": "Google ने पुढे चला",
+    "or": "किंवा",
+    "mobile": "मोबाइल नंबर",
+    "email": "ईमेल",
+    "emailAddr": "ईमेल पत्ता",
+    "password": "पासवर्ड",
+    "name": "पूर्ण नाव",
+    "otpHint": "आम्ही SMS ने 6 अंकी OTP पाठवू.",
+    "sendOtp": "OTP पाठवा",
+    "doLogin": "लॉग इन करा",
+    "create": "खाते तयार करा",
+    "iwant": "मला हवे आहे",
+    "rent": "यंत्रे भाड्याने घेणे",
+    "own": "माझी यंत्रे भाड्याने देणे",
+    "forgot": "पासवर्ड विसरलात?",
+    "terms": "पुढे जाऊन तुम्ही {terms} आणि {privacy} ला संमती देता.",
+    "err": {
+      "mobile": "10 अंकी मोबाइल नंबर टाका.",
+      "creds": "ईमेल किंवा पासवर्ड चुकीचा आहे.",
+      "exists": "या ईमेलचे खाते आधीच आहे. लॉग इन करा.",
+      "rate": "खूप प्रयत्न झाले. 10 मिनिटांनी पुन्हा प्रयत्न करा."
+    }
+  },
+  "otp": {
+    "title": "कोड टाका",
+    "sent": "आम्ही {phone} वर 6 अंकी कोड पाठवला आहे.",
+    "change": "नंबर बदला",
+    "verify": "पडताळा",
+    "resendIn": "{time} मध्ये पुन्हा पाठवा",
+    "resend": "कोड पुन्हा पाठवा",
+    "wrong": "कोड चुकीचा आहे. {n} प्रयत्न बाकी.",
+    "expired": "कोडची मुदत संपली. नवीन कोड पाठवा."
+  },
+  "pw": {
+    "title": "पासवर्ड बदला",
+    "send": "रीसेट लिंक पाठवा",
+    "sent": "या ईमेलचे खाते असल्यास आम्ही लिंक पाठवली आहे. इनबॉक्स तपासा."
+  },
+  "search": {
+    "what": "कोणते काम?",
+    "where": "तुमचे शेत कुठे आहे?",
+    "placePh": "पिन कोड किंवा गाव",
+    "speak": "गावाचे नाव बोला",
+    "locate": "माझ्या फोनचे लोकेशन वापरा",
+    "locateFail": "लोकेशन मिळाले नाही. पिन कोड किंवा गाव लिहा.",
+    "when": "कधी?",
+    "tomorrow": "उद्या",
+    "week": "या आठवड्यात",
+    "pick": "तारीख निवडा",
+    "days": "{n} दिवस",
+    "size": "शेताचा आकार",
+    "optional": "(ऐच्छिक)",
+    "acres": "{n} एकर",
+    "cta": "यंत्रे शोधा",
+    "need": "काम आणि ठिकाण निवडा",
+    "moreAcres": "TODO-translate: More acres",
+    "fewerAcres": "TODO-translate: Fewer acres"
+  },
+  "jobs": {
+    "plough": "नांगरणी",
+    "rotavate": "रोटाव्हेटर",
+    "sow": "पेरणी",
+    "spray": "फवारणी",
+    "harvest": "कापणी",
+    "transport": "वाहतूक"
+  },
+  "results": {
+    "change": "बदला",
+    "sort": {
+      "nearest": "सर्वात जवळ",
+      "cheapest": "सर्वात स्वस्त",
+      "top": "सर्वोत्तम रेटिंग"
+    },
+    "map": "नकाशा",
+    "list": "यादी",
+    "radius": "{km} किमी",
+    "withDriver": "ड्रायव्हरसह",
+    "count": "तुमच्या तारखांना {n} मोकळे · आधी {sort}",
+    "freeChip": "{dates} मोकळे",
+    "busy": "तुमच्या तारखांना व्यस्त",
+    "freeFrom": "{date} पासून मोकळे",
+    "away": "{km} किमी दूर · {village}",
+    "new": "खेती रेंटलवर नवीन",
+    "book": "{dates} साठी बुक करा",
+    "more": "अजून दाखवा",
+    "showing": "{total} पैकी {shown}",
+    "empty": "या तारखांना {km} किमीमध्ये एकही यंत्र मोकळे नाही.",
+    "wider": "25 किमीपर्यंत शोधा",
+    "otherDates": "दुसऱ्या तारखा पहा",
+    "callUs": "आम्हाला कॉल करा",
+    "notFinding": "सापडले नाही?",
+    "loading": "जवळची यंत्रे शोधत आहोत…",
+    "searchArea": "या भागात शोधा"
+  },
+  "detail": {
+    "hours": "{n} इंजिन तास",
+    "rc": "✔ RC तपासले",
+    "reviews": "★ {r} ({n} पुनरावलोकने)",
+    "serviced": "{month} मध्ये सर्व्हिसिंग",
+    "driver": "ड्रायव्हर समाविष्ट",
+    "diesel": "डिझेल समाविष्ट",
+    "comesWith": "सोबत:",
+    "freeDays": "मोकळे दिवस · पुढचे 14",
+    "legend": "हिरवा = मोकळा · राखाडी = बुक · पिवळा = तुमच्या तारखा",
+    "owner": "{village} · {km} किमी · खेती रेंटलवर {years} वर्षे · सुमारे {min} मिनिटांत उत्तर",
+    "say": "शेतकरी काय म्हणतात",
+    "allReviews": "सर्व {n} पुनरावलोकने पहा",
+    "est": "{what} साठी अंदाज",
+    "book": "{dates} बुक करा",
+    "pickOther": "दुसऱ्या तारखा निवडा"
+  },
+  "booking": {
+    "step": "पायरी {n} / 3",
+    "s1": {
+      "title": "कधी हवे आहे?",
+      "info": "ड्रायव्हर दररोज {time} वाजता येईल. वापरलेल्या तासांचेच पैसे."
+    },
+    "slot": {
+      "morning": "सकाळ",
+      "afternoon": "दुपार",
+      "full": "पूर्ण दिवस"
+    },
+    "s2": {
+      "title": "किंमत पहा"
+    },
+    "rent": "भाडे: {qty} × {rate}",
+    "diesel": "डिझेल",
+    "included": "समाविष्ट",
+    "deposit": "अनामत रक्कम",
+    "depositNote": "(कामानंतर परत)",
+    "payAfter": "कामानंतर पैसे द्या",
+    "youPay": "तुम्ही द्याल",
+    "readAloud": "हे वाचून दाखवा",
+    "s3": {
+      "title": "पैसे कसे द्याल?"
+    },
+    "taken": "आत्ताच दुसऱ्याने बुक केले. दुसऱ्या तारखा किंवा यंत्र निवडा."
+  },
+  "pay": {
+    "upi": "UPI",
+    "upiHint": "GPay, PhonePe, Paytm किंवा कोणतेही UPI ॲप",
+    "card": "डेबिट / क्रेडिट कार्ड",
+    "cardHint": "Visa, Mastercard, RuPay",
+    "net": "नेट बँकिंग",
+    "netHint": "सर्व प्रमुख बँका",
+    "cash": "कामानंतर पैसे",
+    "cashHint": "काम झाल्यावर मालकाला रोख किंवा UPI",
+    "demoBanner": "डेमो पेमेंट: खरे पैसे जात नाहीत. {deadline} पर्यंत मोफत रद्द करा.",
+    "ctaOnline": "{amount} भरून बुक करा",
+    "ctaCash": "बुकिंग निश्चित करा",
+    "processing": "प्रक्रिया सुरू आहे…",
+    "success": "पेमेंट यशस्वी (डेमो)",
+    "failed": "पेमेंट झाले नाही. पैसे कापले गेले नाहीत.",
+    "demoLabel": "डेमो – खरे पैसे नाहीत"
+  },
+  "bookings": {
+    "title": "माझी बुकिंग",
+    "sent": "{owner} यांना विनंती पाठवली",
+    "sentBody": "{owner} साधारण {min} मिनिटांत उत्तर देतात. आम्ही तुम्हाला इथे कळवू.",
+    "upcoming": "येणाऱ्या ({n})",
+    "past": "मागील",
+    "code": "कोड {code}",
+    "call": "कॉल",
+    "whatsapp": "WhatsApp",
+    "cancel": "रद्द करा",
+    "numberLater": "मालकाने स्वीकारल्यावर नंबर दिसेल",
+    "report": "अडचण कळवा",
+    "empty": "अजून बुकिंग नाही.",
+    "findOne": "यंत्र शोधा"
+  },
+  "status": {
+    "requested": "मालकाच्या उत्तराची वाट",
+    "confirmed": "निश्चित",
+    "inProgress": "काम सुरू",
+    "completed": "पूर्ण",
+    "cancelled": "रद्द",
+    "declined": "नाकारले",
+    "expired": "मुदत संपली"
+  },
+  "cancel": {
+    "title": "ही बुकिंग रद्द करायची?",
+    "yes": "हो, रद्द करा",
+    "keep": "बुकिंग ठेवा"
+  },
+  "problem": {
+    "title": "काय चुकले?",
+    "noShow": "यंत्र आले नाही",
+    "breakdown": "बिघडले",
+    "damage": "नुकसान",
+    "overcharge": "जास्त पैसे घेतले",
+    "other": "इतर",
+    "send": "तक्रार पाठवा",
+    "sent": "तक्रार पाठवली. आम्ही एका दिवसात कॉल करू."
+  },
+  "notif": {
+    "empty": "नवीन काही नाही.",
+    "markAll": "सर्व वाचले म्हणून खूण करा"
+  },
+  "owner": {
+    "hello": "नमस्कार, {name}",
+    "month": "या महिन्यात",
+    "paid": "तुम्हाला मिळाले",
+    "coming": "येणार",
+    "requests": "नवीन विनंत्या ({n})",
+    "replyIn": "{time} मध्ये उत्तर द्या",
+    "accept": "स्वीकारा",
+    "decline": "नाकारा",
+    "accepted": "स्वीकारले. आता {name} तुम्हाला कॉल करू शकतात.",
+    "noRequests": "नवीन विनंती नाही. आल्यावर आम्ही कळवू.",
+    "blockHint": "दिवस बंद करण्यासाठी त्यावर टॅप करा",
+    "legend": "बुक · मोकळे · बंद",
+    "machines": "माझी यंत्रे ({n})",
+    "add": "+ जोडा",
+    "edit": "बदला",
+    "live": "चालू",
+    "paused": "थांबवले"
+  },
+  "list": {
+    "step": "पायरी {n} / 4",
+    "s1": "तुमचे यंत्र",
+    "s2": "फोटो",
+    "s3": "कुठे आणि कधी",
+    "s4": "तुमची किंमत ठरवा",
+    "howCharge": "तुम्ही कसे पैसे घेता?",
+    "perHour": "प्रति तास",
+    "perAcre": "प्रति एकर",
+    "perDay": "प्रति दिवस",
+    "yourPrice": "तुमची किंमत {per}",
+    "similar": "तुमच्या जवळची अशी यंत्रे {range} घेतात.",
+    "farmerPays": "शेतकरी देईल",
+    "fee": "आमची फी ({pct})",
+    "keep": "तुम्हाला मिळेल",
+    "drive": "मी स्वतः चालवीन (ऑपरेटर समाविष्ट)",
+    "publish": "माझा {machine} प्रकाशित करा",
+    "live": "तुमचा {name} आता दिसत आहे. 10 किमीमधील शेतकरी तो बुक करू शकतात.",
+    "rcPending": "अपलोड झाले – तपासणी बाकी",
+    "photoTip": "टीप: दिवसाचा उजेड, संपूर्ण यंत्र फोटोत.",
+    "takePhoto": "फोटो काढा",
+    "gallery": "गॅलरीतून निवडा"
+  },
+  "errors": {
+    "network": "लोड झाले नाही. इंटरनेट तपासा.",
+    "offlineSubmit": "इंटरनेट नाही. काहीही पाठवले नाही. नेटवर्क आल्यावर पुन्हा प्रयत्न करा.",
+    "server": "आमच्याकडून चूक झाली. पुन्हा प्रयत्न करा किंवा {phone} वर कॉल करा.",
+    "session": "कृपया पुन्हा लॉग इन करा.",
+    "forbidden": "तुम्ही हे पान उघडू शकत नाही.",
+    "notFound": "ते पान सापडले नाही."
+  },
+  "notFound": {
+    "title": "TODO-translate: Page not found – KhetiRental"
+  },
+  "machines": {
+    "tractor": "TODO-translate: Tractor",
+    "rotavator": "TODO-translate: Rotavator",
+    "combine": "TODO-translate: Combine harvester",
+    "sprayer": "TODO-translate: Sprayer",
+    "seedDrill": "TODO-translate: Seed drill",
+    "trolley": "TODO-translate: Trolley",
+    "thresher": "TODO-translate: Thresher",
+    "baler": "TODO-translate: Baler"
+  },
+  "dev": {
+    "title": "TODO-translate: Component gallery",
+    "intro": "TODO-translate: Every component in every state, in the current language.",
+    "theme": "TODO-translate: Dark theme",
+    "buttons": "TODO-translate: Buttons",
+    "fields": "TODO-translate: Inputs, selects and text areas",
+    "chips": "TODO-translate: Chip groups",
+    "tiles": "TODO-translate: Tiles",
+    "cards": "TODO-translate: Cards",
+    "sheet": "TODO-translate: Sheet",
+    "openSheet": "TODO-translate: Open sheet",
+    "submitting": "TODO-translate: Submit takes 2 seconds, close is blocked meanwhile",
+    "sticky": "TODO-translate: Sticky bottom bar",
+    "showSticky": "TODO-translate: Show sticky bar",
+    "stepper": "TODO-translate: Stepper",
+    "badges": "TODO-translate: Badges",
+    "toasts": "TODO-translate: Toasts",
+    "empty": "TODO-translate: Empty state and skeleton",
+    "prices": "TODO-translate: Price rows",
+    "language": "TODO-translate: Language switch",
+    "pictograms": "TODO-translate: Pictograms",
+    "formats": "TODO-translate: Formatting",
+    "loadingDemo": "TODO-translate: Loading",
+    "disabledDemo": "TODO-translate: Disabled with reason",
+    "multi": "TODO-translate: Pick one or more jobs"
+  }
+}

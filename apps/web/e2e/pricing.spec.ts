@@ -4,7 +4,7 @@ test("pricing calculator recomputes and never shows NaN", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-  await page.goto("/pricing");
+  await page.goto("/en/pricing");
   const rate = page.getByTestId("hourly-rate");
   await expect(rate).toHaveText("₹1,053.00"); // M-101 in showcase/analytics/results/pricing_report.json
   await expect(page.getByTestId("payback")).toContainText("4.30 yr");

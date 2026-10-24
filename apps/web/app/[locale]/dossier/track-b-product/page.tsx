@@ -69,12 +69,11 @@ const DEFENCE = [
   },
 ];
 
-export default function TrackBProduct() {
+export default function ProductDossier() {
   const rate = hourlyRate(M101, 91);
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <p className="text-sm text-muted">Track B, Vedant Konde</p>
-      <h1 className="mt-1 text-4xl font-bold tracking-tight">Product dossier</h1>
+      <h1 className="text-4xl font-bold tracking-tight">Product dossier</h1>
       <p className="mt-4 max-w-prose text-lg text-muted">
         The product, risk and pricing decisions behind KhetiRental, with the evidence for each and the
         questions that are still open.
@@ -185,7 +184,7 @@ export default function TrackBProduct() {
       <section className="mt-12 border-t border-line pt-8">
         <h2 className="text-2xl font-semibold">Resume bullets</h2>
         <ul className="mt-4 space-y-3">
-          {RESUME_BULLETS.trackB.map((b) => (
+          {RESUME_BULLETS.product.map((b) => (
             <li key={b} className="border-l-4 border-primary bg-surface p-4">
               {b}
             </li>
