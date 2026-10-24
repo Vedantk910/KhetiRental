@@ -307,6 +307,8 @@ Two conclusions:
 1. **Utilisation, not take-rate, drives owner economics.** Moving the take-rate across the whole 12–15 % band changes payback by about 0.15 years at 250 h. Moving from 250 to 620 hours cuts it by more than half.
 2. **The take-rate is defensible at 12–15 %.** The broker captures an assumed 27.5 % of the farmer's spend without holding the money, verifying the machine or guaranteeing anything. The platform takes roughly half of that and in return carries the escrow, the telematics verification and the dispute process.
 
+**With owner running costs and droughts** (operator ₹80/h, maintenance ₹55/h, ₹12,000/yr fixed [assumption]; one year in four loses 40 % of hours [assumption]): payback is **9.03 years at 250 h, 5.31 at 400 h and 3.31 at 620 h**; repaying a ₹6.4 L tractor inside a 5-year loan needs about **422 rented hours in a normal year** [model: `owner_cash_case` in `analytics/results/pricing_report.json`]. Per-hour costs fall with hours, so a drought year moves payback by 11–13 %, not by the 40 % of hours it loses.
+
 ### 7.5 Platform contribution per booking [model]
 
 For M-101 at harvest rates, 8 billed hours: GMV ₹8,424; fuel pass-through ₹2,912; take-rate base (rental excluding fuel) ₹5,512; platform take at 13.5 % ₹744. Payment, telematics-device and support costs per booking are [assumption] inputs to the pilot P&L and are not yet modelled.
@@ -384,7 +386,7 @@ Dedicated API gateway and escrow microservice (planned containers), live payment
 2. **Utilisation baseline.** Confirm 250 h/yr from CHC logbooks and scheme reports.
 3. **Deposit floors.** Do 0.5 %-of-asset floors depress conversion for the smallest farmers? Measure stage-3 conversion by tier in M1.
 4. **GPS-spoof threshold.** Is 40 km/h right for tractors on rural roads? Calibrate from M1 tracks.
-5. **Owner opex.** Add operator wages, maintenance and insurance to the payback model.
+5. **Owner opex.** Modelled in §7.4 with planning values; replace them with CHC logbook costs per tier.
 6. **Dispute ownership.** Platform ops or a third-party agronomist for D-05 damage disputes?
 7. **D-08 replacement.** Who pays the replacement machine's travel to the parcel?
 

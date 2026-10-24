@@ -174,6 +174,48 @@ def payback_years(acquisition_cost: float, net_hourly_to_owner: float,
     return acquisition_cost / annual_revenue
 
 
+@dataclass(frozen=True)
+class OwnerOpex:
+    """Owner running costs left out of the simple payback (PRD §12 Q5)."""
+    per_hour_inr: float        # operator wage + maintenance per billed hour
+    fixed_per_year_inr: float  # insurance, registration, parking
+
+    def __post_init__(self):
+        if not (self.per_hour_inr >= 0 and self.fixed_per_year_inr >= 0):
+            raise ValueError("owner opex must be non-negative")
+
+
+# Planning assumptions for a 45 HP tractor (not yet validated): operator
+# ₹80/h, maintenance ₹55/h, insurance and registration ₹12,000 a year.
+DEFAULT_OPEX = OwnerOpex(per_hour_inr=135.0, fixed_per_year_inr=12_000.0)
+
+
+def annual_owner_cash(net_hourly_to_owner: float, annual_hours: float, opex: OwnerOpex) -> float:
+    return (net_hourly_to_owner - opex.per_hour_inr) * annual_hours - opex.fixed_per_year_inr
+
+
+def payback_with_opex(acquisition_cost: float, net_hourly_to_owner: float,
+                      annual_hours: float, opex: OwnerOpex) -> float:
+    cash = annual_owner_cash(net_hourly_to_owner, annual_hours, opex)
+    return acquisition_cost / cash if cash > 0 else math.inf
+
+
+def drought_adjusted_hours(normal_hours: float, drought_every: int, hour_loss: float) -> float:
+    """Average yearly hours if one year in `drought_every` loses `hour_loss` of them."""
+    if drought_every < 1 or not 0 <= hour_loss <= 1:
+        raise ValueError("drought_every must be >= 1 and hour_loss within [0, 1]")
+    return normal_hours * (1 - hour_loss / drought_every)
+
+
+def breakeven_hours(acquisition_cost: float, net_hourly_to_owner: float, opex: OwnerOpex,
+                    target_years: float, drought_every: int, hour_loss: float) -> float:
+    """Normal-year rented hours needed to repay the tractor in `target_years`, droughts included."""
+    margin = (net_hourly_to_owner - opex.per_hour_inr) * (1 - hour_loss / drought_every)
+    if margin <= 0:
+        return math.inf
+    return (acquisition_cost / target_years + opex.fixed_per_year_inr) / margin
+
+
 # --------------------------------------------------------------------------- #
 # CLI: price a small fleet and write a JSON report.
 # --------------------------------------------------------------------------- #
@@ -183,6 +225,30 @@ _DEMO_FLEET: list[Machine] = [
     Machine("M-002", "75_4wd", 12, 18_50_000, "jaipur", "black_cotton", "sowing"),
     Machine("M-003", "35", 3, 4_20_000, "nashik", "sandy", "off_season"),
 ]
+
+
+def owner_cash_case(case: Machine, diesel: float) -> dict:
+    """Season-blended net (30 % harvest, 30 % sowing, 40 % off-season hours),
+    owner opex, and one drought year in four losing 40 % of hours."""
+    mix = {"harvest_compressed": 0.3, "sowing": 0.3, "off_season": 0.4}
+    blended = sum(w * net_hourly_to_owner(hourly_rate(Machine(case.machine_id, case.hp, case.age_years,
+                  case.acquisition_cost_inr, case.district, case.soil_type, season), diesel))
+                  for season, w in mix.items())
+    cost, opex = case.acquisition_cost_inr, DEFAULT_OPEX
+    drought = dict(drought_every=4, hour_loss=0.4)
+    return {
+        "note": "blended season mix; opex = operator ₹80/h + maintenance ₹55/h + ₹12,000/yr fixed (assumptions); "
+                "drought = 1 year in 4 loses 40 % of hours",
+        "blended_net_hourly_inr": _round2(blended),
+        "payback_years": {
+            str(h): {
+                "no_opex": round(payback_years(cost, blended, h), 2),
+                "with_opex": round(payback_with_opex(cost, blended, h, opex), 2),
+                "with_opex_and_drought": round(payback_with_opex(cost, blended, drought_adjusted_hours(h, **drought), opex), 2),
+            } for h in (250, 400, 620)
+        },
+        "hours_for_5yr_payback_with_opex_and_drought": round(breakeven_hours(cost, blended, opex, 5, **drought)),
+    }
 
 
 def main() -> int:
@@ -211,6 +277,7 @@ def main() -> int:
             "payback_at_250h": round(payback_years(case.acquisition_cost_inr, net, 250), 2),
             "payback_at_620h": round(payback_years(case.acquisition_cost_inr, net, 620), 2),
         },
+        "owner_cash_case": owner_cash_case(case, diesel),
     }
     dest = out / "pricing_report.json"
     dest.write_text(json.dumps(report, indent=2, ensure_ascii=False))

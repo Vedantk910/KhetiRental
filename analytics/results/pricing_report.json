@@ -40,5 +40,27 @@
     "net_hourly_to_owner_inr": 595.99,
     "payback_at_250h": 4.3,
     "payback_at_620h": 1.73
+  },
+  "owner_cash_case": {
+    "note": "blended season mix; opex = operator ₹80/h + maintenance ₹55/h + ₹12,000/yr fixed (assumptions); drought = 1 year in 4 loses 40 % of hours",
+    "blended_net_hourly_inr": 503.35,
+    "payback_years": {
+      "250": {
+        "no_opex": 5.09,
+        "with_opex": 7.99,
+        "with_opex_and_drought": 9.03
+      },
+      "400": {
+        "no_opex": 3.18,
+        "with_opex": 4.73,
+        "with_opex_and_drought": 5.31
+      },
+      "620": {
+        "no_opex": 2.05,
+        "with_opex": 2.96,
+        "with_opex_and_drought": 3.31
+      }
+    },
+    "hours_for_5yr_payback_with_opex_and_drought": 422
   }
 }

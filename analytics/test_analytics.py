@@ -45,6 +45,36 @@ class PricingTest(unittest.TestCase):
         self.assertLess(pricing.payback_years(6_40_000, net, 620), pricing.payback_years(6_40_000, net, 250))
 
 
+class OwnerEconomicsTest(unittest.TestCase):
+    def test_opex_lowers_annual_cash_and_lengthens_payback(self):
+        opex = pricing.OwnerOpex(per_hour_inr=135, fixed_per_year_inr=12_000)
+        self.assertAlmostEqual(pricing.annual_owner_cash(500, 400, opex), (500 - 135) * 400 - 12_000)
+        self.assertGreater(pricing.payback_with_opex(640_000, 500, 400, opex), pricing.payback_years(640_000, 500, 400))
+
+    def test_cash_never_covers_the_tractor_returns_infinity(self):
+        opex = pricing.OwnerOpex(per_hour_inr=600, fixed_per_year_inr=0)
+        self.assertEqual(pricing.payback_with_opex(640_000, 500, 400, opex), math.inf)
+
+    def test_drought_years_reduce_average_hours(self):
+        # One year in four loses 40 % of hours: average = 0.75 + 0.25 * 0.6 = 90 %.
+        self.assertAlmostEqual(pricing.drought_adjusted_hours(620, drought_every=4, hour_loss=0.4), 558)
+        self.assertEqual(pricing.drought_adjusted_hours(620, drought_every=4, hour_loss=0.0), 620)
+
+    def test_breakeven_hours_hit_the_target_payback(self):
+        opex = pricing.OwnerOpex(per_hour_inr=135, fixed_per_year_inr=12_000)
+        h = pricing.breakeven_hours(640_000, 503.35, opex, target_years=5, drought_every=4, hour_loss=0.4)
+        hours = pricing.drought_adjusted_hours(h, drought_every=4, hour_loss=0.4)
+        self.assertAlmostEqual(pricing.payback_with_opex(640_000, 503.35, hours, opex), 5, places=6)
+
+    def test_rejects_hostile_inputs(self):
+        with self.assertRaises(ValueError):
+            pricing.OwnerOpex(per_hour_inr=-1, fixed_per_year_inr=0)
+        with self.assertRaises(ValueError):
+            pricing.drought_adjusted_hours(620, drought_every=0, hour_loss=0.4)
+        with self.assertRaises(ValueError):
+            pricing.drought_adjusted_hours(620, drought_every=4, hour_loss=1.5)
+
+
 class KpiTest(unittest.TestCase):
     def test_liquidity_index_balanced_market_is_higher(self):
         balanced = kpis.DistrictSnapshot("d", 100, 100, 10.0)

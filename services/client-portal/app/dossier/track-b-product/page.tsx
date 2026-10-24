@@ -51,7 +51,7 @@ const DEFENCE = [
   },
   {
     q: "What breaks the owner economics?",
-    a: "Utilisation, not the fee. Across the whole 12–15 % band, payback moves by about 0.15 years. Going from 250 to 620 rented hours a year cuts it by more than half. The model also leaves out operator wages, maintenance and insurance, so the real payback is longer than shown.",
+    a: "Utilisation, not the fee. Across the whole 12–15 % band, payback moves by about 0.15 years. Going from 250 to 620 rented hours a year cuts it by more than half. Counting operator wages, maintenance and insurance, plus one drought year in four, payback runs from 9.0 years at 250 hours to 3.3 at 620, and an owner needs about 422 rented hours a year to repay the tractor inside a 5-year loan.",
   },
   {
     q: "How does escrow work with 2G coverage and low literacy?",
