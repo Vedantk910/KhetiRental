@@ -24,7 +24,7 @@ run "workflows" "python3 .github/test_workflows.py"
 run "skills frontmatter" "python3 .claude/verify-skills.py"
 run "commit-guard" ".claude/hooks/test_commit_guard.sh"
 run "git-guard" "for c in 'git push --force' 'git reset --hard' 'git clean -fd' 'git branch -D x'; do echo \"{\\\"tool_input\\\":{\\\"command\\\":\\\"\$c\\\"}}\" | .claude/hooks/git-guard.sh 2>/dev/null && exit 1; done; echo '{\"tool_input\":{\"command\":\"git status\"}}' | .claude/hooks/git-guard.sh"
-run "client-portal" "cd services/client-portal && test -d node_modules && npm run -s lint && npm test --silent && npm run -s build >/dev/null && npm run -s test:e2e"
+run "client-portal" "cd services/client-portal && test -d node_modules && npm run -s lint && npm run -s typecheck && npm test --silent && npm run -s build >/dev/null && npm run -s test:e2e"
 run "k6 script parses" "! command -v k6 >/dev/null || k6 inspect tests/load/k6/full_flow.js >/dev/null"
 run "skills e2e flow" "cd .scratch/skills-stack-e2e/flow && python3 test/run_tests.py"
 
