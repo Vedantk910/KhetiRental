@@ -57,3 +57,13 @@ describe("LanguageSwitch", () => {
     expect(sessionStorage.getItem("kr:lang-focus")).toBe("t");
   });
 });
+
+describe("LanguageSwitch: fast switching", () => {
+  it("going back to the language still showing is honoured while the first switch is pending", async () => {
+    replace.mockReset();
+    renderIntl(<LanguageSwitch name="t" />, { locale: "mr" });
+    await userEvent.click(screen.getByRole("button", { name: "हिंदी" }));
+    await userEvent.click(screen.getByRole("button", { name: "मराठी" }));
+    expect(replace.mock.calls.map((c) => (c[1] as { locale: string }).locale)).toEqual(["hi", "mr"]);
+  });
+});

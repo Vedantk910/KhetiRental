@@ -53,3 +53,14 @@ describe("postLoginPath (UI-SPEC §3.3)", () => {
     expect(postLoginPath("en", ["owner"], null, true)).toBe("/en/owner/machines/new");
   });
 });
+
+describe("postLoginPath after login (UI-SPEC §3.3)", () => {
+  it("next wins; owner-only → /owner; everyone else → /rent; new owner sign-up → listing wizard", () => {
+    expect(postLoginPath("hi", ["renter"], "/hi/bookings")).toBe("/hi/bookings");
+    expect(postLoginPath("hi", ["owner"], "https://evil.example")).toBe("/hi/owner");
+    expect(postLoginPath("en", ["owner", "renter"], null)).toBe("/en/rent");
+    expect(postLoginPath("en", ["renter"], null)).toBe("/en/rent");
+    expect(postLoginPath("mr", ["owner"], null, true)).toBe("/mr/owner/machines/new");
+    expect(postLoginPath("mr", ["owner"], "/mr/owner/requests/KR-1", true)).toBe("/mr/owner/requests/KR-1");
+  });
+});

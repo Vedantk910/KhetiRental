@@ -29,6 +29,11 @@ export function LanguageSwitch({
   const router = useRouter();
   const [, startTransition] = useTransition();
   const pressed = useRef<HTMLButtonElement>(null);
+  // The last language asked for. Clicking fast must compare against this, not the page that is still showing.
+  const requested = useRef<string>(current);
+  useEffect(() => {
+    requested.current = current;
+  }, [current]);
 
   // Switching re-renders the page in the new locale; keep keyboard focus where the user left it.
   useEffect(() => {
@@ -42,7 +47,8 @@ export function LanguageSwitch({
   }, [name, current]);
 
   const go = (l: Locale) => {
-    if (l === current) return;
+    if (l === requested.current) return;
+    requested.current = l;
     try {
       if (document.activeElement?.closest("[data-lang-switch]")) sessionStorage.setItem(FOCUS_KEY, name);
     } catch {

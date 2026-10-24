@@ -27,5 +27,7 @@ describe("nav helpers", () => {
     expect(showFooter("/rent")).toBe(true);
     expect(showFooter("/rent/results")).toBe(false);
     expect(showFooter("/bookings")).toBe(false);
+    expect(showFooter("/login")).toBe(false);
+    expect(showFooter("/login/otp")).toBe(false);
   });
 });

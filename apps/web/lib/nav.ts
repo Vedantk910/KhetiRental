@@ -7,5 +7,6 @@ export const isActive = (pathname: string, href: string) =>
 /** Logged-in app pages that get the phone tab bar (UI-SPEC §3.2). */
 export const isAppRoute = (pathname: string) => APP_PREFIXES.some((p) => isActive(pathname, p));
 
-/** Footer: public pages and the bottom of /rent. */
-export const showFooter = (pathname: string) => pathname === "/rent" || !isAppRoute(pathname);
+/** Footer: public pages and the bottom of /rent (the login pages are a single card, no footer). */
+export const showFooter = (pathname: string) =>
+  pathname === "/rent" || !(isAppRoute(pathname) || isActive(pathname, "/login"));

@@ -6,6 +6,7 @@ import { Pictogram } from "@/components/pictograms/pictogram";
 import { LanguageSwitch } from "@/components/ui/language-switch";
 import { Link, usePathname } from "@/i18n/navigation";
 import { isActive } from "@/lib/nav";
+import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/rent", key: "rent" },
@@ -17,17 +18,35 @@ const NAV = [
 export function SiteHeader() {
   const t = useTranslations();
   const pathname = usePathname();
+  // The login pages draw their own back arrow and language switch.
+  if (isActive(pathname, "/login")) return null;
+  // Welcome page: floats transparent over the field scene (UI-SPEC §4.1.1).
+  const overlay = pathname === "/";
   return (
-    <header className="sticky top-0 z-40 border-b border-border-subtle bg-surface">
-      <div className="mx-auto flex h-[56px] max-w-app items-center gap-2 px-4 sm:px-6 lg:h-16 lg:gap-6">
+    <header
+      className={
+        overlay
+          ? "absolute inset-x-0 top-0 z-40"
+          : "sticky top-0 z-40 border-b border-border-subtle bg-surface"
+      }
+    >
+      <div
+        className={cn(
+          "mx-auto flex max-w-app items-center gap-2 px-4 sm:px-6 lg:gap-6",
+          overlay ? "py-3 lg:px-6" : "h-[56px] lg:h-16",
+        )}
+      >
         <Link
           href="/"
-          className="flex min-h-tap shrink-0 items-center gap-2 rounded-control text-[1.25rem] font-bold leading-7 text-text"
+          className={cn(
+            "flex min-h-tap shrink-0 items-center gap-2 rounded-control text-[1.25rem] font-bold leading-7 text-text",
+            overlay && "rounded-pill bg-white/85 px-3 text-[#13100D]",
+          )}
         >
           <Pictogram name="tractor" accent className="hidden sm:block" />
           {t("common.brand")}
         </Link>
-        <nav aria-label={t("nav.label")} className="hidden lg:block">
+        <nav aria-label={t("nav.label")} className={cn("hidden", !overlay && "lg:block")}>
           <ul className="flex items-center gap-1">
             {NAV.map((n) => (
               <li key={n.href}>
@@ -44,13 +63,15 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          <Link
-            href="/notifications"
-            aria-label={t("nav.notifications")}
-            className="flex h-tap w-tap shrink-0 items-center justify-center rounded-pill text-text hover:bg-surface-muted"
-          >
-            <Bell aria-hidden className="h-6 w-6" />
-          </Link>
+          {!overlay && (
+            <Link
+              href="/notifications"
+              aria-label={t("nav.notifications")}
+              className="flex h-tap w-tap shrink-0 items-center justify-center rounded-pill text-text hover:bg-surface-muted"
+            >
+              <Bell aria-hidden className="h-6 w-6" />
+            </Link>
+          )}
           <LanguageSwitch name="header" tight />
         </div>
       </div>

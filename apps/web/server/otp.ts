@@ -3,6 +3,7 @@ import { createHmac, randomInt, timingSafeEqual } from "node:crypto";
 import type { Role } from "@/lib/domain";
 import { getSql, one } from "./db";
 import { ApiError, parse } from "./http";
+import { mocksMayLog } from "./mocks/flags";
 import { sendSms } from "./mocks/sms";
 import { limit } from "./rate-limit";
 import { authSecret } from "./secret";
@@ -16,7 +17,11 @@ const OTP_RESEND_S = 30;
 const hashCode = (phone: string, code: string) =>
   createHmac("sha256", authSecret()).update(`${phone}:${code}`).digest("hex");
 
-export async function sendOtp(rawPhone: string, ip: string): Promise<{ resendAfterS: number }> {
+/** `devCode` is only present where the SMS mock may print codes (dev and e2e), never in a real deployment. */
+export async function sendOtp(
+  rawPhone: string,
+  ip: string,
+): Promise<{ resendAfterS: number; devCode?: string }> {
   const phone = parse(phoneSchema, rawPhone);
   // Limits count every request, before the code is touched: going over can't rotate the code or reset attempts.
   await limit("otpSendIp", ip);
@@ -33,7 +38,7 @@ export async function sendOtp(rawPhone: string, ip: string): Promise<{ resendAft
   if (rows.length === 0)
     throw new ApiError(429, "otp_resend_wait", "phone", { "Retry-After": String(OTP_RESEND_S) });
   sendSms(phone, `${code} is your KhetiRental code. It expires in 5 minutes. Don't share it.`);
-  return { resendAfterS: OTP_RESEND_S };
+  return { resendAfterS: OTP_RESEND_S, ...(mocksMayLog() ? { devCode: code } : {}) };
 }
 
 /** Throws otp_wrong (with triesLeft), otp_expired or otp_locked; consumes the code on success. */

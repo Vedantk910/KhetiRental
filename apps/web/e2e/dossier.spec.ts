@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-const PAGES = ["/en", "/en/architecture", "/en/dossier/track-a-systems", "/en/dossier/track-b-product"];
+// The welcome page ("/") has its own spec (welcome.spec.ts); it links to pages that arrive in later milestones.
+const PAGES = ["/en/architecture", "/en/dossier/track-a-systems", "/en/dossier/track-b-product"];
 
 for (const path of PAGES) {
   test(`${path} renders cleanly and every internal link resolves`, async ({ page, request }) => {

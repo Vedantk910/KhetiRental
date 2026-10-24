@@ -1,93 +1,86 @@
-import Link from "next/link";
-import { EVIDENCE } from "@/lib/evidence";
+import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Counters } from "@/components/welcome/counters";
+import { FieldScene } from "@/components/welcome/field-scene";
+import { ScenePause } from "@/components/welcome/scene-pause";
+import { Story } from "@/components/welcome/story";
+import { ButtonLink } from "@/components/ui/button";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import { STATS } from "@/config/welcome";
+import { pageUser } from "@/server/page-user";
 
-const DOSSIERS = [
-  {
-    href: "/dossier/track-a-systems",
-    cta: "Open the systems dossier",
-    what: "Distributed systems",
-    body: "H3 spatial matching in Go and Redis, Redlock with fencing tokens, a saga with a transactional outbox, offline-first telemetry sync and the 5,000-user load test.",
-  },
-  {
-    href: "/dossier/track-b-product",
-    cta: "Open the product dossier",
-    what: "Product, risk and pricing",
-    body: "The PRD and API contracts, the 3-stage milestone escrow and its dispute rules, the risk audit, and the depreciation pricing model behind every rate.",
-  },
-];
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale: locale as Locale, namespace: "welcome" });
+  return { title: { absolute: `KhetiRental – ${t("h1")}` }, description: t("tag") };
+}
 
-export default function Home() {
+export default async function Welcome({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // eslint-disable-next-line @typescript-eslint/no-deprecated -- next/root-params needs Next 16; this is the Next 15 API
+  setRequestLocale(locale as Locale);
+  const [t, user] = await Promise.all([getTranslations("welcome"), pageUser()]);
+  const owner = user?.roles.includes("owner") ?? false;
+
   return (
-    <div className="mx-auto max-w-5xl px-4 py-14">
-      <section className="max-w-3xl">
-        <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-          Tractors for small farms, booked in milliseconds and paid for only by the verified hour.
-        </h1>
-        <p className="mt-5 max-w-prose text-lg text-muted">
-          KhetiRental matches a farmer to a nearby machine, holds the money in a three-stage escrow and
-          releases it only when the handover, the work and the return are proven by telematics.
-        </p>
-        <div className="mt-7 flex flex-wrap gap-3">
-          <Link
-            href="/marketplace"
-            className="rounded-md bg-primary px-4 py-2.5 font-semibold text-primary-fg"
-          >
-            Try the marketplace
-          </Link>
-          <Link
-            href="/architecture/h3-spatial"
-            className="rounded-md border border-line px-4 py-2.5 font-semibold"
-          >
-            See the H3 sandbox
-          </Link>
+    <>
+      <section className="kr-hero">
+        <FieldScene />
+        <ScenePause />
+        <div className="relative z-10 flex flex-col items-center px-4 pt-[96px] text-center text-[#13100D] lg:pt-[14%]">
+          <h1 className="max-w-[16ch] font-display text-[46px] font-bold leading-[50px] lg:max-w-none lg:text-[72px] lg:leading-[76px]">
+            {t("h1")}
+          </h1>
+          <p className="mt-2 text-[18px] font-bold leading-[26px]">{t("tag")}</p>
+          <nav aria-label={t("start")} className="mt-[14px] flex flex-wrap justify-center gap-[10px]">
+            {user ? (
+              <>
+                <ButtonLink href="/rent" variant="pill-primary">
+                  {t("find")}
+                </ButtonLink>
+                <ButtonLink href="/bookings" variant="pill-accent">
+                  {t("bookings")}
+                </ButtonLink>
+              </>
+            ) : (
+              <>
+                <ButtonLink href="/login" variant="pill-primary">
+                  {t("login")}
+                </ButtonLink>
+                <ButtonLink href="/login?mode=signup" variant="pill-accent">
+                  {t("signup")}
+                </ButtonLink>
+              </>
+            )}
+            <ButtonLink href="/#how" variant="pill-light">
+              {t("how")}
+            </ButtonLink>
+          </nav>
+        </div>
+        <div className="absolute inset-x-0 top-[77.7%] z-10 lg:bottom-[8%] lg:top-auto">
+          <Counters
+            label={t("stats.label")}
+            items={STATS.map((s) => ({
+              value: s.value,
+              decimals: s.decimals,
+              suffix: s.suffix,
+              label: t(`stats.${s.key}`),
+              sr: t(`stats.${s.sr}`),
+            }))}
+            source={
+              <Link href="/how-we-price#sources" className="underline underline-offset-4">
+                {t("stats.source")}
+              </Link>
+            }
+          />
         </div>
       </section>
-
-      <section className="mt-14">
-        <table className="w-full border-collapse text-left">
-          <caption className="mb-3 text-left text-lg font-semibold">
-            Evidence ledger
-            <span className="block text-sm font-normal text-muted">
-              Every number on this site comes from a file in the repository. Here are the headline ones.
-            </span>
-          </caption>
-          <thead className="sr-only">
-            <tr>
-              <th scope="col">Measure</th>
-              <th scope="col">Value</th>
-              <th scope="col">Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.values(EVIDENCE).map((e) => (
-              <tr key={e.label} className="border-t border-line align-baseline">
-                <th scope="row" className="py-4 pr-4 font-normal">
-                  <span className="block font-medium">{e.label}</span>
-                  <span className="block text-sm text-muted">{e.note}</span>
-                </th>
-                <td className="whitespace-nowrap py-4 pr-4 text-3xl font-bold tabular-nums text-primary">
-                  {e.value}
-                </td>
-                <td className="hidden py-4 text-sm text-muted sm:table-cell">
-                  <code>{e.source}</code>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      <section className="mt-14 grid gap-5 md:grid-cols-2">
-        {DOSSIERS.map((t) => (
-          <article key={t.href} className="flex flex-col border-l-4 border-primary bg-surface p-6">
-            <h2 className="text-2xl font-semibold">{t.what}</h2>
-            <p className="mt-3 flex-1 text-muted">{t.body}</p>
-            <Link href={t.href} className="mt-5 font-semibold text-primary underline underline-offset-4">
-              {t.cta}
-            </Link>
-          </article>
-        ))}
-      </section>
-    </div>
+      <Story ownerHref={owner ? "/owner/machines/new" : "/login?mode=signup&role=owner"} />
+    </>
   );
 }

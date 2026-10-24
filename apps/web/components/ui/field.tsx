@@ -64,12 +64,31 @@ export function Input({
   hint,
   error,
   prefix,
+  suffix,
   className,
   ...rest
-}: FieldProps & { prefix?: ReactNode } & Omit<InputHTMLAttributes<HTMLInputElement>, "prefix">) {
+}: FieldProps & {
+  prefix?: ReactNode;
+  /** A 48 × 48 control drawn inside the right edge (e.g. the password eye). */
+  suffix?: ReactNode;
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "prefix">) {
   const f = useField({ label, hint, error }, rest["aria-describedby"]);
   const input = (
-    <input {...rest} {...f.a11y} className={cn(control, "h-[52px] border-border-control", className)} />
+    <input
+      {...rest}
+      {...f.a11y}
+      className={cn(control, "h-[52px] border-border-control", suffix && "pr-[52px]", className)}
+    />
+  );
+  const field = suffix ? (
+    <div className="relative min-w-0 flex-1">
+      {input}
+      <div className="absolute right-[2px] top-[2px] flex h-[48px] w-[48px] items-center justify-center">
+        {suffix}
+      </div>
+    </div>
+  ) : (
+    input
   );
   return (
     <Frame id={f.id} label={label} hint={hint} error={error} hintId={f.hintId} errId={f.errId}>
@@ -78,10 +97,10 @@ export function Input({
           <span className="flex h-[52px] shrink-0 items-center rounded-control border-2 border-border-control bg-surface-muted px-3 text-body font-bold">
             {prefix}
           </span>
-          {input}
+          {field}
         </div>
       ) : (
-        input
+        field
       )}
     </Frame>
   );

@@ -1,0 +1,277 @@
+/* Welcome page: the live field scene and the scroll-driven story (UI-SPEC §4.1). Pure CSS, no animation loop. */
+.kr-hero {
+  --hero-h: clamp(640px, 100svh, 1000px);
+  /* one unit of the 844 px tall drawing, so the scene scales with the hero's height */
+  --u: calc(var(--hero-h) / 844);
+  --travel: calc(100vw - var(--u) * 165);
+  position: relative;
+  height: var(--hero-h);
+  overflow: hidden;
+}
+
+@keyframes kr-round {
+  0% {
+    transform: translate(-10px, 0) scaleX(1);
+  }
+  44% {
+    transform: translate(var(--travel, 225px), 0) scaleX(1);
+  }
+  50% {
+    transform: translate(calc(var(--travel, 225px) + 7px), calc(var(--u, 1px) * 70)) scaleX(-1);
+  }
+  94% {
+    transform: translate(-3px, calc(var(--u, 1px) * 70)) scaleX(-1);
+  }
+  100% {
+    transform: translate(-10px, 0) scaleX(1);
+  }
+}
+@keyframes kr-plough1 {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  44%,
+  93% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+@keyframes kr-plough2 {
+  0%,
+  50% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  94% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+@keyframes kr-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes kr-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes kr-cloud {
+  from {
+    transform: translateX(-120px);
+  }
+  to {
+    transform: translateX(calc(100vw + 30px));
+  }
+}
+@keyframes kr-sway {
+  0%,
+  100% {
+    transform: skewX(-4deg);
+  }
+  50% {
+    transform: skewX(5deg);
+  }
+}
+@keyframes kr-sun {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes kr-puff {
+  0% {
+    opacity: 0.7;
+    transform: translate(0, 0) scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-26px, -22px) scale(1.6);
+  }
+}
+
+.kr-drive {
+  transform-origin: center;
+  animation: kr-round var(--lap, 24s) ease-in-out infinite;
+}
+.kr-plough1 {
+  transform-origin: left center;
+  animation: kr-plough1 var(--lap, 24s) ease-in-out infinite;
+}
+.kr-plough2 {
+  transform-origin: right center;
+  animation: kr-plough2 var(--lap, 24s) ease-in-out infinite;
+}
+.kr-wheel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kr-spin 0.9s linear infinite;
+}
+.kr-body {
+  animation: kr-bob 0.5s ease-in-out infinite;
+}
+.kr-cloud {
+  animation: kr-cloud linear infinite;
+}
+.kr-sway {
+  transform-origin: bottom center;
+  animation: kr-sway 3s ease-in-out infinite;
+}
+.kr-sun {
+  transform-origin: center;
+  animation: kr-sun 6s ease-in-out infinite;
+}
+.kr-puff {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kr-puff 1.2s linear infinite;
+}
+
+/* Hidden tab: stop everything to save battery (set by <ScenePause>). */
+.kr-scene[data-paused] * {
+  animation-play-state: paused !important;
+}
+
+/* Reduced motion, and the still frame on the login page: the tractor parked at 30 % of row 1, both strips half drawn. */
+@media (prefers-reduced-motion: reduce) {
+  .kr-scene * {
+    animation: none !important;
+  }
+  .kr-scene .kr-drive {
+    transform: translate(calc(var(--travel) * 0.3), 0);
+  }
+  .kr-scene .kr-plough1,
+  .kr-scene .kr-plough2 {
+    transform: scaleX(0.5);
+  }
+}
+.kr-still * {
+  animation: none !important;
+}
+.kr-still .kr-drive {
+  transform: translate(calc(var(--travel) * 0.3), 0);
+}
+.kr-still .kr-plough1,
+.kr-still .kr-plough2 {
+  transform: scaleX(0.5);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Story reveals: only where scroll-driven animation exists and motion is welcome. Elsewhere everything is simply there. */
+@keyframes kr-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes kr-fill {
+  from {
+    background-color: rgb(var(--n-200));
+  }
+}
+@keyframes kr-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes kr-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes kr-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+@keyframes kr-stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+@keyframes kr-row {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .kr-reveal,
+    .kr-fill,
+    .kr-grow,
+    .kr-draw,
+    .kr-pop,
+    .kr-stamp,
+    .kr-row {
+      animation-timeline: view();
+      animation-fill-mode: both;
+      animation-timing-function: ease-out;
+    }
+    .kr-reveal {
+      animation-name: kr-up;
+      animation-range: entry 0% entry 60%;
+    }
+    /* --k = position in a sequence; later items start a little later in the same scroll range. */
+    .kr-fill {
+      animation-name: kr-fill;
+      animation-range: entry calc(var(--k) * 3%) entry calc(30% + var(--k) * 3%);
+    }
+    .kr-grow {
+      transform-origin: left center;
+      animation-name: kr-grow;
+      animation-range: entry 10% entry 70%;
+    }
+    .kr-draw {
+      stroke-dasharray: 1;
+      animation-name: kr-draw;
+      animation-range: entry calc(var(--k) * 6%) entry calc(30% + var(--k) * 6%);
+    }
+    .kr-pop {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation-name: kr-pop;
+      animation-range: entry calc(40% + var(--k) * 8%) entry calc(60% + var(--k) * 8%);
+    }
+    .kr-stamp {
+      animation-name: kr-stamp;
+      animation-range: entry calc(var(--k) * 12%) entry calc(36% + var(--k) * 12%);
+    }
+    .kr-row {
+      animation-name: kr-row;
+      animation-range: entry calc(var(--k) * 10%) entry calc(30% + var(--k) * 10%);
+    }
+  }
+}
