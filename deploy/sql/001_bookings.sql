@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS bookings (
     state           TEXT NOT NULL CHECK (state IN (
                         'PENDING', 'INVENTORY_RESERVED', 'ESCROW_AUTHORIZED',
                         'DISPATCHED', 'TELEMATICS_ACTIVE', 'POST_RETURN_AUDIT',
-                        'SETTLED', 'FAILED_PAYMENT_RELEASED', 'FAILED_INVENTORY')),
+                        'SETTLED', 'FAILED_PAYMENT_RELEASED', 'FAILED_INVENTORY',
+                        'DISPUTE_OPEN', 'SUSPENDED_BREAKDOWN', 'NO_SHOW_PENDING')),
     fencing_token   BIGINT NOT NULL CHECK (fencing_token >= 0),
     payload         JSONB NOT NULL DEFAULT '{}',
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),

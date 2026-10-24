@@ -30,6 +30,17 @@ expect_ok  "insert valid booking"                 "$B VALUES ('B-1','M-1','R-1',
 expect_err "reject unknown booking state"         "$B VALUES ('B-2','M-1','R-1','idem-2','BOGUS',1)"
 expect_err "reject replayed Idempotency-Key"      "$B VALUES ('B-3','M-1','R-1','idem-1','PENDING',1)"
 expect_err "reject negative fencing token"        "$B VALUES ('B-4','M-1','R-1','idem-4','PENDING',-1)"
+for st in DISPUTE_OPEN SUSPENDED_BREAKDOWN NO_SHOW_PENDING; do
+  expect_ok "accept state $st"                    "$B VALUES ('B-$st','M-1','R-1','idem-$st','$st',1)"
+done
+# A database created before 005 still has the old CHECK; 005 must widen it.
+q "DELETE FROM bookings WHERE state IN ('DISPUTE_OPEN','SUSPENDED_BREAKDOWN','NO_SHOW_PENDING'); ALTER TABLE bookings DROP CONSTRAINT bookings_state_check; ALTER TABLE bookings ADD CONSTRAINT bookings_state_check CHECK (state IN ('PENDING','SETTLED'))" >/dev/null
+psql -d "$DB" -v ON_ERROR_STOP=1 -q -f 005_booking_states.sql >/dev/null 2>&1 || { echo "  FAIL apply 005 over the pre-005 CHECK"; fail=1; }
+expect_ok  "005 upgrades pre-005 CHECK"           "$B VALUES ('B-up','M-1','R-1','idem-up','DISPUTE_OPEN',1)"
+
+expect_ok  "fencing token may advance"            "UPDATE bookings SET fencing_token = 5 WHERE booking_id = 'B-1'"
+expect_ok  "fencing token may stay"               "UPDATE bookings SET fencing_token = 5, state = 'INVENTORY_RESERVED' WHERE booking_id = 'B-1'"
+expect_err "reject decreasing fencing token"      "UPDATE bookings SET fencing_token = 4 WHERE booking_id = 'B-1'"
 
 expect_ok  "outbox row defaults to unpublished"   "INSERT INTO outbox_events (aggregate_type, aggregate_id, stream, topic, data) VALUES ('booking','B-1','booking','booking.events','{}'); SELECT 1 FROM outbox_events WHERE published_at IS NULL"
 expect_ok  "inbox accepts first delivery"         "INSERT INTO processed_inbox_messages (topic, message_id) VALUES ('booking.events','m-1')"
