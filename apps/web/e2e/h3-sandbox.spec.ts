@@ -1,6 +1,6 @@
 import { type Page, expect, test } from "@playwright/test";
 
-const URL = "/architecture/h3-spatial";
+const URL = "/en/architecture/h3-spatial";
 const RING = (k: number) => 3 * k * (k + 1) + 1;
 
 function watch(page: Page) {

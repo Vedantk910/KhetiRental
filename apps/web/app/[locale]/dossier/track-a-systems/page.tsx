@@ -214,11 +214,10 @@ const SECTIONS = [
   },
 ];
 
-export default function TrackASystems() {
+export default function SystemsDossier() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <p className="text-sm text-muted">Track A, Tarun Konde</p>
-      <h1 className="mt-1 text-4xl font-bold tracking-tight">Systems dossier</h1>
+      <h1 className="text-4xl font-bold tracking-tight">Systems dossier</h1>
       <p className="mt-4 max-w-prose text-lg text-muted">
         How KhetiRental finds a tractor in under 3 ms at harvest-surge load, keeps two farmers from booking
         the same machine, and never moves money without a matching record.
@@ -280,7 +279,7 @@ export default function TrackASystems() {
           Each one states the result, how it was measured, and what was built to get there.
         </p>
         <ul className="mt-4 space-y-3">
-          {RESUME_BULLETS.trackA.map((b) => (
+          {RESUME_BULLETS.systems.map((b) => (
             <li key={b} className="border-l-4 border-primary bg-surface p-4">
               {b}
             </li>
