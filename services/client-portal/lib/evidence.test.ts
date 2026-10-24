@@ -27,6 +27,11 @@ describe("evidence", () => {
     }
   });
 
+  it("the resume sheet carries every bullet verbatim", () => {
+    const sheet = readFileSync(path.join(repo, "docs/interview/resume-bullets.md"), "utf8");
+    for (const b of [...RESUME_BULLETS.trackA, ...RESUME_BULLETS.trackB]) expect(sheet).toContain(b);
+  });
+
   it("every resume bullet is X-Y-Z: action verb, a number, and a 'by' clause", () => {
     for (const b of [...RESUME_BULLETS.trackA, ...RESUME_BULLETS.trackB]) {
       expect(b).toMatch(/^(Cut|Eliminated|Engineered|Authored|Designed|Built)\b/);
