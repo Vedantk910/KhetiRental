@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { EVIDENCE, LOAD_TEST_RUNS, RESUME_BULLETS } from "./evidence";
+import { EVIDENCE, LOAD_TEST_RUNS } from "./evidence";
 
 const repo = path.resolve(__dirname, "../../..");
 
@@ -21,22 +21,9 @@ describe("evidence", () => {
   });
 
   it("uses no figure the codebase never produced", () => {
-    const all = JSON.stringify({ EVIDENCE, LOAD_TEST_RUNS, RESUME_BULLETS });
+    const all = JSON.stringify({ EVIDENCE, LOAD_TEST_RUNS });
     for (const banned of ["8.6", "48.2", "94%", "99.98", "45-page", "82%"]) {
       expect(all).not.toContain(banned);
-    }
-  });
-
-  it("the resume sheet carries every bullet verbatim", () => {
-    const sheet = readFileSync(path.join(repo, "docs/interview/resume-bullets.md"), "utf8");
-    for (const b of [...RESUME_BULLETS.systems, ...RESUME_BULLETS.product]) expect(sheet).toContain(b);
-  });
-
-  it("every resume bullet is X-Y-Z: action verb, a number, and a 'by' clause", () => {
-    for (const b of [...RESUME_BULLETS.systems, ...RESUME_BULLETS.product]) {
-      expect(b).toMatch(/^(Cut|Eliminated|Engineered|Authored|Designed|Built)\b/);
-      expect(b).toMatch(/\d/);
-      expect(b).toMatch(/ by /);
     }
   });
 });

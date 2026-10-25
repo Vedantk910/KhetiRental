@@ -356,7 +356,7 @@ export function BookingSheet(p: Props) {
               </div>
               {canSpeak && (
                 <Button variant="secondary" size="md" onClick={speak}>
-                  <Volume2 aria-hidden className="h-5 w-5" />
+                  <Volume2 aria-hidden className="h-[20px] w-[20px]" />
                   {speaking ? t("booking.stop") : t("booking.readAloud")}
                 </Button>
               )}

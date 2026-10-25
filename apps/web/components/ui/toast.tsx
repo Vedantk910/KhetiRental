@@ -89,7 +89,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               }}
               className="flex h-tap w-tap shrink-0 items-center justify-center rounded-pill hover:bg-surface-muted"
             >
-              <X aria-hidden className="h-5 w-5" />
+              <X aria-hidden className="h-[20px] w-[20px]" />
             </button>
           </div>
         );

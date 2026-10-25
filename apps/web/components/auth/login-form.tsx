@@ -272,6 +272,7 @@ export function LoginForm({
 
       <div id={panelId} role="tabpanel" aria-labelledby={`${panelId}-${mode}`}>
         <form
+          method="post"
           ref={form}
           noValidate
           onSubmit={(e) => {

@@ -82,35 +82,6 @@ body:has([data-sheet-open]) [data-tab-bar] {
     }
   }
 }
-
-/* LEGACY until M7: colours the pre-Mitti pages read (see tailwind.config.ts). */
-:root {
-  --primary: #047857;
-  --primary-fg: #ffffff;
-  --soil: #78350f;
-  --fg: #0f172a;
-  --muted: #475569;
-  --line: #cbd5e1;
-  /* Chart identity colours, validated (dataviz skill): CVD ΔE ≥ 22 light. */
-  --viz-1: #047857;
-  --viz-2: #1d4ed8;
-  --viz-3: #b45309;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #34d399;
-    --primary-fg: #04241a;
-    --soil: #f59e0b;
-    --fg: #f1f5f9;
-    --muted: #94a3b8;
-    --line: #1e293b;
-    --viz-1: #059669;
-    --viz-2: #3b82f6;
-    --viz-3: #d97706;
-  }
-}
-/* end LEGACY */
-
 /* Results map: price pills on Leaflet markers (UI-SPEC §4.5.4). */
 .kr-pin {
   display: inline-block;

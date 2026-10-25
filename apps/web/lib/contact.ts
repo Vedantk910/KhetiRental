@@ -5,3 +5,9 @@ export function helplineHref(phone: string = config.helplinePhone): string | nul
   const d = phone.replace(/[\s()-]/g, "");
   return /^\+?\d{8,15}$/.test(d) ? `tel:${d}` : null;
 }
+
+/** `wa.me` link for WhatsApp support, or null while it is still a placeholder. */
+export function whatsappHref(phone: string = config.whatsappPhone): string | null {
+  const d = phone.replace(/[\s()+-]/g, "");
+  return /^\d{8,15}$/.test(d) ? `https://wa.me/${d}` : null;
+}

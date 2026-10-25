@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 
-export const metadata: Metadata = { title: "Architecture & ADRs | KhetiRental v2.0" };
+export const metadata: Metadata = { title: "Architecture & ADRs" };
 
 const SERVICES = [
   {
@@ -22,7 +22,7 @@ const SERVICES = [
   {
     name: "client-portal",
     tech: "Next.js, TypeScript",
-    job: "This site: marketplace, pricing, escrow and the H3 sandbox.",
+    job: "This site: the farmer app and these engineering pages.",
   },
 ];
 
@@ -52,51 +52,54 @@ const ADRS = [
 export default function Architecture() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12">
-      <h1 className="text-4xl font-bold tracking-tight">Architecture and decisions</h1>
-      <p className="mt-4 max-w-prose text-lg text-muted">
+      <h1 className="text-h1 tracking-tight">Architecture and decisions</h1>
+      <p className="mt-3 text-body font-bold">
+        In plain words: the parts the app is made of, and the big choices we wrote down.
+      </p>
+      <p className="mt-4 max-w-prose text-body text-text-muted">
         Three Go services, a Postgres system of record with a transactional outbox, Redis for spatial search
         and locks, and this portal. The full C4 view is in <code>showcase/ARCHITECTURE.md</code>.
       </p>
 
-      <section className="mt-10">
-        <h2 className="text-2xl font-semibold">Services</h2>
-        <dl className="mt-4 divide-y divide-line border-y border-line">
+      <section className="mt-[40px]">
+        <h2 className="text-h2">Services</h2>
+        <dl className="mt-4 divide-y divide-border-subtle border-y border-border-subtle">
           {SERVICES.map((s) => (
             <div key={s.name} className="grid gap-1 py-4 sm:grid-cols-[14rem_1fr]">
               <dt>
-                <code className="font-semibold">{s.name}</code>
-                <span className="block text-sm text-muted">{s.tech}</span>
+                <code className="font-bold">{s.name}</code>
+                <span className="block text-caption text-text-muted">{s.tech}</span>
               </dt>
-              <dd className="text-muted">{s.job}</dd>
+              <dd className="text-text-muted">{s.job}</dd>
             </div>
           ))}
         </dl>
         <p className="mt-4">
           See matching work in the{" "}
-          <Link href="/architecture/h3-spatial" className="text-primary underline">
+          <Link href="/about/engineering/h3-spatial" className="text-link underline">
             H3 spatial sandbox
           </Link>
           .
         </p>
       </section>
 
-      <section className="mt-10">
-        <h2 className="text-2xl font-semibold">Architecture decision records</h2>
+      <section className="mt-[40px]">
+        <h2 className="text-h2">Architecture decision records</h2>
         <ul className="mt-4 space-y-3">
           {ADRS.map((a) => (
             <li key={a.id} className="bg-surface p-4">
-              <p className="font-semibold">
+              <p className="font-bold">
                 {a.id}: {a.title}
               </p>
-              <p className="text-sm text-muted">
+              <p className="text-caption text-text-muted">
                 <code>{a.file}</code>
               </p>
             </li>
           ))}
         </ul>
-        <p className="mt-4 text-muted">
+        <p className="mt-4 text-text-muted">
           The reasoning behind each is walked through in the{" "}
-          <Link href="/dossier/track-b-product" className="text-primary underline">
+          <Link href="/about/engineering/product" className="text-link underline">
             product dossier
           </Link>
           .

@@ -111,7 +111,7 @@ export function MockPay({ bookingId, code, totalPaise, method, backHref }: Props
       )}
       {phase === "processing" && (
         <div role="status" className="flex flex-col items-center gap-2 p-6">
-          <Loader2 aria-hidden className="h-10 w-10 animate-spin text-action" />
+          <Loader2 aria-hidden className="h-[40px] w-[40px] animate-spin text-action" />
           <p className="text-h4">{t("pay.processing")}</p>
         </div>
       )}
@@ -140,7 +140,7 @@ export function MockPay({ bookingId, code, totalPaise, method, backHref }: Props
       )}
 
       {phase === "form" && (
-        <form onSubmit={submit} noValidate className="flex flex-col gap-4" autoComplete="off">
+        <form method="post" onSubmit={submit} noValidate className="flex flex-col gap-4" autoComplete="off">
           {method === "upi" && (
             <Input
               label={t("pay.upiId")}

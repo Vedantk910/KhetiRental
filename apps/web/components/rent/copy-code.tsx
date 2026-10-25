@@ -23,7 +23,7 @@ export function CopyCode({ code }: { code: string }) {
       className="inline-flex min-h-tap items-center gap-2 rounded-control text-h2 tabular-nums hover:bg-surface-muted"
     >
       {code}
-      <Copy aria-hidden className="h-5 w-5 text-text-subtle" />
+      <Copy aria-hidden className="h-[20px] w-[20px] text-text-subtle" />
     </button>
   );
 }

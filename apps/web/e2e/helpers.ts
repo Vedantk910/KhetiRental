@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export const LOCALES = ["en", "hi", "mr"] as const;
 export const WIDTHS = [360, 390, 768, 1024, 1440] as const;
@@ -66,4 +66,11 @@ export async function setTheme(page: Page, theme: "light" | "dark") {
   }, theme);
   // Controls animate their colours for 100–120 ms; measure contrast after they settle.
   await page.waitForTimeout(250);
+}
+
+/** Waits until React has hydrated the element (its props are attached), so a click reaches its handler. */
+export async function untilInteractive(locator: Locator) {
+  await expect
+    .poll(() => locator.evaluate((el) => Object.keys(el).some((k) => k.startsWith("__reactProps"))))
+    .toBe(true);
 }

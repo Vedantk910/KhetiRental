@@ -79,7 +79,7 @@ export function RequestDetail({ b }: { b: BookingView }) {
       {live && phone && (
         <div className="grid gap-2 sm:grid-cols-2">
           <a href={`tel:${phone}`} className={btn}>
-            <Phone aria-hidden className="h-5 w-5" />
+            <Phone aria-hidden className="h-[20px] w-[20px]" />
             {t("call", { name: name.split(/\s+/)[0] })}
           </a>
           <a
@@ -91,7 +91,7 @@ export function RequestDetail({ b }: { b: BookingView }) {
             rel="noopener noreferrer"
             className={btn}
           >
-            <MessageCircle aria-hidden className="h-5 w-5" />
+            <MessageCircle aria-hidden className="h-[20px] w-[20px]" />
             {tb("whatsapp")}
           </a>
         </div>

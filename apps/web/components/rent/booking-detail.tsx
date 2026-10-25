@@ -80,7 +80,7 @@ export function BookingDetail({
     <div className="mx-auto flex max-w-[720px] flex-col gap-4 px-4 py-4 pb-8 sm:px-6">
       {justBooked && active && (
         <div role="status" className="flex items-start gap-3 rounded-card bg-success-bg p-4 text-success">
-          <CircleCheck aria-hidden className="mt-1 h-7 w-7 shrink-0" />
+          <CircleCheck aria-hidden className="mt-1 h-[28px] w-[28px] shrink-0" />
           <div>
             <p className="text-h3">{t("sent", { owner: ownerFirst })}</p>
             <p className="text-small text-text">
@@ -132,7 +132,7 @@ export function BookingDetail({
             rel="noopener noreferrer"
             className="inline-flex min-h-tap items-center gap-2 text-link underline underline-offset-4"
           >
-            <MapPin aria-hidden className="h-5 w-5" />
+            <MapPin aria-hidden className="h-[20px] w-[20px]" />
             {t("directions")}
           </a>
         )}
@@ -160,7 +160,7 @@ export function BookingDetail({
           {phone && (
             <>
               <a href={`tel:${phone}`} className={btn}>
-                <Phone aria-hidden className="h-5 w-5" />
+                <Phone aria-hidden className="h-[20px] w-[20px]" />
                 {t("call")}
               </a>
               <a
@@ -169,14 +169,14 @@ export function BookingDetail({
                 rel="noopener noreferrer"
                 className={btn}
               >
-                <MessageCircle aria-hidden className="h-5 w-5" />
+                <MessageCircle aria-hidden className="h-[20px] w-[20px]" />
                 {t("whatsapp")}
               </a>
             </>
           )}
           {status === "CONFIRMED" && (
             <a href={`/api/bookings/${b.id}/ics`} className={btn}>
-              <CalendarPlus aria-hidden className="h-5 w-5" />
+              <CalendarPlus aria-hidden className="h-[20px] w-[20px]" />
               {t("calendar")}
             </a>
           )}

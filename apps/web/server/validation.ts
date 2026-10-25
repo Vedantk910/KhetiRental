@@ -256,3 +256,9 @@ export const userRolesSchema = z
       .transform((r) => [...new Set(r)]),
   })
   .strict();
+
+/** Settings (UI-SPEC §4.15). Strict: no user id in any body, the cookie decides who is changed. */
+export const deleteAccountSchema = z.object({ confirm: z.literal("DELETE") }).strict();
+export const profileSchema = z.object({ name: nameSchema }).strict();
+export const phoneChangeSchema = z.object({ phone: phoneSchema, code: z.string().max(12) }).strict();
+export const rolesSchema = z.object({ renter: z.boolean(), owner: z.boolean() }).strict();

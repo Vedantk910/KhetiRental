@@ -1,7 +1,7 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { devCode, freshPhone, newVisitor, requestCode, sql, typeCode, watchHealth } from "./auth-helpers";
-import { expectNoAxeViolations, hasHScroll, setTheme } from "./helpers";
+import { expectNoAxeViolations, hasHScroll, setTheme, untilInteractive } from "./helpers";
 import { formatRupees } from "../lib/format";
 
 type Messages = typeof import("../messages/en.json");
@@ -224,9 +224,12 @@ for (const locale of LOCALES) {
       )
       .toBe(1);
     // a booked day can't be blocked, it opens the booking
-    if (inDays(accept).slice(0, 7) !== month)
-      await page.getByRole("button", { name: m.owner.nextMonth }).click();
-    await page.locator(`[data-date="${inDays(accept)}"]`).click();
+    const next = page.getByRole("button", { name: m.owner.nextMonth });
+    await untilInteractive(next);
+    if (inDays(accept).slice(0, 7) !== month) await next.click();
+    const day = page.locator(`[data-date="${inDays(accept)}"]`);
+    await untilInteractive(day);
+    await day.click();
     await expect(page).toHaveURL(new RegExp(`/owner/requests/${code1}$`));
     await page.goBack();
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

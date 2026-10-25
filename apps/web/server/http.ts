@@ -27,6 +27,8 @@ export const API_ERRORS = [
   "email_taken",
   "token_invalid",
   "has_bookings",
+  "active_bookings",
+  "phone_taken",
   "day_booked",
   "file_too_large",
   "file_type",

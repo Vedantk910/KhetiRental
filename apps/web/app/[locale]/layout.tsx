@@ -11,6 +11,7 @@ import { TabBar } from "@/components/shell/tab-bar";
 import { ToastProvider } from "@/components/ui/toast";
 import { routing } from "@/i18n/routing";
 import { MOTION_SCRIPT } from "@/lib/motion";
+import { THEME_SCRIPT } from "@/lib/theme";
 
 const ui = Mukta({
   subsets: ["latin", "devanagari"],
@@ -59,6 +60,7 @@ export default async function LocaleLayout({
       <head>
         {/* Sets data-motion before first paint, so nothing flashes (UI-SPEC §4.1.5). */}
         <script dangerouslySetInnerHTML={{ __html: MOTION_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="flex min-h-screen flex-col overflow-x-hidden font-ui antialiased">
         <NextIntlClientProvider>

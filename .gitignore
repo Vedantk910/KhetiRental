@@ -66,3 +66,7 @@ target/
 .scratch/khetirental-git-setup/
 docs/commit-sequence.md
 scripts/check-agent-tooling.sh
+
+# Local-only: agent test fixtures and private interview notes
+.scratch/skills-stack-e2e/
+docs/interview/

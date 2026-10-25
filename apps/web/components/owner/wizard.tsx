@@ -571,7 +571,7 @@ export function Wizard({
               </p>
             )}
             <Button variant="secondary" size="md" onClick={locate} className="self-start">
-              <LocateFixed aria-hidden className="h-5 w-5" />
+              <LocateFixed aria-hidden className="h-[20px] w-[20px]" />
               {t("useLocation")}
             </Button>
             {geoBad && (

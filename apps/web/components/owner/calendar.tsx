@@ -105,15 +105,15 @@ export function OwnerCalendar({
       <p className="text-caption text-text-muted">{t("blockHint")}</p>
       <ul className="flex flex-wrap gap-4 text-caption text-text-muted">
         <li>
-          <span aria-hidden className="mr-1 inline-block h-3 w-3 rounded-sm bg-action" />
+          <span aria-hidden className="mr-1 inline-block h-3 w-3 rounded-[2px] bg-action" />
           {t("legendBooked")}
         </li>
         <li>
-          <span aria-hidden className="mr-1 inline-block h-3 w-3 rounded-sm bg-success" />
+          <span aria-hidden className="mr-1 inline-block h-3 w-3 rounded-[2px] bg-success" />
           {t("legendFree")}
         </li>
         <li>
-          <span aria-hidden className="mr-1 inline-block h-3 w-3 rounded-sm bg-chip" />
+          <span aria-hidden className="mr-1 inline-block h-3 w-3 rounded-[2px] bg-chip" />
           {t("legendBlocked")}
         </li>
       </ul>

@@ -71,7 +71,7 @@ export async function searchUsers(u: SessionUser, q: string) {
     { id: string; name: string | null; email: string | null; phone: string | null; roles: string[] }[]
   >`
     SELECT id, name, email, phone, roles FROM users
-    WHERE ${q} = '' OR name ILIKE ${like} OR email ILIKE ${like} OR phone ILIKE ${like}
+    WHERE deleted_at IS NULL AND (${q} = '' OR name ILIKE ${like} OR email ILIKE ${like} OR phone ILIKE ${like})
     ORDER BY created_at DESC, id LIMIT 20`;
   return { items };
 }
@@ -82,7 +82,7 @@ export async function setUserRoles(u: SessionUser, id: string, roles: string[]) 
   if (id === u.id && !roles.includes("admin")) throw new ApiError(409, "invalid_state");
   const rows = await getSql()<
     { roles: string[] }[]
-  >`UPDATE users SET roles = ${roles} WHERE id = ${id} RETURNING roles`;
+  >`UPDATE users SET roles = ${roles} WHERE id = ${id} AND deleted_at IS NULL RETURNING roles`;
   const r = one(rows);
   if (!r) throw new ApiError(404, "not_found");
   return { id, roles: r.roles };

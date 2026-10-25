@@ -33,10 +33,33 @@ const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
 ];
 
+// Pre-rebuild URLs (UI-SPEC §4.19, D-16): the demo and dossier pages moved under /about/engineering and the
+// old marketplace demo is superseded by /rent. 308, with or without a locale prefix. Destinations are fixed
+// paths, never taken from the request, so nothing here can be turned into an open redirect.
+const MOVED = {
+  "/dossier/:old(.*-systems)": "/about/engineering/systems",
+  "/dossier/:old(.*-product)": "/about/engineering/product",
+  "/dossier": "/about/engineering",
+  "/architecture/h3-spatial": "/about/engineering/h3-spatial",
+  "/architecture": "/about/engineering/architecture",
+  "/escrow": "/about/engineering/escrow",
+  "/pricing": "/about/engineering/pricing",
+  "/marketplace": "/rent",
+  "/marketplace/search": "/rent",
+  "/marketplace/listing": "/owner/machines/new",
+};
+const moved = Object.entries(MOVED).flatMap(([from, to]) => [
+  { source: `/:locale(en|hi|mr)${from}`, destination: `/:locale${to}`, permanent: true },
+  { source: from, destination: to, permanent: true },
+]);
+
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
   poweredByHeader: false,
+  async redirects() {
+    return moved;
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

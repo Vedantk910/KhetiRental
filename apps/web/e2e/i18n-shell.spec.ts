@@ -161,8 +161,14 @@ test("CSP does not block the page: fonts load and nothing is refused", async ({ 
   expect(errors.filter((e) => /Content Security Policy|Refused/i.test(e))).toEqual([]);
 });
 
-test("legacy pages still render inside the new shell", async ({ page }) => {
-  for (const path of ["/en", "/en/pricing", "/en/escrow", "/en/marketplace", "/en/architecture"]) {
+test("engineering pages render inside the app shell", async ({ page }) => {
+  for (const path of [
+    "/en",
+    "/en/about/engineering",
+    "/en/about/engineering/pricing",
+    "/en/about/engineering/escrow",
+    "/en/about/engineering/architecture",
+  ]) {
     const res = await page.goto(path);
     expect(res!.status(), path).toBe(200);
     await expect(page.getByRole("banner")).toBeVisible();

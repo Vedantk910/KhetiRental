@@ -5,7 +5,7 @@
 # The k6 load test is separate: see showcase/tests/load/k6/full_flow.js.
 # apps/web needs `npm ci` first, and Postgres + PostGIS on WEB_DATABASE_URL (default the dev database,
 # postgres://kheti:kheti@localhost:5432/kheti). Its tests clone throwaway databases from template_postgis
-# and the e2e run builds its own kheti_e2e; the dev database's data is never read or written. Agent-tooling checks: scripts/check-agent-tooling.sh.
+# and the e2e run builds its own kheti_e2e; the dev database's data is never read or written.
 set -uo pipefail
 cd "$(dirname "$0")"
 failed=()

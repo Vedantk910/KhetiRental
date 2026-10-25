@@ -95,7 +95,7 @@ export function PhotoSlotTile({
             onClick={() => cam.current?.click()}
             className="!px-2 text-caption"
           >
-            <Camera aria-hidden className="h-5 w-5 shrink-0" />
+            <Camera aria-hidden className="h-[20px] w-[20px] shrink-0" />
             {t("takePhoto")}
           </Button>
           <Button
@@ -104,7 +104,7 @@ export function PhotoSlotTile({
             onClick={() => gal.current?.click()}
             className="!px-2 text-caption"
           >
-            <ImagePlus aria-hidden className="h-5 w-5 shrink-0" />
+            <ImagePlus aria-hidden className="h-[20px] w-[20px] shrink-0" />
             {t("gallery")}
           </Button>
         </div>

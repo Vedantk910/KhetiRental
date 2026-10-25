@@ -254,7 +254,7 @@ export function ResultsView({ initial, filters: f }: { initial: Page; filters: F
                 mapMode ? "border-action bg-selected text-selected-on" : "border-chip bg-surface",
               )}
             >
-              <MapIcon aria-hidden className="h-5 w-5" />
+              <MapIcon aria-hidden className="h-[20px] w-[20px]" />
               {mapMode ? t("list") : t("map")}
             </button>
           </div>

@@ -99,6 +99,7 @@ export function ProblemForm({
 
   return (
     <form
+      method="post"
       onSubmit={(e) => void send(e)}
       className="mx-auto flex max-w-[640px] flex-col gap-4 px-4 py-4 pb-8 sm:px-6"
     >
@@ -133,7 +134,7 @@ export function ProblemForm({
           ))}
           {photos.length < MAX_PHOTOS && (
             <Button type="button" variant="secondary" size="md" onClick={() => file.current?.click()}>
-              <Camera aria-hidden className="h-5 w-5" />
+              <Camera aria-hidden className="h-[20px] w-[20px]" />
               {t("addPhoto")}
             </Button>
           )}
@@ -167,7 +168,7 @@ export function ProblemForm({
             onClick={speech.toggle}
             aria-pressed={speech.listening}
           >
-            <Mic aria-hidden className="h-5 w-5" />
+            <Mic aria-hidden className="h-[20px] w-[20px]" />
             {t("speak")}
           </Button>
         )}

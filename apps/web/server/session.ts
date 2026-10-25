@@ -36,7 +36,7 @@ export async function userFromToken(token: string | undefined): Promise<SessionU
     await getSql()<SessionUser[]>`
     SELECT u.id, u.name, u.email, u.phone, u.roles
     FROM sessions s JOIN users u ON u.id = s.user_id
-    WHERE s.session_token = ${hashToken(token)} AND s.expires > now()`,
+    WHERE s.session_token = ${hashToken(token)} AND s.expires > now() AND u.deleted_at IS NULL`,
   );
   return u ?? null;
 }

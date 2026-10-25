@@ -26,7 +26,7 @@ Using your own Postgres instead of Docker: the tests clone throwaway databases f
 | `apps/web/` | The website (Next.js App Router, TypeScript, Tailwind). This is the product. |
 | `compose.yaml` | Local Postgres + PostGIS (and Redis for the showcase). |
 | `design/` | Approved UI mockups (reference only; see `UI-SPEC.md` §0). |
-| `docs/` | Agent docs and private interview material. |
+| `docs/` | Agent docs and the docs link checker. |
 | `showcase/` | Engineering portfolio: Go services, contracts, analytics, PRD, ADRs and the risk audit. Not on the website's request path. See [`showcase/README.md`](showcase/README.md). |
 | `GLOSSARY.md` | The terms used across the product and code. |
 

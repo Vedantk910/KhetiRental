@@ -108,6 +108,7 @@ export function OtpForm({ next }: { next: string | null }) {
 
   return (
     <form
+      method="post"
       noValidate
       onSubmit={(e) => {
         e.preventDefault();

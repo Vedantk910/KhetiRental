@@ -1,7 +1,6 @@
 # KhetiRental v2.0 — System Architecture
 
 > Agritech machinery sharing + 3-stage milestone escrow platform.
-> Co-authored on two tracks (see [`.scratch/khetirental-git-setup/PLAN.md`](../.scratch/khetirental-git-setup/PLAN.md) for the full ownership map).
 >
 > Provenance: originated Sept 2023 as an academic prototype (shortlisted, Internal Smart India Hackathon 2024 @ AISSMS COE); expanded to a production-grade distributed system in 2026.
 

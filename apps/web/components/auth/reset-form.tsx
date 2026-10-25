@@ -69,6 +69,7 @@ export function ResetForm({ token }: { token: string }) {
 
   return (
     <form
+      method="post"
       noValidate
       onSubmit={(e) => {
         e.preventDefault();

@@ -168,7 +168,7 @@ export function SearchForm({ initial, today }: { initial: Filters; today: string
             </h2>
             <PlaceInput value={place} onText={edit} onPick={pick} />
             <Button type="button" variant="secondary" size="md" loading={locating} onClick={locate}>
-              <LocateFixed aria-hidden className="h-5 w-5" />
+              <LocateFixed aria-hidden className="h-[20px] w-[20px]" />
               {t("locate")}
             </Button>
             <p role="status" className="text-caption text-text-muted empty:hidden">

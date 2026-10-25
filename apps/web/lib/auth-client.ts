@@ -44,3 +44,13 @@ export async function sessionRoles(): Promise<string[]> {
   const s = (await (await fetch("/api/auth/session")).json()) as { user?: { roles?: string[] } } | null;
   return s?.user?.roles ?? [];
 }
+
+/** Ends this browser's session on the server (the cookie and the sessions row), then the caller leaves the page. */
+export async function signOutRequest() {
+  const { csrfToken } = (await (await fetch("/api/auth/csrf")).json()) as { csrfToken: string };
+  await fetch("/api/auth/signout", {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded", "x-auth-return-redirect": "1" },
+    body: new URLSearchParams({ csrfToken, callbackUrl: location.origin }),
+  });
+}

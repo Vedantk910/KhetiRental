@@ -111,7 +111,7 @@ export function BookingsList({
       <h1 className="text-h2">{t("title")}</h1>
       {newOwner && (
         <div role="status" className="flex items-start gap-3 rounded-card bg-success-bg p-4 text-success">
-          <CircleCheck aria-hidden className="mt-1 h-7 w-7 shrink-0" />
+          <CircleCheck aria-hidden className="mt-1 h-[28px] w-[28px] shrink-0" />
           <p className="text-h3">{t("sent", { owner: newOwner })}</p>
         </div>
       )}

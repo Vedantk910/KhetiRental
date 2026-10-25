@@ -15,7 +15,7 @@ export async function createTestDb() {
   }
   const url = new URL(base);
   url.pathname = `/${name}`;
-  const c = connect(url.toString(), 25);
+  const c = connect(url.toString(), 12);
   await runMigrations(c.db);
   setConnection(c);
   return {

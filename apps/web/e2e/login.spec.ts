@@ -10,7 +10,7 @@ import {
   typeCode,
   watchHealth,
 } from "./auth-helpers";
-import { expectNoAxeViolations, hasHScroll, setTheme } from "./helpers";
+import { expectNoAxeViolations, hasHScroll, setTheme, untilInteractive } from "./helpers";
 
 const PASSWORD = "kheti-demo-2026";
 
@@ -335,6 +335,7 @@ test("forgot and reset password: same answer for any email, the link works once"
   await expect(page).toHaveURL(/\/en\/login\/reset\?token=/);
   await page.getByLabel("New password", { exact: true }).fill("new-password-22");
   await page.getByLabel("Confirm new password").fill("different-22");
+  await untilInteractive(page.getByRole("button", { name: "Save password" }));
   await page.getByRole("button", { name: "Save password" }).click();
   await expect(page.getByText("The two passwords don't match.")).toBeVisible();
   await page.getByLabel("Confirm new password").fill("new-password-22");
@@ -423,5 +424,29 @@ test("desktop: still field frame on the left, centred card, no heavy animation o
     await page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length),
   ).toBe(0);
   expect(await hasHScroll(page)).toBe(false);
+  await ctx.close();
+});
+
+test("a submit before the page is interactive never puts typed secrets in the URL", async ({ browser }) => {
+  // No JavaScript = the state a slow phone is in before hydration: the browser submits the form itself.
+  const ctx = await browser.newContext({ javaScriptEnabled: false });
+  const page = await ctx.newPage();
+  for (const [path, fill] of [
+    ["/en/login/reset?token=abc", ["new-password-22", "new-password-22"]],
+    ["/en/login?mode=signup", ["Kisan Rao"]],
+    ["/en/login/forgot", ["kisan@example.test"]],
+  ] as const) {
+    await page.goto(path);
+    const inputs = page.locator("form input:not([type=hidden]):not([type=radio])");
+    for (const [i, v] of fill.entries()) await inputs.nth(i).fill(v);
+    await Promise.all([
+      // eslint-disable-next-line @typescript-eslint/no-deprecated -- the only wait that covers a native form submit
+      page.waitForNavigation({ timeout: 5000 }).catch(() => undefined),
+      page.locator("form button[type=submit]").first().click(),
+    ]);
+    const url = decodeURIComponent(page.url());
+    for (const v of fill) expect(url, `${path} leaked into the URL`).not.toContain(v);
+    await expect(page.getByRole("heading", { level: 1 }), `${path} after a native submit`).toBeVisible();
+  }
   await ctx.close();
 });

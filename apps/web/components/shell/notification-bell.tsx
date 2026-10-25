@@ -53,7 +53,7 @@ export function NotificationBell({ overlay = false }: { overlay?: boolean }) {
         <span
           aria-hidden
           data-testid="bell-count"
-          className="absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-pill bg-danger px-1 text-[0.6875rem] font-bold leading-none text-bg"
+          className="absolute right-1 top-1 flex h-[20px] min-w-[20px] items-center justify-center rounded-pill bg-danger px-1 text-[0.6875rem] font-bold leading-none text-bg"
         >
           {/* Same digits as the label (Devanagari in mr), so the visible text matches the spoken name. */}
           {unread > 9 ? `${format.number(9)}+` : format.number(unread)}

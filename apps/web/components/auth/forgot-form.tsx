@@ -50,6 +50,7 @@ export function ForgotForm() {
 
   return (
     <form
+      method="post"
       noValidate
       onSubmit={(e) => {
         e.preventDefault();

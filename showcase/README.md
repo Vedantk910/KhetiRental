@@ -11,13 +11,13 @@ KhetiRental is a marketplace for renting tractors and other farm machinery by th
 | Page | What it shows |
 |---|---|
 | [/](https://khetirental.vercel.app/) | Home and headline evidence |
-| [/marketplace](https://khetirental.vercel.app/marketplace) | Search, quote and booking flow |
-| [/architecture/h3-spatial](https://khetirental.vercel.app/architecture/h3-spatial) | H3 spatial sandbox |
-| [/pricing](https://khetirental.vercel.app/pricing) | Itemised hourly price |
-| [/escrow](https://khetirental.vercel.app/escrow) | Three-stage escrow simulator |
-| [/architecture](https://khetirental.vercel.app/architecture) | System architecture |
-| [/dossier/track-a-systems](https://khetirental.vercel.app/dossier/track-a-systems) | Systems dossier |
-| [/dossier/track-b-product](https://khetirental.vercel.app/dossier/track-b-product) | Product dossier |
+| [/rent](https://khetirental.vercel.app/rent) | Search, quote and booking flow |
+| [/about/engineering/h3-spatial](https://khetirental.vercel.app/about/engineering/h3-spatial) | H3 spatial sandbox |
+| [/about/engineering/pricing](https://khetirental.vercel.app/about/engineering/pricing) | Itemised hourly price |
+| [/about/engineering/escrow](https://khetirental.vercel.app/about/engineering/escrow) | Three-stage escrow simulator |
+| [/about/engineering/architecture](https://khetirental.vercel.app/about/engineering/architecture) | System architecture |
+| [/about/engineering/systems](https://khetirental.vercel.app/about/engineering/systems) | Systems dossier |
+| [/about/engineering/product](https://khetirental.vercel.app/about/engineering/product) | Product dossier |
 
 ## Headline numbers
 

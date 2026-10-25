@@ -66,7 +66,7 @@ export function NotificationsList({ items }: { items: NotificationItem[] }) {
         )}
       </div>
       {items.length === 0 ? (
-        <EmptyState icon={<Bell aria-hidden className="h-10 w-10" />} title={t("empty")} />
+        <EmptyState icon={<Bell aria-hidden className="h-[40px] w-[40px]" />} title={t("empty")} />
       ) : (
         <ul className="flex flex-col gap-2">
           {items.map((n) => {
