@@ -237,6 +237,8 @@ export const priceHintSchema = z
     unit: z.enum(PRICE_UNITS),
     lat: num.pipe(z.number().min(-90).max(90)),
     lng: num.pipe(z.number().min(-180).max(180)),
+    hp: num.pipe(z.number().int().min(10).max(200)).optional(),
+    year: num.pipe(z.number().int().min(1970).max(2100)).optional(),
   })
   .strict();
 export const emptySchema = z.object({}).strict();

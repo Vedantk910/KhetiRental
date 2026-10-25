@@ -4,6 +4,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { config } from "@/config/site";
 import { formatRupees } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { S2Bars } from "./s2-bars";
 import { StoryMotion } from "./story-motion";
 import { TractorSlot } from "./tractor-slot";
 
@@ -77,20 +78,7 @@ export function Story({ ownerHref }: { ownerHref: string }) {
       <Section tone="surface" labelledBy="s2" pin="s2">
         <H2 id="s2">{t("s2.title")}</H2>
         <TractorSlot />
-        <div>
-          <div className="flex justify-between text-small">
-            <span>{t("s2.buy")}</span>
-            <strong>{rupees(640000)}</strong>
-          </div>
-          <div className="kr-shrink mt-[6px] h-[18px] rounded-[9px] bg-[#483F37]" />
-        </div>
-        <div>
-          <div className="flex justify-between text-small">
-            <span>{t("s2.rent")}</span>
-            <strong className="text-success">{rupees(2839)}</strong>
-          </div>
-          <div className="kr-grow mt-[6px] h-[18px] w-[12px] rounded-[9px] bg-success" />
-        </div>
+        <S2Bars />
       </Section>
 
       <Section tone="bg" labelledBy="s3">

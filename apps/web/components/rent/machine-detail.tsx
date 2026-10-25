@@ -22,6 +22,7 @@ const PICTO: Record<string, MachineName> = {
   combine_harvester: "combine",
   thresher: "thresher",
   trolley: "trolley",
+  baler: "baler",
 };
 
 const initials = (name: string) =>

@@ -1,6 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { newVisitor, signUp as signUpShared, sql, watchHealth } from "./auth-helpers";
-import { checkLayout, untilInteractive } from "./helpers";
+import { checkLayout, expectNoAxeViolations, untilInteractive } from "./helpers";
 import { MESSAGES } from "./messages";
 import { formatRupees } from "../lib/format";
 
@@ -269,6 +269,56 @@ for (const locale of LOCALES) {
     await Promise.all([owner.ctx.close(), renter.ctx.close(), admin.ctx.close()]);
   });
 }
+
+test("an owner lists a baler; far from any comparable, a tractor gets a labelled estimate", async ({
+  browser,
+}) => {
+  test.setTimeout(120_000);
+  const m = MESSAGES.en;
+  const owner = await signUp(browser, "Ramesh Patil", "owner");
+  const page = owner.page;
+  // A place with no machines within 25 km, so there is nothing to compare with.
+  await sql(
+    (s) => s`INSERT INTO pin_codes (pin, office, village, district, state, location, is_sample)
+      VALUES ('560001', 'Bengaluru G.P.O', 'Bengaluru', 'Bengaluru', 'Karnataka',
+              ST_SetSRID(ST_MakePoint(77.5946, 12.9716), 4326)::geography, false) ON CONFLICT DO NOTHING`,
+  );
+  const model = `B${Date.now() % 1e7}`;
+  const drive = async (category: string, tractor: boolean) => {
+    await page.goto("/en/owner/machines/new?step=1");
+    await page.getByRole("radio", { name: category }).click();
+    await page.getByLabel(m.list.company, { exact: true }).selectOption("swaraj");
+    await page.getByLabel(m.list.model, { exact: true }).fill(model);
+    if (tractor) await page.getByLabel(m.list.hp, { exact: true }).fill("45");
+    await page.getByLabel(m.list.year, { exact: true }).fill("2020");
+    await expectNoAxeViolations(page, `step 1 ${category}`);
+    await stepButton(page).click();
+    for (const slot of ["front", "side", "meter"])
+      await page.getByTestId(`photo-${slot}-gallery`).setInputFiles(png(`${slot}.png`));
+    await stepButton(page).click();
+    await page.getByRole("combobox").fill("560001");
+    await page.getByRole("option").first().click();
+    await stepButton(page).click();
+    await expect(page).toHaveURL(/step=4/);
+  };
+  await drive("Tractor", true);
+  const estimate = page.getByText(/Our pricing model estimates/);
+  await expect(estimate).toBeVisible();
+  await expect(estimate).toContainText("rough guide, not what machines nearby charge");
+  await expect(page.getByText(/Similar machines near you charge/)).toHaveCount(0);
+  await expectNoAxeViolations(page, "step 4 estimate");
+  await drive("Baler", false);
+  await expect(estimate).toHaveCount(0); // the estimate only exists for tractors
+  await page.locator("input[inputmode=numeric]").fill("1300");
+  await stepButton(page).click();
+  await expect(page).toHaveURL(/\/en\/owner$/);
+  const [row] = await sql(
+    (s) =>
+      s<{ category: string; hp: number | null }[]>`SELECT category, hp FROM machines WHERE model = ${model}`,
+  );
+  expect(row).toEqual({ category: "baler", hp: null });
+  await owner.ctx.close();
+});
 
 test("hostile text in a listing is shown as text, never run", async ({ browser }) => {
   test.setTimeout(90_000);

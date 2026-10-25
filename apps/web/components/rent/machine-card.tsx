@@ -21,6 +21,7 @@ const PICTO: Record<string, MachineName> = {
   combine_harvester: "combine",
   thresher: "thresher",
   trolley: "trolley",
+  baler: "baler",
 };
 
 /** The title line "Swaraj 744 FE + rotavator · 48 HP". */

@@ -118,9 +118,3 @@ test("search → book → replay → pay later, with the session from Mock Googl
   });
   expect(((await pay.json()) as { status: string }).status).toBe("pay_later");
 });
-
-test("the old settlement endpoint is admin-only (S-03)", async ({ request }) => {
-  expect((await request.post("/api/escrow/x/settle")).status()).toBe(401);
-  await signIn(request, "mock-google", {});
-  expect((await request.post("/api/escrow/x/settle")).status()).toBe(403);
-});

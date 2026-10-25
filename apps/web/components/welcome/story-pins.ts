@@ -35,9 +35,12 @@ function build(root: HTMLElement) {
       const q = (s: string) => sec.querySelectorAll<HTMLElement>(s);
       if (id === "s1") tl.from(q(".kr-fill"), { backgroundColor: grey, stagger: 0.1, duration: 0.1 });
       if (id === "s2") {
-        tl.fromTo(q(".kr-shrink"), { scaleX: 1 }, { scaleX: 0.12, duration: 0.4 }, 0)
-          .fromTo(q(".kr-grow"), { scaleX: 0 }, { scaleX: 1, duration: 0.3 }, 0.1)
-          .fromTo(q("[data-tractor-slot]"), { "--kr-p": 0 }, { "--kr-p": 1, duration: 1 }, 0);
+        tl.fromTo(q(".kr-grow"), { scaleX: 0 }, { scaleX: 1, duration: 0.3, stagger: 0.1 }, 0.1).fromTo(
+          q("[data-tractor-slot]"),
+          { "--kr-p": 0 },
+          { "--kr-p": 1, duration: 1 },
+          0,
+        );
       }
       if (id === "s5") tl.from(q(".kr-stamp"), { opacity: 0, scale: 1.15, stagger: 0.3, duration: 0.3 });
     });

@@ -51,7 +51,10 @@ async function scrollThrough(page: Page) {
 
 const slot = (page: Page) => page.locator("[data-tractor-slot]");
 const scaleX = (page: Page, sel: string) =>
-  page.locator(sel).evaluate((el) => new DOMMatrixReadOnly(getComputedStyle(el).transform).a);
+  page
+    .locator(sel)
+    .first()
+    .evaluate((el) => new DOMMatrixReadOnly(getComputedStyle(el).transform).a);
 
 test.describe("3D and pins never load unless motion is rich", () => {
   for (const mode of ["lite", "none"] as const) {
@@ -95,6 +98,8 @@ test.describe("3D and pins never load unless motion is rich", () => {
     expect((await lazy.settled()).glb, "nothing 3D before S2 is near").toBe(0);
     await slot(page).scrollIntoViewIfNeeded();
     await expect(slot(page).locator("canvas")).toBeVisible({ timeout: 15_000 });
+    // The canvas mounts at opacity 0 over the still and fetches the model after; wait for that fetch.
+    await expect.poll(() => lazy.seen.glb).toBe(1);
     const seen = await lazy.settled();
     expect(seen.glb).toBe(1);
     expect(seen.scene).toBeGreaterThan(0);
@@ -177,26 +182,48 @@ test.describe("reduced motion", () => {
       await page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length),
     ).toBe(0);
     await slot(page).scrollIntoViewIfNeeded();
-    expect(await scaleX(page, ".kr-shrink")).toBeCloseTo(0.12, 2);
-    expect(await scaleX(page, ".kr-grow")).toBe(1);
+    await expectHonestBars(page);
     await expect(page.locator(".kr-reveal").first()).toHaveCSS("opacity", "1");
     await expect(slot(page).locator("svg")).toBeVisible();
   });
 });
 
+/** Buy fills the row; rent is its true (tiny) share, held at a visible stub. Both are fully drawn. */
+async function expectHonestBars(page: Page) {
+  const bars = page.locator(".kr-grow");
+  await expect(bars).toHaveCount(2);
+  const [buy, rent] = await bars.evaluateAll((els) =>
+    els.map((el) => ({
+      scale: new DOMMatrixReadOnly(getComputedStyle(el).transform).a,
+      width: el.getBoundingClientRect().width,
+      row: el.parentElement!.getBoundingClientRect().width,
+    })),
+  );
+  expect(buy.scale).toBe(1);
+  expect(rent.scale).toBe(1);
+  expect(buy.width).toBeCloseTo(buy.row, 0);
+  expect(rent.width).toBeGreaterThanOrEqual(12);
+  expect(rent.width).toBeLessThan(buy.width * 0.1);
+}
+
 test.describe("S2 bars", () => {
-  test("the buy bar shrinks from full width as S2 scrolls in (lite, CSS)", async ({ page }) => {
+  test("both bars draw in from zero as S2 scrolls in, ending at the honest widths (lite, CSS)", async ({
+    page,
+  }) => {
     await asDevice(page, "lite");
     await page.goto("/en");
     await page.evaluate(() => {
       window.scrollTo(0, 0);
     });
-    const before = await scaleX(page, ".kr-shrink");
-    expect(before).toBeGreaterThan(0.9);
+    expect(await scaleX(page, ".kr-grow")).toBeLessThan(0.1);
     await page.evaluate(() => {
-      document.querySelector(".kr-shrink")!.scrollIntoView({ block: "center", behavior: "instant" });
+      document.querySelector(".kr-grow")!.scrollIntoView({ block: "center", behavior: "instant" });
     });
-    await expect.poll(() => scaleX(page, ".kr-shrink")).toBeLessThan(0.2);
+    await expect.poll(() => scaleX(page, ".kr-grow")).toBeGreaterThan(0.9);
+    await page.evaluate(() => {
+      document.querySelector(".kr-grow")!.scrollIntoView({ block: "start", behavior: "instant" });
+    });
+    await expect.poll(() => scaleX(page, ".kr-grow")).toBe(1);
   });
 });
 
@@ -235,14 +262,17 @@ for (const locale of LOCALES) {
 }
 
 test.describe("adversarial", () => {
-  const reachable = async (page: Page) => {
+  const reachable = async (page: Page, phase = "") => {
     // every story title can be scrolled to and is readable, and the page bottom is reachable (no stuck pin)
     for (const id of ["s1", "s2", "s3", "s4", "s5", "s6", "s7"]) {
-      await page.evaluate((i) => {
-        document.getElementById(i)!.scrollIntoView({ block: "center", behavior: "instant" });
-      }, id);
-      await page.waitForTimeout(80);
-      await expect(page.locator(`#${id}`)).toBeInViewport();
+      // Retry: scrollIntoView is a no-op while a pinned section is still position: fixed from the last scroll.
+      await expect(async () => {
+        await page.evaluate((i) => {
+          document.getElementById(i)!.scrollIntoView({ block: "center", behavior: "instant" });
+        }, id);
+        await page.waitForTimeout(80);
+        await expect(page.locator(`#${id}`), `${phase} #${id}`).toBeInViewport({ timeout: 500 });
+      }).toPass({ timeout: 5000 });
     }
     await page.evaluate(() => {
       window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
@@ -349,13 +379,15 @@ test.describe("adversarial", () => {
     await expect(slot(page).locator("canvas")).toHaveCount(0);
     await expect(slot(page).locator("svg")).toBeVisible();
     await expect(page.locator("[data-pinned]")).toHaveCount(0);
-    await expect.poll(() => scaleX(page, ".kr-shrink")).toBeCloseTo(0.12, 2);
-    await reachable(page);
+    await expect.poll(() => scaleX(page, ".kr-grow")).toBe(1);
+    await reachable(page, "none");
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await expect(page.locator("html")).toHaveAttribute("data-motion", "rich");
     await slot(page).scrollIntoViewIfNeeded();
     await expect(slot(page).locator("canvas")).toBeVisible({ timeout: 15_000 });
-    await reachable(page);
+    // Pins rebuild after idle; check reachability once they're back, not mid-rebuild.
+    await expect(page.locator("[data-pinned]").first()).toBeAttached({ timeout: 15_000 });
+    await reachable(page, "rich-again");
     expect(errors).toEqual([]);
   });
 });

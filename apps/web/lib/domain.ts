@@ -10,6 +10,7 @@ export const CATEGORIES = [
   "combine_harvester",
   "thresher",
   "trolley",
+  "baler",
 ] as const;
 export type Category = (typeof CATEGORIES)[number];
 
@@ -56,7 +57,7 @@ export const JOB_MACHINES: Record<Job, { categories: Category[]; attachments: At
   rotavate: { categories: ["rotavator"], attachments: ["rotavator"] },
   sow: { categories: ["seed_drill"], attachments: ["seed_drill"] },
   spray: { categories: ["sprayer"], attachments: ["sprayer"] },
-  harvest: { categories: ["combine_harvester", "thresher"], attachments: ["harvester"] },
+  harvest: { categories: ["combine_harvester", "thresher", "baler"], attachments: ["harvester"] },
   transport: { categories: ["trolley"], attachments: ["trolley"] },
 };
 

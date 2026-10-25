@@ -24,13 +24,13 @@ let ids: Ids;
 let detailId: string;
 test.beforeAll(async () => {
   ids = await loadIds();
-  // The same machine every run, whatever ids the seed handed out.
+  // The same machine every run, whatever ids the seed handed out; in Jaipur, where the shots search from.
   detailId = (
     await sql(
       (s) =>
         s<
           { id: string }[]
-        >`SELECT id FROM machines WHERE is_sample AND active AND rc_status = 'checked' ORDER BY make, model, village, id LIMIT 1`,
+        >`SELECT id FROM machines WHERE is_sample AND active AND rc_status = 'checked' AND pin LIKE '30%' ORDER BY make, model, village, id LIMIT 1`,
     )
   )[0].id;
 });

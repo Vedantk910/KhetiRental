@@ -178,6 +178,46 @@ describe("GET /api/owner/price-hint", () => {
     );
     expect((await hint(null, "category=sprayer&unit=acre&lat=1&lng=1")).status).toBe(401);
   });
+
+  describe("estimate fallback (fewer than 3 comparables)", () => {
+    const hint = (u: TestUser | null, q: string) => hintRoute(req(`/api/owner/price-hint?${q}`, as(u)), none);
+    const E = "category=tractor&unit=hour&lat=26.9&lng=75.8";
+
+    it("falls back to the pricing-engine estimate, labelled as such; a market range wins at 3+", async () => {
+      const owner = await makeUser(["owner"]);
+      await makeMachine(owner.id, { lat: 26.9, lng: 75.8, pricePaise: 80_000 });
+      await makeMachine(owner.id, { lat: 26.9, lng: 75.8, pricePaise: 90_000 });
+      const est = await (await hint(owner, `${E}&hp=45&year=2020`)).json();
+      expect(est).toMatchObject({ n: 2, estimate: true });
+      expect(est.minRupees).toBeGreaterThan(0);
+      expect(est.maxRupees).toBeGreaterThan(est.minRupees);
+      // no HP, or not a tractor: nothing honest to estimate
+      expect(await (await hint(owner, E)).json()).toEqual({ n: 0 });
+      expect(
+        await (await hint(owner, "category=sprayer&unit=day&lat=26.9&lng=75.8&hp=45&year=2020")).json(),
+      ).toEqual({ n: 0 });
+      await makeMachine(owner.id, { lat: 26.9, lng: 75.8, pricePaise: 100_000 });
+      const market = await (await hint(owner, `${E}&hp=45&year=2020`)).json();
+      expect(market).toEqual({ n: 3, minRupees: 850, maxRupees: 950 });
+    });
+
+    it("a renter cannot call it, and hostile hp/year never 500", async () => {
+      const owner = await makeUser(["owner"]);
+      expect((await hint(await makeUser(["renter"]), `${E}&hp=45&year=2020`)).status).toBe(403);
+      for (const bad of [
+        "hp=1e309",
+        "hp=-5",
+        "hp=9999",
+        "hp=45;DROP",
+        "year=1800",
+        "year=NaN",
+        "hp=4.5&year=2020",
+      ]) {
+        const status = (await hint(owner, `${E}&${bad}`)).status;
+        expect(status, bad).toBe(400);
+      }
+    });
+  });
 });
 
 describe("owner mode and /api/me", () => {

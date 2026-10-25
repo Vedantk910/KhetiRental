@@ -15,7 +15,7 @@ cd apps/web && npm ci && npm run db:setup  # migrations + sample data
 npm run dev                                # http://localhost:3000
 ```
 
-Every external service (Google sign-in, SMS OTP, payments, notifications) runs as a local mock when its key is empty, so no accounts or keys are needed. In dev, "Continue with Google" signs in a sample user, OTP codes and password-reset links print in the server log, and seeded accounts (`ramesh@khetirental.test`, `sunil@khetirental.test`, …) use the password `kheti-demo-2026`.
+Every external service (Google sign-in, SMS OTP, payments, notifications) runs as a local mock when its key is empty, so no accounts or keys are needed. In dev, "Continue with Google" signs in a sample user, OTP codes and password-reset links print in the server log, and seeded accounts (`ramesh@khetirental.test` owner, `sunil@khetirental.test` renter, `admin@khetirental.test` admin, …) use the password `kheti-demo-2026`.
 
 Using your own Postgres instead of Docker: the tests clone throwaway databases from `template_postgis`, which the Docker image creates. Create it once as a superuser: `createdb -T template0 template_postgis && psql -d template_postgis -c 'CREATE EXTENSION postgis; CREATE EXTENSION btree_gist; ALTER DATABASE template_postgis IS_TEMPLATE true'`.
 

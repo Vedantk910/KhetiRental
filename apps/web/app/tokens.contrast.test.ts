@@ -43,13 +43,8 @@ describe.each(Object.entries(THEMES))("%s theme contrast", (_n, vars) => {
     },
   );
 
-  // Owner decision pending: warning text on the muted surface is 4.44:1 in the light theme (a palette change, not made
-  // here). The pairing is not used by any page; the axe sweep fails if one ever is.
-  const NOT_PAIRED = new Set(["warning|surface-muted"]);
   it.each(
-    FLOORS.flatMap((f) =>
-      ["text-subtle", "link", "success", "warning", "danger", "info"].map((t) => [t, f]),
-    ).filter(([t, f]) => !NOT_PAIRED.has(`${t}|${f}`)),
+    FLOORS.flatMap((f) => ["text-subtle", "link", "success", "warning", "danger", "info"].map((t) => [t, f])),
   )("text %s on %s is at least 4.5:1", (t, f) => {
     expect(ratio(vars, t, f)).toBeGreaterThanOrEqual(4.5);
   });

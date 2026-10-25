@@ -130,6 +130,41 @@ describe("listing CRUD", () => {
     ).toBe(204);
   });
 
+  it("lists a baler, and refuses hostile category values", async () => {
+    const owner = await makeUser(["owner"]);
+    const baler = {
+      ...listing,
+      category: "baler",
+      make: "Fieldking",
+      model: "Square Baler",
+      hp: null,
+      attachments: [],
+      priceUnit: "acre",
+    };
+    const r = await create(owner, baler);
+    expect(r.status).toBe(201);
+    const { id } = await r.json();
+    const [m] = await t.sql<{ category: string }[]>`SELECT category FROM machines WHERE id = ${id}`;
+    expect(m.category).toBe("baler");
+    for (const category of ["balers", "BALER", "baler'; DROP TABLE machines; --", ["baler"], null]) {
+      expect((await create(owner, { ...baler, category })).status, JSON.stringify(category)).toBe(400);
+    }
+  });
+
+  it("many owners listing at once all succeed, each seeing only their own", async () => {
+    const owners = await Promise.all(Array.from({ length: 12 }, () => makeUser(["owner"])));
+    const res = await Promise.all(owners.map((o) => create(o)));
+    expect(res.map((r) => r.status)).toEqual(Array(12).fill(201));
+    const mine = await Promise.all(
+      owners.map(
+        async (o) =>
+          (await (await listMine(req("/api/owner/machines", { headers: { cookie: o.cookie } }), none)).json())
+            .items,
+      ),
+    );
+    expect(mine.every((items: unknown[]) => items.length === 1)).toBe(true);
+  });
+
   it("hostile listing input never 500s", async () => {
     const owner = await makeUser(["owner"]);
     for (const body of [

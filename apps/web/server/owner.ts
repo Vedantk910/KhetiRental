@@ -1,10 +1,10 @@
 // Owner dashboard data (UI-SPEC §4.12): earnings ledger, the month calendar, the price hint, owner mode,
 // and one machine in the shape the edit wizard needs.
-import { ACTIVE_STATUSES, keepPaise } from "@/lib/domain";
+import { ACTIVE_STATUSES, keepPaise, type PriceUnit } from "@/lib/domain";
 import { getSql, one } from "./db";
 import { expireStale } from "./bookings";
 import { ApiError } from "./http";
-import { todayIst } from "./pricing";
+import { estimateHintRupees, todayIst } from "./pricing";
 import { requireRole, type SessionUser } from "./session";
 
 const ACTIVE = [...ACTIVE_STATUSES];
@@ -69,11 +69,14 @@ export async function ownerCalendar(u: SessionUser, id: string, month: string): 
 const HINT_MIN = 3;
 const HINT_KM = 25;
 
-/** "Similar machines near you charge …": the 25th–75th percentile; hidden with fewer than 3 to compare. */
+/**
+ * "Similar machines near you charge …": the 25th–75th percentile. With fewer than 3 to compare, a tractor
+ * with a known HP gets the pricing-engine estimate instead (`estimate: true`); anything else gets nothing.
+ */
 export async function priceHint(
   u: SessionUser,
-  q: { category: string; unit: string; lat: number; lng: number },
-): Promise<{ n: 0 } | { n: number; minRupees: number; maxRupees: number }> {
+  q: { category: string; unit: PriceUnit; lat: number; lng: number; hp?: number; year?: number },
+): Promise<{ n: 0 } | { n: number; minRupees: number; maxRupees: number; estimate?: true }> {
   requireRole(u, "owner");
   const r = one(
     await getSql()<{ n: number; lo: number | null; hi: number | null }[]>`
@@ -84,7 +87,12 @@ export async function priceHint(
     WHERE active AND category = ${q.category} AND price_unit = ${q.unit}
       AND ST_DWithin(location, ST_SetSRID(ST_MakePoint(${q.lng}, ${q.lat}), 4326)::geography, ${HINT_KM * 1000})`,
   );
-  if (!r || r.n < HINT_MIN || r.lo === null || r.hi === null) return { n: 0 };
+  if (!r) return { n: 0 };
+  if (r.n < HINT_MIN || r.lo === null || r.hi === null) {
+    if (q.category !== "tractor" || q.hp === undefined) return { n: 0 };
+    const ageYears = q.year === undefined ? 5 : new Date().getFullYear() - q.year;
+    return { n: r.n, ...estimateHintRupees({ hp: q.hp, ageYears, unit: q.unit }), estimate: true };
+  }
   const tens = (paise: number) => Math.round(paise / 1000) * 10;
   return { n: r.n, minRupees: tens(r.lo), maxRupees: tens(r.hi) };
 }

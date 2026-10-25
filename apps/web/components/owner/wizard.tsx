@@ -23,6 +23,7 @@ import {
   fromMachine,
   makeName,
   MAKES,
+  int,
   sundaysBetween,
   toPayload,
   validateStep,
@@ -50,18 +51,7 @@ const PICTO: Record<Category, MachineName> = {
   combine_harvester: "combine",
   thresher: "thresher",
   trolley: "trolley",
-};
-const MACHINE_KEY: Record<
-  Category,
-  "tractor" | "rotavator" | "seedDrill" | "sprayer" | "combine" | "thresher" | "trolley"
-> = {
-  tractor: "tractor",
-  rotavator: "rotavator",
-  seed_drill: "seedDrill",
-  sprayer: "sprayer",
-  combine_harvester: "combine",
-  thresher: "thresher",
-  trolley: "trolley",
+  baler: "baler",
 };
 const DRAFT_KEY = "kr:listing-draft:v1";
 const HORIZON_DAYS = 60;
@@ -149,7 +139,7 @@ export function Wizard({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [geoBad, setGeoBad] = useState(false);
-  const [hint, setHint] = useState<{ min: number; max: number } | null>(null);
+  const [hint, setHint] = useState<{ min: number; max: number; estimate: boolean } | null>(null);
   const [month, setMonth] = useState(today.slice(0, 7));
   const created = useRef<string | null>(null);
   const uploaded = useRef(new Set<PhotoKey>());
@@ -218,18 +208,27 @@ export function Wizard({
       lat: String(draft.lat),
       lng: String(draft.lng),
     });
+    const hp = int(draft.hp);
+    if (draft.category === "tractor" && hp >= 10 && hp <= 200) q.set("hp", String(hp));
+    if (int(draft.year) >= 1970) q.set("year", String(int(draft.year)));
     fetch(`/api/owner/price-hint?${q}`, { signal: ac.signal })
       .then((r) =>
-        r.ok ? (r.json() as Promise<{ n: number; minRupees?: number; maxRupees?: number }>) : null,
+        r.ok
+          ? (r.json() as Promise<{ n: number; minRupees?: number; maxRupees?: number; estimate?: boolean }>)
+          : null,
       )
       .then((j) => {
-        setHint(j && j.n > 0 && j.minRupees && j.maxRupees ? { min: j.minRupees, max: j.maxRupees } : null);
+        setHint(
+          j?.minRupees && j.maxRupees
+            ? { min: j.minRupees, max: j.maxRupees, estimate: j.estimate === true }
+            : null,
+        );
       })
       .catch(() => undefined);
     return () => {
       ac.abort();
     };
-  }, [step, draft.category, draft.unit, draft.lat, draft.lng]);
+  }, [step, draft.category, draft.unit, draft.lat, draft.lng, draft.hp, draft.year]);
 
   const go = () => {
     if (Object.keys(errors).length > 0) {
@@ -368,7 +367,7 @@ export function Wizard({
   const priceOk = Number.isInteger(price) && price >= 1 && price <= 100_000;
   const money = (rupees: number) => formatRupees(rupees * 100, locale);
   const keep = priceOk ? keepPaise(price * 100) : 0;
-  const machineLabel = tm(MACHINE_KEY[draft.category]).toLocaleLowerCase(locale);
+  const machineLabel = tm(PICTO[draft.category]).toLocaleLowerCase(locale);
 
   const startMonth = today.slice(0, 7);
   const end = addDays(today, HORIZON_DAYS);
@@ -416,7 +415,7 @@ export function Wizard({
             }}
             options={CATEGORIES.map((c) => ({
               value: c,
-              label: tm(MACHINE_KEY[c]),
+              label: tm(PICTO[c]),
               icon: <Pictogram name={PICTO[c]} />,
             }))}
           />
@@ -701,7 +700,7 @@ export function Wizard({
           />
           {hint && (
             <p className="rounded-control bg-[rgb(var(--sarson-100))] p-3 text-small text-[rgb(var(--n-950))]">
-              {t("similar", {
+              {t(hint.estimate ? "similarEstimate" : "similar", {
                 range: t("range", { min: money(hint.min), max: money(hint.max), per: unitWord }),
               })}
             </p>

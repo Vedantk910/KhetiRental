@@ -84,7 +84,7 @@ const REQUIRED_PHOTOS = ["front", "side", "meter"] as const;
 export const makeName = (d: Pick<Draft, "make" | "makeOther">) =>
   d.make === "other" ? d.makeOther.trim() : (MAKE_NAME[d.make] ?? "");
 
-const int = (s: string) => {
+export const int = (s: string) => {
   const n = toAsciiNumber(s);
   return Number.isInteger(n) ? n : NaN;
 };

@@ -66,7 +66,7 @@ These are the same tokens as REVIEW.md Phase 3 §1, repeated here so this file s
 | `on-action` | `#FFFFFF` | `#13100D` | Text on primary buttons |
 | `selected` | `#FFD45C` + 2 px `#223585` border | same | Selected chip, tile or radio row (`#FFF4CC` fill for large rows) |
 | `success` / `success-bg` | `#1E7B3C` / `#E7F4EA` | `#6CCB8A` / `#1F3326` | "Free 2–4 Nov", "Confirmed", "Driver included" |
-| `warning` / `warning-bg` | `#B4500A` / `#FDEEE2` | `#F59E5B` / `#3A2A1C` | "Waiting for owner", reply timers |
+| `warning` / `warning-bg` | `#B14F0A` / `#FDEEE2` | `#F59E5B` / `#3A2A1C` | "Waiting for owner", reply timers |
 | `danger` / `danger-bg` | `#B42318` / `#FDECEA` | `#F97066` / `#3A1F1C` | Errors, Cancel button text and border |
 | `info` / `info-bg` | `#2C44A8` / `#EAEFFB` | `#8DA2E3` / `#1E2440` | "RC checked", demo-payment banner |
 | `owner-hero` | `#223585` (text `#FFFFFF`, tiles `#1B2A66`, labels `#DCE3F7`) | same | Owner dashboard header, story owner section |
@@ -125,7 +125,7 @@ The full `tokens.css` and `tailwind.config.ts` follow, identical to REVIEW.md Ph
   --selected: var(--sarson-300); --on-selected: var(--n-950); --selected-border: var(--neel-700);
   --focus: var(--neel-900);   --focus-halo: var(--sarson-300);
   --success: 30 123 60;  --success-bg: 231 244 234;
-  --warning: 180 80 10;  --warning-bg: 253 238 226;
+  --warning: 177 79 10;  --warning-bg: 253 238 226;
   --danger: 180 35 24;   --danger-bg: 253 236 234;
   --info: 44 68 168;     --info-bg: 234 239 251;
   --overlay: 19 16 13;
@@ -360,7 +360,7 @@ Each section fades and slides up 28 px as it enters, using CSS `animation-timeli
 | # | Background | Title key | Content | Clickable |
 |---|---|---|---|---|
 | S1 | bg | `story.s1` "A tractor costs ₹6–7 lakh. Most of the year, it waits in the shed." | Eyebrow `story.problem` (14 px bold, `#8F5F00`, letter-spacing 1 px). A strip of 182 small squares (26 columns, 10 px tall, 3 px gap, 2 px radius); every 12th is mustard `#FBC02D`, the rest `#E5DDD1`. As it scrolls into view the mustard squares fill one by one (scroll-driven); with reduced motion they're just shown. Caption `story.s1.caption` | – |
-| S2 | surface | `story.s2` "You don't need to own it. You need it on time." | The **3D tractor slot** (160 px tall on phones, 360 px on desktop, `surface-muted`, `rounded-card`), see §4.1.5. Two bars: "Buy" ₹6,40,000 (full width, `#483F37`) and "Rent 4 hours" ₹2,839 (12 px wide, `success`); as it scrolls in, the buy bar shrinks from full width to a short stub | – |
+| S2 | surface | `story.s2` "You don't need to own it. You need it on time." | The **3D tractor slot** (160 px tall on phones, 360 px on desktop, `surface-muted`, `rounded-card`), see §4.1.5. Two bars drawn to the true price gap: "Buy" ₹6,40,000 (full width, `#483F37`) and "Rent 4 hours" ₹2,839 (its real share of the width, never under a 12 px stub, `success`); as it scrolls in both draw in from zero and the buy bar stays full width. Reduced motion shows the finished bars | – |
 | S3 | bg | `story.s3` "It's already near you." | A stylised village SVG (358 × 220 on phones; scale up on desktop): a canal, roads, a hex ring of 7 cells around a mustard centre cell with a blue farm dot, and 3 black price pills ₹710 / ₹650 / ₹1,400. As it scrolls in, the hex ring outlines draw one by one, then the pills pop in (scale 0.6 → 1, staggered 120 ms) | – |
 | S4 | surface | `story.s4` "The full price, before you say yes." | Receipt panel (`bg`, `rounded-card`, 18 px): Rent 4 h × ₹710 = ₹2,840; Diesel "Included" (success, bold); Deposit (comes back) ₹1,950; total row "You pay ₹2,840". Rows appear one after another as it scrolls in | – |
 | S5 | bg | `story.s5` "The owner is paid after the job, not before." | 3 equal cards (2 px `action` border): numbered circles 1/2/3 (44 px, action fill), titles Handover / Work / Return, captions "Photo + OTP" / "Hours counted" / "Owner paid". They stamp in one by one (scale 1.15 → 1 with fade) | – |
@@ -828,7 +828,7 @@ The welcome hero always fills the viewport height (`100svh`, clamped to 640–10
 |---|---|---|---|
 | Welcome scene | tractor rounds, strips, wheels, bob, puffs, clouds, crops, sun | §4.1.2 | Off, still frame |
 | Welcome counters | count up 0 → value | 1800 ms ease-out-cubic | Final values |
-| Story sections | fade and slide up, strip fill, bar shrink, hex draw, pill pop, receipt rows, stamps | scroll-driven | Shown static |
+| Story sections | fade and slide up, strip fill, bar draw-in, hex draw, pill pop, receipt rows, stamps | scroll-driven | Shown static |
 | 3D tractor | rotate with scroll | scroll-linked | Not loaded |
 | Sheets / dialogs | slide up / fade | 200 ms `cubic-bezier(.2,.8,.2,1)` | Instant |
 | Chips / tiles selection | background fill | 120 ms | Instant |
@@ -2027,7 +2027,7 @@ class Component extends DCLogic {
   renderVals() {
     return {
       list: [
-        { status: 'Waiting for owner', chipBg: '#FDEEE2', chipFg: '#B4500A', code: 'KR-4821', when: 'Mon 2 – Wed 4 Nov · from 7 am', what: 'Swaraj 744 FE + rotavator · Ramesh K.' },
+        { status: 'Waiting for owner', chipBg: '#FDEEE2', chipFg: '#B14F0A', code: 'KR-4821', when: 'Mon 2 – Wed 4 Nov · from 7 am', what: 'Swaraj 744 FE + rotavator · Ramesh K.' },
         { status: 'Confirmed', chipBg: '#E7F4EA', chipFg: '#1E7B3C', code: 'KR-4790', when: 'Sat 14 Nov · morning', what: 'Trolley · Sunita P.' }
       ]
     };
@@ -2164,7 +2164,7 @@ a{color:#223585}a:hover{color:#1B2A66}
 <sc-if value="{{none}}" hint-placeholder-val="{{ false }}"><p style="margin: 0; font-size: 18px; color: #483F37">No new requests. We'll SMS you when one comes.</p></sc-if>
 <sc-for list="{{reqs}}" as="r" hint-placeholder-count="2">
 <article style="background: #FFFFFF; border: 2px solid #FBC02D; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
-<div style="display: flex; justify-content: space-between"><strong style="font-size: 18px">{{r.who}}</strong><span style="font-size: 14px; font-weight: 700; color: #B4500A">Reply in {{r.left}}</span></div>
+<div style="display: flex; justify-content: space-between"><strong style="font-size: 18px">{{r.who}}</strong><span style="font-size: 14px; font-weight: 700; color: #B14F0A">Reply in {{r.left}}</span></div>
 <span style="font-size: 16px; color: #483F37">{{r.what}}</span>
 <strong style="font-size: 22px">{{r.amount}}</strong>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 4px">
@@ -2243,7 +2243,7 @@ class Component extends DCLogic {
 "t1":{"x":940,"y":-300,"text":"Farmer app: search → results → detail → book → my bookings","kind":"title1","maxW":2270},
 "t2":{"x":940,"y":1300,"text":"Owner app","kind":"title1","maxW":860},
 "s0":{"x":-420,"y":0,"w":360,"text":"Live background: the tractor drives across the field, wheels turn, the ploughed strip grows behind it, clouds drift, crops sway. Open Tweaks on this artboard to change tractor speed, time of day (morning / noon / evening) and turn the tractor off. Phones with reduced motion get a still scene.","fill":"yellow","size":"s"},
-"s1":{"x":-420,"y":900,"w":360,"text":"Story below the hero: each section fades up as it scrolls in, the year strip fills, the ₹6.4 lakh bar shrinks. Desktop and fast phones also get the rotating 3D tractor in the 'buy vs rent' scene.","fill":"orange","size":"s"},
+"s1":{"x":-420,"y":900,"w":360,"text":"Story below the hero: each section fades up as it scrolls in, the year strip fills, the ₹6.4 lakh and ₹2,839 bars draw in. Desktop and fast phones also get the rotating 3D tractor in the 'buy vs rent' scene.","fill":"orange","size":"s"},
 "s2":{"x":-420,"y":1500,"w":360,"text":"The मराठी / हिंदी / English switch at the top works: it changes the headline, intro, buttons and section titles.","fill":"blue","size":"s"}
 },
 "designSystems":[]}
