@@ -8,6 +8,7 @@ import { createPayment } from "./mocks/payments";
 import { notify } from "./notifications";
 import { bookingWindow, cancelDeadline, type PricedMachine, quote, REPLY_WINDOW_MS } from "./pricing";
 import { limit } from "./rate-limit";
+import { shortName } from "@/lib/format";
 import { bookingCodeSchema } from "./validation";
 import type { SessionUser } from "./session";
 
@@ -103,7 +104,11 @@ function view(b: BookingRow, viewer: SessionUser) {
     declineReason: b.decline_reason,
     cancelReason: b.cancel_reason,
     owner: { name: b.owner_name, phone: contact && role === "renter" ? b.owner_phone : null },
-    renter: { name: b.renter_name, phone: contact && role === "owner" ? b.renter_phone : null },
+    // The owner knows the renter as "Sunil P." until the job is done with.
+    renter: {
+      name: role === "owner" ? shortName(b.renter_name) : b.renter_name,
+      phone: contact && role === "owner" ? b.renter_phone : null,
+    },
     location: contact ? { lat: b.lat, lng: b.lng } : null,
     payment: b.pay_status ? { method: b.pay_method, status: b.pay_status } : null,
   };
@@ -130,7 +135,7 @@ async function visible(viewer: SessionUser, id: string) {
 }
 
 /** Requests the owner didn't answer in 2 hours become EXPIRED (and free the slot). */
-async function expireStale(machineId?: string) {
+export async function expireStale(machineId?: string) {
   const rows = await getSql()<{ id: string; renter_id: string }[]>`
     UPDATE bookings SET status = 'EXPIRED', closed_at = now()
     WHERE status = 'REQUESTED' AND reply_by <= now() ${machineId ? getSql()`AND machine_id = ${machineId}` : getSql()``}
@@ -186,13 +191,6 @@ export async function createBooking(
   }
 
   await expireStale(m.id);
-  // shortcut: blocks are checked outside the insert; an owner blocking a day at the same instant can lose that race.
-  const blocked = one(
-    await sql`
-    SELECT 1 FROM machine_blocks WHERE machine_id = ${m.id} AND day BETWEEN ${input.startDate}::date AND ${input.endDate}::date LIMIT 1`,
-  );
-  if (blocked) throw new ApiError(409, "machine_unavailable");
-
   for (let attempt = 0; attempt < 20; attempt++) {
     const code = `KR-${String(randomInt(0, 10_000)).padStart(4, "0")}`;
     try {
@@ -200,6 +198,12 @@ export async function createBooking(
       // check (each deadlock costs deadlock_timeout, 1 s). The constraint still decides who wins.
       const [row] = await sql.begin(async (tx) => {
         await tx`SELECT pg_advisory_xact_lock(hashtextextended(${m.id}, 0))`;
+        // Under the same lock as setBlocks, so a day can't be blocked and booked at once.
+        const blocked = one(
+          await tx`SELECT 1 FROM machine_blocks WHERE machine_id = ${m.id}
+                   AND day BETWEEN ${input.startDate}::date AND ${input.endDate}::date LIMIT 1`,
+        );
+        if (blocked) throw new ApiError(409, "machine_unavailable");
         return tx<{ id: string }[]>`
         INSERT INTO bookings (code, machine_id, renter_id, during, start_date, end_date, slot, est_qty, unit, rate_paise,
           rent_paise, deposit_paise, diesel_included, total_paise, reply_by, idempotency_key)
