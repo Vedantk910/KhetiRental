@@ -22,7 +22,6 @@ var ErrStaleFencing = errors.New("fenced store: stale fencing token")
 // (internal/pgstore) runs against the bookings table.
 type SQLFencedBookingStore struct{}
 
-// NewSQLFencedBookingStore returns the reference SQL store.
 func NewSQLFencedBookingStore() *SQLFencedBookingStore { return &SQLFencedBookingStore{} }
 
 // TransitionSQL returns the fenced UPDATE the store executes on every state

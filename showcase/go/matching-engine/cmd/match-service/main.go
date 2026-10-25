@@ -54,7 +54,6 @@ func main() {
 	}
 }
 
-// env reads an environment variable with a fallback.
 func env(key, def string) string {
 	if v := os.Getenv(key); v != "" {
 		return v

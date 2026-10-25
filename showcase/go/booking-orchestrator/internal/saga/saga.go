@@ -130,7 +130,6 @@ func NewOrchestrator(store Store, lock Fencer, inventory InventoryManager, escro
 // answer arrives after the SLA, the booking is compensated: it moves to
 // FAILED_PAYMENT_RELEASED, the machine is released and the authorisation voided.
 func (o *Orchestrator) Start(ctx context.Context, bookingID string) error {
-	// Step 1: reserve inventory.
 	if err := o.inventory.Reserve(ctx, bookingID); err != nil {
 		if serr := o.step(ctx, bookingID, StateFailedInventory, evtReserveInventory); serr != nil {
 			return errors.Join(fmt.Errorf("saga: reserve inventory: %w", err), serr)
@@ -141,7 +140,7 @@ func (o *Orchestrator) Start(ctx context.Context, bookingID string) error {
 		return err
 	}
 
-	// Step 2: authorize escrow under a bounded context (the 30 s SLA). An
+	// Authorize escrow under a bounded context (the 30 s SLA). An
 	// answer after the deadline counts as a timeout even if it is a success.
 	authCtx, cancel := context.WithTimeout(ctx, EscrowAuthSLA)
 	defer cancel()
@@ -156,7 +155,6 @@ func (o *Orchestrator) Start(ctx context.Context, bookingID string) error {
 		return err
 	}
 
-	// Step 3: dispatch notification.
 	if err := o.notify.Dispatch(ctx, bookingID); err != nil {
 		return fmt.Errorf("saga: dispatch notification: %w", err)
 	}

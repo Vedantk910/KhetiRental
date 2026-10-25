@@ -76,8 +76,6 @@ func (h *Handler) Mux() *http.ServeMux {
 	return mux
 }
 
-// --- request / response shapes --------------------------------------------
-
 type MachineRecord struct {
 	ID  string  `json:"id"`
 	Lat float64 `json:"lat"`
@@ -221,8 +219,6 @@ func (h *Handler) handleUnindex(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
-// --- helpers ---------------------------------------------------------------
 
 func httpError(w http.ResponseWriter, code int, msg string) {
 	w.Header().Set("Content-Type", "application/json")

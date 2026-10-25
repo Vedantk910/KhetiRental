@@ -1,5 +1,5 @@
 // TS port of showcase/go/matching-engine (h3geo/spatial.go, ranker/ranker.go, store/store.go handleNear).
-import { cellToLatLng, gridDisk, latLngToCell } from "h3-js";
+import { gridDisk, latLngToCell } from "h3-js";
 
 export type Res = 7 | 8 | 9;
 export const EDGE_KM: Record<Res, number> = { 7: 1.2, 8: 0.46, 9: 0.174 };
@@ -87,7 +87,7 @@ export function findNear(fleet: Machine[], p: NearParams) {
   return { origin, ring, usedK, pipeline: redisPipeline(ring), candidates };
 }
 
-// ---- DEMO DATA: synthetic, seeded fleet. Not real machines or owners. ----
+// Demo data: synthetic, seeded fleet. Not real machines or owners.
 export const DEMO_CENTER: LatLng = { lat: 26.84, lng: 75.83 };
 
 function mulberry32(seed: number) {
@@ -118,7 +118,3 @@ function buildFleet(): Machine[] {
   });
 }
 export const DEMO_FLEET: Machine[] = buildFleet();
-export const cellCentre = (cell: string): LatLng => {
-  const [lat, lng] = cellToLatLng(cell);
-  return { lat, lng };
-};

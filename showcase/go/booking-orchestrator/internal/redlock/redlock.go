@@ -114,7 +114,6 @@ func Acquire(ctx context.Context, key string, opts Options) (*Lock, error) {
 		return nil, fmt.Errorf("redlock: acquisition took %s, longer than ttl %s", time.Since(start), opts.TTL)
 	}
 
-	// 4) Start the lease-renewal heartbeat.
 	hbCtx, cancel := context.WithCancel(ctx)
 	lock := &Lock{
 		key:       lockKey,

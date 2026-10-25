@@ -33,7 +33,6 @@ type Poller struct {
 	interval time.Duration
 }
 
-// NewPoller returns a poller with the given drain interval.
 func NewPoller(interval time.Duration) *Poller {
 	if interval <= 0 {
 		interval = 500 * time.Millisecond
@@ -41,5 +40,4 @@ func NewPoller(interval time.Duration) *Poller {
 	return &Poller{interval: interval}
 }
 
-// Interval exposes the poll interval.
 func (p *Poller) Interval() time.Duration { return p.interval }

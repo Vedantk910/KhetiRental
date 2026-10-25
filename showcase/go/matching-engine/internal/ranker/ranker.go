@@ -66,11 +66,9 @@ func (r *Ranker) Rank(cands []Candidate, req h3geo.LatLon) []Scored {
 		distScore := math.Exp(-d / r.τ)
 		hpGap := math.Abs(r.ReqHP - c.HorsePower)
 		hpScore := 1.0 / (1.0 + math.Exp(hpGap/3.0))
-		// ownerReputation is already 0..1; pass through.
 		combined := r.w.Distance*distScore + r.w.HP*hpScore + r.w.Reputation*c.OwnerReputation
 		out = append(out, Scored{Candidate: c, Score: combined, DistKm: d})
 	}
-	// Ties broken by distance asc (closer wins)
 	sort.SliceStable(out, func(i, j int) bool {
 		if math.Abs(out[i].Score-out[j].Score) > 1e-12 {
 			return out[i].Score > out[j].Score

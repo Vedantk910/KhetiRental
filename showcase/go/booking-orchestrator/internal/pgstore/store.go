@@ -16,7 +16,6 @@ import (
 // Store persists bookings and their outbox events.
 type Store struct{ db *pgxpool.Pool }
 
-// New returns a Store over the pool.
 func New(db *pgxpool.Pool) *Store { return &Store{db: db} }
 
 // CreateBooking inserts a PENDING booking stamped with the creator's token.

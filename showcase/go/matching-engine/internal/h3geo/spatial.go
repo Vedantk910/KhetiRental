@@ -68,8 +68,6 @@ func (c Cell) Centroid() (LatLon, error) {
 	return LatLon{ll.Lat, ll.Lng}, nil
 }
 
-// --- Redis backend -------------------------------------------------------
-
 // RedisStore indexes machines into one Redis hash per H3 cell.
 // Key: machines:h3:<cellUint64>   field: machineID   value: "lat,lng,hp,rep"
 //
