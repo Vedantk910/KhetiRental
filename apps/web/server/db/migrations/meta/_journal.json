@@ -15,6 +15,13 @@
       "when": 1792899573544,
       "tag": "0001_deleted_at",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792999573544,
+      "tag": "0002_baler",
+      "breakpoints": true
     }
   ]
 }

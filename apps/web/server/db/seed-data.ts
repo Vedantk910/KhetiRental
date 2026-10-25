@@ -1,6 +1,7 @@
-// Sample data for Latur and Pune (Maharashtra) and Jaipur (Rajasthan), D-13. Pure and deterministic:
-// the same seed gives the same rows; dates are relative to `today` so bookings stay upcoming.
-import type { Attachment, Category, PriceUnit, Role, Slot } from "@/lib/domain";
+// Sample data for Maharashtra (Latur, Pune, Nashik, Satara, Kolhapur, Solapur, Chhatrapati Sambhajinagar,
+// Nagpur, Jalgaon) and Jaipur (Rajasthan), D-13. Pure and deterministic: the same seed gives the same rows;
+// dates are relative to `today` so bookings stay upcoming.
+import type { Attachment, BookingStatus, Category, PriceUnit, Role, Slot } from "@/lib/domain";
 import { addDays } from "../pricing";
 
 /** mulberry32 */
@@ -152,6 +153,132 @@ const PINS: SeedPin[] = [
     state: "Maharashtra",
     lat: 18.85,
     lng: 73.8833,
+  },
+  {
+    pin: "422001",
+    office: "Nashik H.O",
+    village: "Nashik",
+    district: "Nashik",
+    state: "Maharashtra",
+    lat: 19.9975,
+    lng: 73.7898,
+  },
+  {
+    pin: "422103",
+    office: "Sinnar S.O",
+    village: "Sinnar",
+    district: "Nashik",
+    state: "Maharashtra",
+    lat: 19.8469,
+    lng: 74.0007,
+  },
+  {
+    pin: "415001",
+    office: "Satara H.O",
+    village: "Satara",
+    district: "Satara",
+    state: "Maharashtra",
+    lat: 17.6805,
+    lng: 74.0183,
+  },
+  {
+    pin: "415110",
+    office: "Karad S.O",
+    village: "Karad",
+    district: "Satara",
+    state: "Maharashtra",
+    lat: 17.2894,
+    lng: 74.1815,
+  },
+  {
+    pin: "416001",
+    office: "Kolhapur H.O",
+    village: "Kolhapur",
+    district: "Kolhapur",
+    state: "Maharashtra",
+    lat: 16.705,
+    lng: 74.2433,
+  },
+  {
+    pin: "416115",
+    office: "Ichalkaranji S.O",
+    village: "Ichalkaranji",
+    district: "Kolhapur",
+    state: "Maharashtra",
+    lat: 16.691,
+    lng: 74.4605,
+  },
+  {
+    pin: "413001",
+    office: "Solapur H.O",
+    village: "Solapur",
+    district: "Solapur",
+    state: "Maharashtra",
+    lat: 17.6599,
+    lng: 75.9064,
+  },
+  {
+    pin: "413304",
+    office: "Pandharpur S.O",
+    village: "Pandharpur",
+    district: "Solapur",
+    state: "Maharashtra",
+    lat: 17.6792,
+    lng: 75.3319,
+  },
+  {
+    pin: "431001",
+    office: "Chhatrapati Sambhajinagar H.O",
+    village: "Chhatrapati Sambhajinagar",
+    district: "Chhatrapati Sambhajinagar",
+    state: "Maharashtra",
+    lat: 19.8762,
+    lng: 75.3433,
+  },
+  {
+    pin: "431107",
+    office: "Paithan S.O",
+    village: "Paithan",
+    district: "Chhatrapati Sambhajinagar",
+    state: "Maharashtra",
+    lat: 19.4767,
+    lng: 75.3833,
+  },
+  {
+    pin: "440001",
+    office: "Nagpur H.O",
+    village: "Nagpur",
+    district: "Nagpur",
+    state: "Maharashtra",
+    lat: 21.1458,
+    lng: 79.0882,
+  },
+  {
+    pin: "441302",
+    office: "Katol S.O",
+    village: "Katol",
+    district: "Nagpur",
+    state: "Maharashtra",
+    lat: 21.2711,
+    lng: 78.5833,
+  },
+  {
+    pin: "425001",
+    office: "Jalgaon H.O",
+    village: "Jalgaon",
+    district: "Jalgaon",
+    state: "Maharashtra",
+    lat: 21.0077,
+    lng: 75.5626,
+  },
+  {
+    pin: "425201",
+    office: "Bhusawal S.O",
+    village: "Bhusawal",
+    district: "Jalgaon",
+    state: "Maharashtra",
+    lat: 21.0446,
+    lng: 75.785,
   },
   {
     pin: "302029",
@@ -327,6 +454,114 @@ const USERS: SeedUser[] = [
   },
 ];
 
+/** Owners and renters for the other districts. The generated machines and bookings below use USERS only. */
+const MORE_USERS: SeedUser[] = [
+  {
+    key: "o7",
+    name: "Dnyaneshwar Gaikwad",
+    email: "dnyaneshwar@khetirental.test",
+    phone: "+919800000007",
+    roles: ["owner"],
+    district: "Nashik",
+  },
+  {
+    key: "o8",
+    name: "Savita Bhosale",
+    email: "savita@khetirental.test",
+    phone: "+919800000008",
+    roles: ["owner"],
+    district: "Satara",
+  },
+  {
+    key: "o9",
+    name: "Prakash Chavan",
+    email: "prakash@khetirental.test",
+    phone: "+919800000009",
+    roles: ["owner"],
+    district: "Kolhapur",
+  },
+  {
+    key: "o10",
+    name: "Rekha Waghmare",
+    email: "rekha@khetirental.test",
+    phone: "+919800000010",
+    roles: ["owner", "renter"],
+    district: "Solapur",
+  },
+  {
+    key: "o11",
+    name: "Santosh Pagare",
+    email: "santosh@khetirental.test",
+    phone: "+919800000015",
+    roles: ["owner"],
+    district: "Chhatrapati Sambhajinagar",
+  },
+  {
+    key: "o12",
+    name: "Mangesh Raut",
+    email: "mangesh@khetirental.test",
+    phone: "+919800000016",
+    roles: ["owner"],
+    district: "Nagpur",
+  },
+  {
+    key: "o13",
+    name: "Alka Borse",
+    email: "alka@khetirental.test",
+    phone: "+919800000017",
+    roles: ["owner"],
+    district: "Jalgaon",
+  },
+  {
+    key: "r5",
+    name: "Vitthal Jagtap",
+    email: "vitthal@khetirental.test",
+    phone: "+919800000018",
+    roles: ["renter"],
+    district: "Nashik",
+  },
+  {
+    key: "r6",
+    name: "Meena Kulkarni",
+    email: "meena@khetirental.test",
+    phone: "+919800000019",
+    roles: ["renter"],
+    district: "Satara",
+  },
+  {
+    key: "r7",
+    name: "Rajendra Thorat",
+    email: "rajendra@khetirental.test",
+    phone: "+919800000020",
+    roles: ["renter"],
+    district: "Kolhapur",
+  },
+  {
+    key: "r8",
+    name: "Poonam Tiwari",
+    email: "poonam@khetirental.test",
+    phone: "+919800000021",
+    roles: ["renter"],
+    district: "Nagpur",
+  },
+  {
+    key: "r9",
+    name: "Shivaji Gawande",
+    email: "shivaji@khetirental.test",
+    phone: "+919800000022",
+    roles: ["renter"],
+    district: "Jalgaon",
+  },
+  {
+    key: "r10",
+    name: "Ramkishan Yadav",
+    email: "ramkishan@khetirental.test",
+    phone: "+919800000023",
+    roles: ["renter"],
+    district: "Nagpur",
+  },
+];
+
 interface Kind {
   category: Category;
   makes: [string, string][];
@@ -442,8 +677,386 @@ interface SeedMachine {
   pricePaise: number;
   operatorIncluded: boolean;
   dieselIncluded: boolean;
-  rcStatus: "pending" | "checked";
+  rcStatus: "pending" | "checked" | "rejected";
+  active: boolean;
 }
+
+/** A hand-picked machine for the other districts, so every category has several and every screen has variety. */
+interface Extra {
+  key: string;
+  owner: string;
+  category: Category;
+  make: string;
+  model: string;
+  hp: number | null;
+  year: number;
+  attachments?: Attachment[];
+  pin: string;
+  unit: PriceUnit;
+  rupees: number;
+  operator?: boolean;
+  diesel?: boolean;
+  rc?: SeedMachine["rcStatus"];
+  paused?: boolean;
+}
+
+const EXTRAS: Extra[] = [
+  {
+    key: "nashik-tractor",
+    owner: "o7",
+    category: "tractor",
+    make: "Mahindra",
+    model: "475 DI",
+    hp: 42,
+    year: 2017,
+    attachments: ["rotavator", "plough"],
+    pin: "422001",
+    unit: "hour",
+    rupees: 750,
+  },
+  {
+    key: "nashik-sprayer",
+    owner: "o7",
+    category: "sprayer",
+    make: "Aspee",
+    model: "Power Sprayer 600L",
+    hp: null,
+    year: 2020,
+    pin: "422103",
+    unit: "day",
+    rupees: 650,
+    diesel: false,
+  },
+  {
+    key: "nashik-baler",
+    owner: "o7",
+    category: "baler",
+    make: "Fieldking",
+    model: "Square Baler",
+    hp: null,
+    year: 2019,
+    pin: "422001",
+    unit: "acre",
+    rupees: 1250,
+  },
+  {
+    key: "satara-tractor",
+    owner: "o8",
+    category: "tractor",
+    make: "Swaraj",
+    model: "735 FE",
+    hp: 40,
+    year: 2015,
+    attachments: ["cultivator", "plough"],
+    pin: "415001",
+    unit: "hour",
+    rupees: 650,
+    diesel: false,
+  },
+  {
+    key: "satara-thresher",
+    owner: "o8",
+    category: "thresher",
+    make: "Kisankraft",
+    model: "Multicrop",
+    hp: null,
+    year: 2016,
+    pin: "415110",
+    unit: "hour",
+    rupees: 600,
+    rc: "pending",
+  },
+  {
+    key: "satara-baler",
+    owner: "o8",
+    category: "baler",
+    make: "Shaktiman",
+    model: "Round Baler",
+    hp: null,
+    year: 2021,
+    pin: "415001",
+    unit: "acre",
+    rupees: 1500,
+  },
+  {
+    key: "kolhapur-tractor",
+    owner: "o9",
+    category: "tractor",
+    make: "John Deere",
+    model: "5310",
+    hp: 55,
+    year: 2019,
+    attachments: ["rotavator", "trolley"],
+    pin: "416001",
+    unit: "hour",
+    rupees: 950,
+  },
+  {
+    key: "kolhapur-combine",
+    owner: "o9",
+    category: "combine_harvester",
+    make: "Preet",
+    model: "987",
+    hp: 100,
+    year: 2018,
+    pin: "416115",
+    unit: "acre",
+    rupees: 2600,
+  },
+  {
+    key: "kolhapur-seed-drill",
+    owner: "o9",
+    category: "seed_drill",
+    make: "Dasmesh",
+    model: "9-Row Seed Drill",
+    hp: null,
+    year: 2020,
+    pin: "416001",
+    unit: "acre",
+    rupees: 800,
+    operator: false,
+  },
+  {
+    key: "kolhapur-trolley",
+    owner: "o9",
+    category: "trolley",
+    make: "Local",
+    model: "Tipping trolley",
+    hp: null,
+    year: 2014,
+    pin: "416115",
+    unit: "day",
+    rupees: 1000,
+    paused: true,
+  },
+  {
+    key: "solapur-tractor",
+    owner: "o10",
+    category: "tractor",
+    make: "Sonalika",
+    model: "DI 750",
+    hp: 50,
+    year: 2016,
+    attachments: ["plough", "cultivator"],
+    pin: "413001",
+    unit: "hour",
+    rupees: 800,
+    rc: "rejected",
+  },
+  {
+    key: "solapur-rotavator",
+    owner: "o10",
+    category: "rotavator",
+    make: "Fieldking",
+    model: "Heavy Duty",
+    hp: null,
+    year: 2021,
+    pin: "413304",
+    unit: "acre",
+    rupees: 1300,
+  },
+  {
+    key: "solapur-thresher",
+    owner: "o10",
+    category: "thresher",
+    make: "Dasmesh",
+    model: "Paddy-Wheat",
+    hp: null,
+    year: 2013,
+    pin: "413001",
+    unit: "hour",
+    rupees: 550,
+  },
+  {
+    key: "solapur-baler",
+    owner: "o10",
+    category: "baler",
+    make: "Kartar",
+    model: "Mini Baler",
+    hp: null,
+    year: 2022,
+    pin: "413304",
+    unit: "day",
+    rupees: 3500,
+    paused: true,
+  },
+  {
+    key: "sambhajinagar-tractor",
+    owner: "o11",
+    category: "tractor",
+    make: "New Holland",
+    model: "3630",
+    hp: 55,
+    year: 2020,
+    attachments: ["trolley"],
+    pin: "431001",
+    unit: "hour",
+    rupees: 900,
+  },
+  {
+    key: "sambhajinagar-seed-drill",
+    owner: "o11",
+    category: "seed_drill",
+    make: "Fieldking",
+    model: "Multi Crop",
+    hp: null,
+    year: 2018,
+    pin: "431107",
+    unit: "acre",
+    rupees: 750,
+  },
+  {
+    key: "sambhajinagar-sprayer",
+    owner: "o11",
+    category: "sprayer",
+    make: "Neptune",
+    model: "HTP Power",
+    hp: null,
+    year: 2022,
+    pin: "431001",
+    unit: "day",
+    rupees: 550,
+  },
+  {
+    key: "sambhajinagar-rotavator",
+    owner: "o11",
+    category: "rotavator",
+    make: "Shaktiman",
+    model: "Semi Champion",
+    hp: null,
+    year: 2019,
+    pin: "431107",
+    unit: "acre",
+    rupees: 1200,
+    rc: "pending",
+  },
+  {
+    key: "nagpur-tractor",
+    owner: "o12",
+    category: "tractor",
+    make: "Eicher",
+    model: "485",
+    hp: 45,
+    year: 2014,
+    attachments: ["plough"],
+    pin: "440001",
+    unit: "hour",
+    rupees: 700,
+    rc: "rejected",
+  },
+  {
+    key: "nagpur-combine",
+    owner: "o12",
+    category: "combine_harvester",
+    make: "Kartar",
+    model: "4000",
+    hp: 95,
+    year: 2017,
+    pin: "441302",
+    unit: "acre",
+    rupees: 2400,
+    rc: "pending",
+  },
+  {
+    key: "nagpur-thresher",
+    owner: "o12",
+    category: "thresher",
+    make: "Dasmesh",
+    model: "Multicrop",
+    hp: null,
+    year: 2019,
+    pin: "440001",
+    unit: "hour",
+    rupees: 600,
+  },
+  {
+    key: "nagpur-trolley",
+    owner: "o12",
+    category: "trolley",
+    make: "Local",
+    model: "4-wheel trolley",
+    hp: null,
+    year: 2018,
+    pin: "441302",
+    unit: "day",
+    rupees: 900,
+    operator: false,
+  },
+  {
+    key: "nagpur-baler",
+    owner: "o12",
+    category: "baler",
+    make: "Fieldking",
+    model: "Square Baler",
+    hp: null,
+    year: 2020,
+    pin: "440001",
+    unit: "acre",
+    rupees: 1350,
+  },
+  {
+    key: "jalgaon-tractor",
+    owner: "o13",
+    category: "tractor",
+    make: "Mahindra",
+    model: "575 DI",
+    hp: 47,
+    year: 2018,
+    attachments: ["rotavator"],
+    pin: "425001",
+    unit: "hour",
+    rupees: 800,
+  },
+  {
+    key: "jalgaon-rotavator",
+    owner: "o13",
+    category: "rotavator",
+    make: "Fieldking",
+    model: "Maxx",
+    hp: null,
+    year: 2020,
+    pin: "425201",
+    unit: "acre",
+    rupees: 1250,
+  },
+  {
+    key: "jalgaon-seed-drill",
+    owner: "o13",
+    category: "seed_drill",
+    make: "Dasmesh",
+    model: "Zero Till",
+    hp: null,
+    year: 2017,
+    pin: "425001",
+    unit: "acre",
+    rupees: 700,
+  },
+  {
+    key: "jalgaon-sprayer",
+    owner: "o13",
+    category: "sprayer",
+    make: "Aspee",
+    model: "Boom 400L",
+    hp: null,
+    year: 2021,
+    pin: "425201",
+    unit: "day",
+    rupees: 600,
+  },
+  {
+    key: "jalgaon-trolley",
+    owner: "o13",
+    category: "trolley",
+    make: "Local",
+    model: "4-wheel trolley",
+    hp: null,
+    year: 2016,
+    pin: "425001",
+    unit: "day",
+    rupees: 850,
+    operator: false,
+  },
+];
 
 interface SeedBooking {
   machineIdx: number;
@@ -452,10 +1065,175 @@ interface SeedBooking {
   startDate: string;
   endDate: string;
   slot: Slot;
-  status: "REQUESTED" | "CONFIRMED" | "COMPLETED";
+  status: BookingStatus;
   stars?: number;
   review?: string;
+  /** Minutes since the request was made; set for requests that should show a live reply timer or have lapsed. */
+  ageMin?: number;
+  declineReason?: string;
+  cancelReason?: string;
+  cancelledBy?: "renter" | "owner";
+  method?: "upi" | "cash";
+  notify: boolean;
+  problem?: {
+    by: "renter" | "owner";
+    type: string;
+    text: string;
+    status: "open" | "resolved";
+    note?: string;
+  };
 }
+
+/** A hand-written booking on one of the EXTRAS (by key); `day` is days from today, negative for the past. */
+interface ExtraBooking extends Partial<Omit<SeedBooking, "machineIdx" | "startDate" | "endDate" | "notify">> {
+  machine: string;
+  renter: string;
+  status: BookingStatus;
+  day: number;
+  days?: number;
+}
+
+const EXTRA_BOOKINGS: ExtraBooking[] = [
+  // Requests waiting on owners: plenty of time left, little time left, just sent.
+  { machine: "nashik-tractor", renter: "r5", status: "REQUESTED", day: 3, slot: "full", ageMin: 25 },
+  {
+    machine: "satara-tractor",
+    renter: "r6",
+    status: "REQUESTED",
+    day: 4,
+    days: 2,
+    slot: "morning",
+    ageMin: 100,
+  },
+  {
+    machine: "sambhajinagar-tractor",
+    renter: "r1",
+    status: "REQUESTED",
+    day: 5,
+    slot: "afternoon",
+    ageMin: 5,
+  },
+  // Confirmed and upcoming.
+  { machine: "kolhapur-tractor", renter: "r7", status: "CONFIRMED", day: 2, slot: "full", method: "upi" },
+  { machine: "solapur-rotavator", renter: "r5", status: "CONFIRMED", day: 6, slot: "morning" },
+  { machine: "jalgaon-tractor", renter: "r9", status: "CONFIRMED", day: 3, slot: "full", method: "upi" },
+  { machine: "nagpur-combine", renter: "r8", status: "CONFIRMED", day: 9, days: 2, slot: "full" },
+  // Out in the field today.
+  { machine: "nagpur-tractor", renter: "r10", status: "IN_PROGRESS", day: 0, slot: "full", method: "upi" },
+  { machine: "nashik-baler", renter: "r5", status: "IN_PROGRESS", day: 0, slot: "full" },
+  {
+    machine: "jalgaon-sprayer",
+    renter: "r2",
+    status: "IN_PROGRESS",
+    day: -1,
+    days: 3,
+    slot: "full",
+    problem: {
+      by: "renter",
+      type: "broke_down",
+      text: "The pump stopped after an hour. The owner is sending a fitter.",
+      status: "open",
+    },
+  },
+  // Finished and reviewed.
+  {
+    machine: "satara-baler",
+    renter: "r6",
+    status: "COMPLETED",
+    day: -12,
+    slot: "full",
+    stars: 5,
+    review: "Baling finished in one afternoon.",
+  },
+  {
+    machine: "nashik-sprayer",
+    renter: "r5",
+    status: "COMPLETED",
+    day: -8,
+    slot: "morning",
+    stars: 4,
+    review: "Machine in good condition.",
+  },
+  {
+    machine: "kolhapur-combine",
+    renter: "r7",
+    status: "COMPLETED",
+    day: -20,
+    days: 2,
+    slot: "full",
+    stars: 5,
+    review: "Cut the whole field in two days.",
+    problem: {
+      by: "renter",
+      type: "overcharged",
+      text: "Billed for 12 acres but the field is 9.",
+      status: "open",
+    },
+  },
+  {
+    machine: "solapur-thresher",
+    renter: "r7",
+    status: "COMPLETED",
+    day: -15,
+    slot: "afternoon",
+    stars: 3,
+    review: "Late by an hour but did the work.",
+    problem: {
+      by: "owner",
+      type: "late_return",
+      text: "Returned about an hour late.",
+      status: "resolved",
+      note: "Spoke to both sides. No extra charge.",
+    },
+  },
+  { machine: "nagpur-baler", renter: "r8", status: "COMPLETED", day: -6, slot: "full", stars: 5 },
+  {
+    machine: "jalgaon-tractor",
+    renter: "r9",
+    status: "COMPLETED",
+    day: -25,
+    slot: "full",
+    stars: 5,
+    review: "Came on time, good driver.",
+  },
+  // Cancelled, declined, lapsed.
+  {
+    machine: "sambhajinagar-seed-drill",
+    renter: "r4",
+    status: "CANCELLED",
+    day: 7,
+    slot: "full",
+    cancelledBy: "renter",
+    cancelReason: "Rain forecast, sowing postponed.",
+  },
+  {
+    machine: "solapur-tractor",
+    renter: "r2",
+    status: "CANCELLED",
+    day: 4,
+    slot: "full",
+    cancelledBy: "owner",
+    cancelReason: "Tractor is in the workshop.",
+  },
+  {
+    machine: "nashik-tractor",
+    renter: "r6",
+    status: "DECLINED",
+    day: 8,
+    slot: "full",
+    declineReason: "busy",
+  },
+  {
+    machine: "satara-thresher",
+    renter: "r1",
+    status: "DECLINED",
+    day: 5,
+    slot: "morning",
+    declineReason: "too_far",
+  },
+  { machine: "sambhajinagar-rotavator", renter: "r5", status: "EXPIRED", day: 3, slot: "full", ageMin: 400 },
+  { machine: "nagpur-trolley", renter: "r4", status: "EXPIRED", day: 2, slot: "full", ageMin: 300 },
+];
 
 const REVIEWS = [
   "Came on time, good driver.",
@@ -499,6 +1277,7 @@ export function buildSeed(today: string, seed = 2026) {
       operatorIncluded: kind.category !== "trolley" ? r() > 0.15 : false,
       dieselIncluded: r() > 0.3,
       rcStatus: r() > 0.3 ? "checked" : "pending",
+      active: true,
     };
   });
   const renters = USERS.filter((u) => u.key.startsWith("r"));
@@ -518,6 +1297,7 @@ export function buildSeed(today: string, seed = 2026) {
         endDate: start,
         slot: pick(["morning", "afternoon", "full"] as const),
         status: "COMPLETED",
+        notify: false,
         stars: r() < 0.75 ? 5 : r() < 0.6 ? 4 : 3,
         review: pick(REVIEWS) ?? undefined,
       });
@@ -535,10 +1315,66 @@ export function buildSeed(today: string, seed = 2026) {
       endDate: i % 3 === 0 ? addDays(start, 1) : start,
       slot: i % 2 ? "morning" : "full",
       status: i % 2 ? "REQUESTED" : "CONFIRMED",
+      notify: true,
     });
   }
   const blocks = machines
     .filter((_, i) => i % 6 === 0)
     .map((m, i) => ({ machineIdx: m.idx, day: addDays(today, 15 + i) }));
-  return { pins: PINS, users: USERS, machines, bookings, blocks };
+
+  const idxOf = new Map<string, number>();
+  for (const e of EXTRAS) {
+    const place = PINS.find((p) => p.pin === e.pin);
+    if (!place) throw new Error(`seed: unknown PIN ${e.pin}`);
+    const idx = machines.length;
+    idxOf.set(e.key, idx);
+    machines.push({
+      idx,
+      owner: e.owner,
+      category: e.category,
+      make: e.make,
+      model: e.model,
+      hp: e.hp,
+      year: e.year,
+      hourMeter: Math.round(between(300, 6000)),
+      lastServiced: addDays(today, -Math.floor(between(10, 200))),
+      attachments: e.attachments ?? [],
+      lat: Math.round((place.lat + between(-0.05, 0.05)) * 1e5) / 1e5,
+      lng: Math.round((place.lng + between(-0.05, 0.05)) * 1e5) / 1e5,
+      village: place.village,
+      pin: e.pin,
+      priceUnit: e.unit,
+      pricePaise: e.rupees * 100,
+      operatorIncluded: e.operator ?? true,
+      dieselIncluded: e.diesel ?? true,
+      rcStatus: e.rc ?? "checked",
+      active: !e.paused,
+    });
+  }
+  let extraCode = 2000;
+  for (const { machine, day, days = 1, ...b } of EXTRA_BOOKINGS) {
+    const machineIdx = idxOf.get(machine);
+    if (machineIdx === undefined) throw new Error(`seed: unknown machine ${machine}`);
+    const startDate = addDays(today, day);
+    bookings.push({
+      slot: "full",
+      ...b,
+      machineIdx,
+      code: `KR-${++extraCode}`,
+      startDate,
+      endDate: addDays(startDate, days - 1),
+      notify: b.status !== "COMPLETED" || !!b.problem || !!b.stars,
+    });
+  }
+  // Days the owners are unavailable (their own work, a wedding, a festival).
+  for (const [i, key] of [
+    "nashik-baler",
+    "satara-tractor",
+    "kolhapur-combine",
+    "nagpur-tractor",
+    "jalgaon-rotavator",
+  ].entries()) {
+    blocks.push({ machineIdx: idxOf.get(key) ?? 0, day: addDays(today, 12 + i * 2) });
+  }
+  return { pins: PINS, users: [...USERS, ...MORE_USERS], machines, bookings, blocks };
 }

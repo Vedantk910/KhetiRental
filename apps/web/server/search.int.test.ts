@@ -175,6 +175,28 @@ describe("GET /api/machines (search)", () => {
   });
 });
 
+describe("baler", () => {
+  it("is found by the harvest job and by lat/lng, with its own card fields", async () => {
+    const owner = await makeUser(["owner"]);
+    const at = { lat: 23.1, lng: 77.4 };
+    const baler = await makeMachine(owner.id, {
+      ...at,
+      category: "baler",
+      hp: null,
+      attachments: [],
+      priceUnit: "acre",
+      pricePaise: 120_000,
+    });
+    await makeMachine(owner.id, { ...at, category: "rotavator", hp: null, attachments: [] });
+    const q = { lat: String(at.lat), lng: String(at.lng) };
+    const { body } = await search({ ...q, job: "harvest" });
+    expect(body.items.map((i: { id: string }) => i.id)).toEqual([baler]);
+    expect(body.items[0]).toMatchObject({ category: "baler", unit: "acre", priceRupees: 1200 });
+    expect((await search({ ...q, job: "sow" })).body.items).toEqual([]);
+    expect((await search({ ...q, job: "baler; DROP TABLE machines" })).status).toBe(400);
+  });
+});
+
 describe("GET /api/machines/[id] (detail)", () => {
   const detail = async (id: string, user: TestUser = viewer) => {
     const r = await detailRoute(req(`/api/machines/${id}`, { headers: { cookie: user.cookie } }), {

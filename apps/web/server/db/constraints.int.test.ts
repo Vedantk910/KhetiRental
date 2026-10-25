@@ -8,6 +8,7 @@ beforeAll(async () => {
 });
 afterAll(() => t.drop());
 
+let seq = 0;
 const insert = (
   machineId: string,
   renterId: string,
@@ -17,7 +18,7 @@ const insert = (
 ) =>
   t.sql`INSERT INTO bookings (code, machine_id, renter_id, during, start_date, end_date, slot, est_qty, unit,
           rate_paise, rent_paise, deposit_paise, diesel_included, total_paise, status, reply_by, idempotency_key)
-        VALUES (${`KR-${String(Math.floor(Math.random() * 10_000)).padStart(4, "0")}`}, ${machineId}, ${renterId},
+        VALUES (${`KR-${String(++seq).padStart(4, "0")}`}, ${machineId}, ${renterId},
           ${range}::tstzrange, '2026-11-02', '2026-11-02', 'full', 4, 'hour', 75000, 300000, 75000, true, 300000,
           ${status}, now() + interval '2 hours', ${key})`;
 
@@ -78,6 +79,7 @@ describe("schema constraints (F-09)", () => {
       "same-key-123",
     ).catch((e: unknown) => e);
     expect(code(dup)).toBe("23505");
+    expect((dup as { constraint_name?: string }).constraint_name).toMatch(/idempotency/);
   });
 
   it("CHECKs reject bad money, roles and categories", async () => {
