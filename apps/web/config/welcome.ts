@@ -25,3 +25,17 @@ export const STATS = [
   { key: "avg", sr: "sr2", value: 1.08, decimals: 2, suffix: "" },
   { key: "mech", sr: "sr3", value: 47, decimals: 0, suffix: "%" },
 ] as const;
+
+/**
+ * The tractor and the implements that attach to it, with typical 2025–26 Maharashtra market prices (approximate).
+ * Tractor: 45–50 HP. Prices are whole rupees; rent is per hour, except the trolley, per day.
+ * The "key" is both the machines.* message and the node name in public/models/tractor.glb.
+ */
+export const COMPONENTS = [
+  { key: "tractor", buy: 640_000, rent: 700, per: "hour" },
+  { key: "rotavator", buy: 110_000, rent: 400, per: "hour" },
+  { key: "plough", buy: 35_000, rent: 250, per: "hour" },
+  { key: "seedDrill", buy: 60_000, rent: 300, per: "hour" },
+  { key: "trolley", buy: 150_000, rent: 500, per: "day" },
+] as const;
+export type ComponentKey = (typeof COMPONENTS)[number]["key"];

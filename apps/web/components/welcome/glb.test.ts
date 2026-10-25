@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { Mesh } from "three";
+import { COMPONENTS } from "@/config/welcome";
 import { describe, expect, it } from "vitest";
 import { parseGlb } from "./glb";
 
@@ -19,7 +20,7 @@ describe("tractor.glb", () => {
   });
   it("has the named parts and brand colours the scene relies on", () => {
     const root = parseGlb(buf);
-    expect(root.getObjectByName("rotavator")).toBeTruthy();
+    for (const { key } of COMPONENTS) expect(root.getObjectByName(key), key).toBeTruthy();
     // node transforms are applied (a matrix-only node must not collapse to the origin)
     expect(root.getObjectByName("hood")?.position.x).toBeCloseTo(0.55);
     expect(root.getObjectByName("front-wheel-1")?.position.z).toBeCloseTo(0.62);
@@ -30,6 +31,19 @@ describe("tractor.glb", () => {
     });
     // blue body, yellow cab, mustard hubs (linear to sRGB round trip, so compare loosely)
     expect(colours.size).toBeGreaterThanOrEqual(5);
+  });
+  it("keeps each implement a separate node with its own meshes, hitched behind the tractor", () => {
+    const root = parseGlb(buf);
+    for (const { key } of COMPONENTS.filter((c) => c.key !== "tractor")) {
+      const node = root.getObjectByName(key)!;
+      let meshes = 0;
+      node.traverse((o) => {
+        if (o instanceof Mesh) meshes++;
+      });
+      expect(meshes, key).toBeGreaterThanOrEqual(4);
+      expect(node.parent?.name, key).toBe("tractor");
+      expect(node.position.x, key).toBeLessThan(-1);
+    }
   });
   it("rejects a file that is not a glb", () => {
     expect(() => parseGlb(new ArrayBuffer(32))).toThrow("not a glb");

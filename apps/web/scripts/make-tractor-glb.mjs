@@ -1,5 +1,5 @@
-// Builds public/models/tractor.glb: an original low-poly tractor in the site palette (blue body, yellow cab and hubs),
-// matching the still SVG in the story section. Run `npm run model:tractor` after editing. No external assets.
+// Builds public/models/tractor.glb: an original low-poly tractor in the site palette (blue body, yellow cab and hubs)
+// matching the still SVG in the story section, with four implements (rotavator, plough, seed drill, trolley) as named nodes. Run `npm run model:tractor` after editing. No external assets.
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { BoxGeometry, CylinderGeometry, Group, Mesh, MeshStandardMaterial, Scene } from "three";
@@ -56,14 +56,62 @@ for (const side of [-1, 1]) {
   front.add(cyl(0.15, 0.32, 10, hub, "hub", [0, 0, 0], [Math.PI / 2, 0, 0]));
   tractor.add(front);
 }
-// The scene lowers this group between 40 % and 60 % of the scroll through the section.
-const rotavator = new Group();
-rotavator.name = "rotavator";
-rotavator.position.set(-1.45, 0.55, 0);
-rotavator.add(box(0.3, 0.14, 0.14, brown, "arm", [0.2, 0.15, 0.55]));
-rotavator.add(box(0.3, 0.14, 0.14, brown, "arm", [0.2, 0.15, -0.55]));
-rotavator.add(cyl(0.22, 1.3, 12, brown, "drum", [-0.1, -0.15, 0], [Math.PI / 2, 0, 0]));
-tractor.add(rotavator);
+// Implements: each is a named group whose local origin is the point where it hitches on, and which extends toward -x.
+// The scene shows one at a time, lowering it onto the hitch, so the glb keeps each one at its hitched position.
+const implement = (name, position, parts) => {
+  const g = new Group();
+  g.name = name;
+  g.position.set(...position);
+  parts.forEach((p) => g.add(p));
+  tractor.add(g);
+};
+const HITCH = [-1.25, 0.6, 0];
+
+implement("rotavator", HITCH, [
+  box(0.3, 0.14, 0.14, brown, "arm", [0.2, 0.15, 0.55]),
+  box(0.3, 0.14, 0.14, brown, "arm", [0.2, 0.15, -0.55]),
+  cyl(0.22, 1.3, 12, brown, "drum", [-0.1, -0.15, 0], [Math.PI / 2, 0, 0]),
+  box(0.5, 0.06, 1.4, yellow, "shield", [-0.1, 0.12, 0]),
+]);
+
+// A three-bottom disc plough: a slanted beam with discs hung below it, each tilted like a real one.
+implement("plough", HITCH, [
+  box(1.3, 0.12, 0.12, blue, "beam", [-0.55, 0.1, 0.25], [0, -0.35, 0]),
+  box(0.3, 0.14, 0.14, brown, "arm", [0.2, 0.1, 0.45]),
+  box(0.3, 0.14, 0.14, brown, "arm", [0.2, 0.1, -0.45]),
+  ...[0, 1, 2].flatMap((i) => [
+    box(0.08, 0.5, 0.08, brown, "leg", [-0.25 - i * 0.4, -0.1, 0.38 - i * 0.14]),
+    cyl(0.3, 0.04, 18, black, "disc", [-0.25 - i * 0.4, -0.42, 0.38 - i * 0.14], [Math.PI / 2, 0, 0.45]),
+  ]),
+]);
+
+// A seed drill: a hopper on a frame, seed tubes down to the coulters, and a ground wheel.
+implement("seedDrill", HITCH, [
+  box(0.3, 0.14, 0.14, brown, "arm", [0.2, 0.05, 0.5]),
+  box(0.3, 0.14, 0.14, brown, "arm", [0.2, 0.05, -0.5]),
+  box(1.0, 0.36, 1.3, yellow, "hopper", [-0.6, 0.3, 0]),
+  box(1.0, 0.1, 1.4, blue, "frame", [-0.6, 0.06, 0]),
+  ...[-0.5, -0.25, 0, 0.25, 0.5].map((z) => cyl(0.03, 0.5, 6, black, "tube", [-0.6, -0.2, z])),
+  cyl(0.3, 0.12, 14, black, "wheel", [-0.6, -0.3, 0.72], [Math.PI / 2, 0, 0]),
+  cyl(0.3, 0.12, 14, black, "wheel", [-0.6, -0.3, -0.72], [Math.PI / 2, 0, 0]),
+]);
+
+// A trolley hooks onto the drawbar and trails further behind.
+implement(
+  "trolley",
+  [-1.25, 0.45, 0],
+  [
+    box(0.7, 0.1, 0.12, brown, "drawbar", [-0.35, 0, 0]),
+    box(1.7, 0.1, 1.0, blue, "bed", [-1.5, 0.1, 0]),
+    box(1.7, 0.35, 0.06, yellow, "board", [-1.5, 0.33, 0.47]),
+    box(1.7, 0.35, 0.06, yellow, "board", [-1.5, 0.33, -0.47]),
+    box(0.06, 0.35, 1.0, yellow, "board", [-2.33, 0.33, 0]),
+    ...[-1, 1].map((side) =>
+      cyl(0.42, 0.18, 18, black, "tyre", [-1.9, -0.0, side * 0.6], [Math.PI / 2, 0, 0]),
+    ),
+    ...[-1, 1].map((side) => cyl(0.16, 0.22, 10, hub, "hub", [-1.9, -0.0, side * 0.6], [Math.PI / 2, 0, 0])),
+  ],
+);
 
 const scene = new Scene();
 scene.add(tractor);

@@ -24,6 +24,7 @@ describe("messageForApi", () => {
   it("maps rate limits and resend waits, anything else is the network message", () => {
     expect(messageForApi("rate_limited").key).toBe("login.err.rate");
     expect(messageForApi("otp_resend_wait").key).toBe("errors.api.otp_resend_wait");
+    expect(messageForApi("phone_login_unavailable").key).toBe("errors.api.phone_login_unavailable");
     expect(messageForApi(undefined).key).toBe("errors.network");
   });
 });

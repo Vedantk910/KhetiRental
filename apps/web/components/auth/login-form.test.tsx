@@ -34,6 +34,7 @@ const view = (over: Partial<Parameters<typeof LoginForm>[0]> = {}) =>
         initialRole="renter"
         next={null}
         google="mock"
+        phoneLogin
         authFailed={false}
         {...over}
       />
@@ -41,6 +42,14 @@ const view = (over: Partial<Parameters<typeof LoginForm>[0]> = {}) =>
   );
 
 describe("LoginForm", () => {
+  it("without phone login there is no Mobile method, even if one was remembered", () => {
+    sessionStorage.setItem("kr:login.method", JSON.stringify("mobile"));
+    view({ phoneLogin: false });
+    expect(screen.queryByRole("radio", { name: "Mobile number" })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Mobile number")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Email address")).toBeInTheDocument();
+  });
+
   it("login + mobile: invalid number shows the inline error and sends nothing", async () => {
     const user = userEvent.setup();
     view();

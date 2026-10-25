@@ -360,12 +360,12 @@ Each section fades and slides up 28 px as it enters, using CSS `animation-timeli
 | # | Background | Title key | Content | Clickable |
 |---|---|---|---|---|
 | S1 | bg | `story.s1` "A tractor costs ₹6–7 lakh. Most of the year, it waits in the shed." | Eyebrow `story.problem` (14 px bold, `#8F5F00`, letter-spacing 1 px). A strip of 182 small squares (26 columns, 10 px tall, 3 px gap, 2 px radius); every 12th is mustard `#FBC02D`, the rest `#E5DDD1`. As it scrolls into view the mustard squares fill one by one (scroll-driven); with reduced motion they're just shown. Caption `story.s1.caption` | – |
-| S2 | surface | `story.s2` "You don't need to own it. You need it on time." | The **3D tractor slot** (160 px tall on phones, 360 px on desktop, `surface-muted`, `rounded-card`), see §4.1.5. Two bars drawn to the true price gap: "Buy" ₹6,40,000 (full width, `#483F37`) and "Rent 4 hours" ₹2,839 (its real share of the width, never under a 12 px stub, `success`); as it scrolls in both draw in from zero and the buy bar stays full width. Reduced motion shows the finished bars | – |
+| S2 | surface | `story.s2` "You don't need to own it. You need it on time." | The **3D tractor slot** (200 px tall on phones, 320 px on desktop, `surface-muted`, `rounded-card`), see §4.1.5, then a plain list of the tractor and its four implements with typical buy and rent prices (`COMPONENTS` in `config/welcome.ts`; shown in every motion mode). Two bars drawn to the true price gap: "Buy" ₹6,40,000 (full width, `#483F37`) and "Rent 4 hours" ₹2,839 (its real share of the width, never under a 12 px stub, `success`); as it scrolls in both draw in from zero and the buy bar stays full width. Reduced motion shows the finished bars | – |
 | S3 | bg | `story.s3` "It's already near you." | A stylised village SVG (358 × 220 on phones; scale up on desktop): a canal, roads, a hex ring of 7 cells around a mustard centre cell with a blue farm dot, and 3 black price pills ₹710 / ₹650 / ₹1,400. As it scrolls in, the hex ring outlines draw one by one, then the pills pop in (scale 0.6 → 1, staggered 120 ms) | – |
 | S4 | surface | `story.s4` "The full price, before you say yes." | Receipt panel (`bg`, `rounded-card`, 18 px): Rent 4 h × ₹710 = ₹2,840; Diesel "Included" (success, bold); Deposit (comes back) ₹1,950; total row "You pay ₹2,840". Rows appear one after another as it scrolls in | – |
 | S5 | bg | `story.s5` "The owner is paid after the job, not before." | 3 equal cards (2 px `action` border): numbered circles 1/2/3 (44 px, action fill), titles Handover / Work / Return, captions "Photo + OTP" / "Hours counted" / "Owner paid". They stamp in one by one (scale 1.15 → 1 with fade) | – |
 | S6 | `owner-hero` (`#223585`, white text) | `story.s6` "Your idle tractor can earn." | Paragraph `story.s6.body` (`#DCE3F7`). Button **List your tractor** (`lg`, `#FBC02D` fill, `text`) → `/login?mode=signup&role=owner` (or `/owner/machines/new` when logged in as an owner) | 1 button |
-| S7 | bg | `story.s7` "Prefer to talk?" | Button **Call [helpline]** (`outline-dark`, `lg`) → `tel:` from `config.helplinePhone` (shows `[YOUR HELPLINE]` until set). Footer links: About · How we price · How we built it · Privacy · Terms | Call + footer links |
+| S7 | bg | `story.s7` "Prefer to talk?" | Button **Call [helpline]** (`outline-dark`, `lg`) → `tel:` from `config.helplinePhone` (`SUPPORT_PHONE`, a placeholder number to replace before launch). Footer links: About · How we price · How we built it · Privacy · Terms | Call + footer links |
 
 #### 4.1.5 3D tractor (D-09)
 - **When:** only when `data-motion="rich"`. The detector script is inline in `<head>`:
@@ -374,7 +374,7 @@ Each section fades and slides up 28 px as it enters, using CSS `animation-timeli
   const rich=!m&&!(c&&(c.saveData||/2g|3g/.test(c.effectiveType)))&&(navigator.deviceMemory??4)>=4&&(navigator.hardwareConcurrency??4)>=6;
   document.documentElement.dataset.motion=m?"none":rich?"rich":"lite";
   ```
-- **How:** `next/dynamic(() => import("./TractorScene"), { ssr: false })`, mounted after `requestIdleCallback` once S2 is within one viewport. React Three Fiber + drei `useGLTF`. GLB ≤ 400 KB (meshopt + KTX2, ≤ 25k triangles), low-poly, in the brand colours (indigo body, mustard canopy). The tractor rotates with scroll progress through S2 (0 → 300°), and the rotavator lowers between 40 % and 60 %.
+- **How:** `next/dynamic(() => import("./TractorScene"), { ssr: false })`, mounted after `requestIdleCallback` once S2 is within one viewport. React Three Fiber + drei `useGLTF`. GLB ≤ 400 KB (meshopt + KTX2, ≤ 25k triangles), low-poly, in the brand colours (indigo body, mustard canopy). Scroll progress through S2 turns the tractor from the side view toward the rear quarter and picks the implement hitched on: rotavator, plough, seed drill, trolley, each lowered onto the hitch. Two price tags (real HTML text, `aria-hidden` because the list carries the same prices) follow the projected x of the tractor and of the hitched implement, one row at the top and one at the bottom of the slot so they never collide.
 - **Fallback (lite/none):** a still image (AVIF ≤ 80 KB, same framing) inside the same slot. The slot keeps its size, so nothing shifts (CLS 0).
 
 #### 4.1.6 Welcome page states and checks
@@ -1173,7 +1173,7 @@ For **every** page: matches its §4 spec and mockup at 390 px · works at 360 / 
 | 404 / 403 | Correct titles; working buttons |
 
 ## 14. Assumptions and placeholders to replace before launch
-- Helpline number `[YOUR HELPLINE]` and WhatsApp support number: set in `config/contact.ts`.
+- Helpline and WhatsApp support number: the placeholder `SUPPORT_PHONE` in `config/site.ts` (`+91 78219 00000`, not a real line); replace it before launch. Help, the welcome page and the "call us" links render it as `tel:` and `wa.me` links.
 - Terms and Privacy text: `[LEGAL REVIEW NEEDED]`.
 - Machine photos, owner photos and the pictogram set are placeholders until real ones are commissioned or uploaded.
 - The Hindi and Marathi strings in §11 are drafts that need native review.

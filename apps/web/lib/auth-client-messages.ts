@@ -10,6 +10,7 @@ export type AuthMessage =
         | "errors.api.invalid_request"
         | "errors.network"
         | "errors.api.otp_resend_wait"
+        | "errors.api.phone_login_unavailable"
         | "otp.noAccount";
     }
   | { key: "otp.wrong"; n: number };
@@ -45,6 +46,8 @@ export function messageForApi(code: string | undefined): AuthMessage {
       return { key: "errors.api.otp_resend_wait" };
     case "invalid_request":
       return { key: "errors.api.invalid_request" };
+    case "phone_login_unavailable":
+      return { key: "errors.api.phone_login_unavailable" };
     default:
       return { key: "errors.network" };
   }

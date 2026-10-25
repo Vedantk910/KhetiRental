@@ -1,6 +1,7 @@
+/** Fake placeholder number: replace with the real support line before launch. */
+export const SUPPORT_PHONE = "+91 78219 00000";
+
 export const config = {
-  /** Shown until the real helpline is set; no `tel:` link is made from a placeholder. */
-  helplinePhone: "[YOUR HELPLINE]",
-  /** Shown until the real WhatsApp support number is set; no wa.me link is made from a placeholder. */
-  whatsappPhone: "[YOUR WHATSAPP]",
+  helplinePhone: SUPPORT_PHONE,
+  whatsappPhone: SUPPORT_PHONE,
 };

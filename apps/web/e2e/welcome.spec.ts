@@ -109,7 +109,7 @@ test("reduced motion: still scene, final counter values at once, no running anim
   expect(await page.locator("canvas").count()).toBe(0);
 });
 
-test("story sections S1–S7 are there, owner CTA and helpline placeholder", async ({ page }) => {
+test("story sections S1–S7 are there, owner CTA and helpline link", async ({ page }) => {
   await page.goto("/en");
   const titles = await page.locator("#story h2").allTextContents();
   expect(titles).toEqual([
@@ -126,7 +126,10 @@ test("story sections S1–S7 are there, owner CTA and helpline placeholder", asy
     "href",
     "/en/login?mode=signup&role=owner",
   );
-  await expect(page.getByText("Call [YOUR HELPLINE]")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Call +91 78219 00000" })).toHaveAttribute(
+    "href",
+    "tel:+917821900000",
+  );
   await expect(page.getByRole("link", { name: "How it works ↓" })).toHaveAttribute("href", "/en#how");
   // alternating backgrounds, S6 indigo
   const bg = await page

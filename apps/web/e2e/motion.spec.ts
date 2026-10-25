@@ -1,23 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { expectNoAxeViolations, hasHScroll, LOCALES, setTheme, watchErrors } from "./helpers";
-
-type Mode = "rich" | "lite" | "none";
-
-/** Makes the page look like a capable desktop (rich), a Save-Data phone (lite), or a reduced-motion user (none). */
-async function asDevice(page: Page, mode: Mode) {
-  if (mode === "none") await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.addInitScript((m) => {
-    const define = (o: object, k: string, v: unknown) =>
-      Object.defineProperty(o, k, { get: () => v, configurable: true });
-    define(navigator, "deviceMemory", 8);
-    define(navigator, "hardwareConcurrency", 8);
-    define(navigator, "connection", {
-      saveData: m === "lite",
-      effectiveType: "4g",
-      addEventListener() {},
-    });
-  }, mode);
-}
+import { asDevice, expectNoAxeViolations, hasHScroll, LOCALES, setTheme, watchErrors } from "./helpers";
 
 /** Records the 3D model and the two lazy chunks (found by a marker string each one contains). */
 function watchLazy(page: Page) {
@@ -148,9 +130,12 @@ test.describe("fallbacks", () => {
     const errors = watchErrors(page);
     await asDevice(page, "rich");
     await page.goto("/en");
-    await slot(page).scrollIntoViewIfNeeded();
     const canvas = slot(page).locator("canvas");
-    await expect(canvas).toBeVisible({ timeout: 15_000 });
+    // The pins build after idle and can move the page; keep the slot in view until the canvas shows.
+    await expect(async () => {
+      await slot(page).scrollIntoViewIfNeeded();
+      await expect(canvas).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 20_000 });
     await canvas.evaluate((c) => c.dispatchEvent(new Event("webglcontextlost", { cancelable: true })));
     await expect(canvas).toHaveCount(0);
     await expect(slot(page).locator("svg")).toBeVisible();

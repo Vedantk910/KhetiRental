@@ -83,13 +83,19 @@ test("How we price states the real rules and has the #sources anchor", async ({ 
   await expect(page).toHaveURL(/\/en\/how-we-price#sources$/);
 });
 
-test("Help: contact placeholders are text, not dead links; FAQ opens; footer and tab links work", async ({
+test("Help: call and WhatsApp are real links; FAQ opens; footer and tab links work", async ({
   browser,
   page,
 }) => {
   await page.goto("/en/help");
-  await expect(page.locator('main a[href^="tel:"], main a[href*="wa.me"]')).toHaveCount(0);
-  await expect(page.getByText("[YOUR HELPLINE]").first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Call +91 78219 00000" })).toHaveAttribute(
+    "href",
+    "tel:+917821900000",
+  );
+  await expect(page.getByRole("link", { name: "WhatsApp +91 78219 00000" })).toHaveAttribute(
+    "href",
+    "https://wa.me/917821900000",
+  );
   const q = page.getByText("How do I cancel?");
   await q.click();
   await expect(page.getByText("free until 24 hours before the start time")).toBeVisible();

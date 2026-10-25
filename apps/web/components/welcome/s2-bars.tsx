@@ -1,7 +1,8 @@
 import { useLocale, useTranslations } from "next-intl";
+import { COMPONENTS } from "@/config/welcome";
 import { formatRupees } from "@/lib/format";
 
-export const BUY_RUPEES = 640_000;
+export const BUY_RUPEES = COMPONENTS[0].buy;
 export const RENT_RUPEES = 2839;
 
 /** Buy is the full width; rent is its true share, but never thinner than a 12 px stub so it stays visible. */

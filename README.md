@@ -19,16 +19,33 @@ Every external service (Google sign-in, SMS OTP, payments, notifications) runs a
 
 Using your own Postgres instead of Docker: the tests clone throwaway databases from `template_postgis`, which the Docker image creates. Create it once as a superuser: `createdb -T template0 template_postgis && psql -d template_postgis -c 'CREATE EXTENSION postgis; CREATE EXTENSION btree_gist; ALTER DATABASE template_postgis IS_TEMPLATE true'`.
 
+### Real sign-in on a deployment (all free)
+
+With no keys, a deployed site offers email + password only: Mobile OTP needs an SMS provider (none is built in, so the Mobile method is hidden and the OTP API answers 503), and Google is hidden without its keys. Every account, whichever way it signs in, is a row in the `users` table.
+
+**Password-reset emails with Gmail SMTP**
+
+1. Turn on 2-Step Verification for the Google account that will send the mail.
+2. Open <https://myaccount.google.com/apppasswords>, create an app password named "KhetiRental" and copy the 16 letters.
+3. Set `SMTP_URL=smtps://you%40gmail.com:the-16-letters@smtp.gmail.com:465` (`@` in the address written as `%40`), `MAIL_FROM="KhetiRental <you@gmail.com>"` and `SITE_URL=https://your-domain`. Links in emails always use `SITE_URL`, never the request's Host header.
+
+**Sign in with Google**
+
+1. In <https://console.cloud.google.com/>, create a project, then APIs & Services, OAuth consent screen (External, add your email as a test user while testing).
+2. Credentials, Create credentials, OAuth client ID, type Web application.
+3. Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google` and `https://your-domain/api/auth/callback/google`.
+4. Set `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` to the client ID and secret. A new Google user gets a `users` row with name, email, photo and the renter role. Someone who already has an email + password account with the same address is not merged automatically (that would let a person who signed up with your address take over your Google login); they see the sign-in error and use their password.
+
 ## Project map
 
-| Path | What it is |
-|---|---|
-| `apps/web/` | The website (Next.js App Router, TypeScript, Tailwind). This is the product. |
-| `compose.yaml` | Local Postgres + PostGIS (and Redis for the showcase). |
-| `design/` | Approved UI mockups (reference only; see `UI-SPEC.md` §0). |
-| `docs/` | Agent docs and the docs link checker. |
-| `showcase/` | Engineering portfolio: Go services, contracts, analytics, PRD, ADRs and the risk audit. Not on the website's request path. See [`showcase/README.md`](showcase/README.md). |
-| `GLOSSARY.md` | The terms used across the product and code. |
+| Path           | What it is                                                                                                                                                                 |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/web/`    | The website (Next.js App Router, TypeScript, Tailwind). This is the product.                                                                                               |
+| `compose.yaml` | Local Postgres + PostGIS (and Redis for the showcase).                                                                                                                     |
+| `design/`      | Approved UI mockups (reference only; see `UI-SPEC.md` §0).                                                                                                                 |
+| `docs/`        | Agent docs and the docs link checker.                                                                                                                                      |
+| `showcase/`    | Engineering portfolio: Go services, contracts, analytics, PRD, ADRs and the risk audit. Not on the website's request path. See [`showcase/README.md`](showcase/README.md). |
+| `GLOSSARY.md`  | The terms used across the product and code.                                                                                                                                |
 
 ## Checks
 

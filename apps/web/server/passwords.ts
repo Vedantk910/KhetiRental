@@ -1,9 +1,9 @@
-// Email + password (D-05): argon2id hashes, ≥ 8 characters, a reset link logged in dev.
+// Email + password (D-05): argon2id hashes, ≥ 8 characters, a reset link sent by email (logged in dev).
 import { hash, verify } from "@node-rs/argon2";
 import { createHmac, randomBytes } from "node:crypto";
 import { getSql, one } from "./db";
 import { ApiError, parse } from "./http";
-import { logNotification } from "./mocks/notify";
+import { sendMail, siteUrl } from "./mail";
 import { limit } from "./rate-limit";
 import { authSecret } from "./secret";
 import type { SessionUser } from "./session";
@@ -53,7 +53,7 @@ export async function loginWithPassword(
 
 const tokenHash = (t: string) => createHmac("sha256", authSecret()).update(t).digest("hex");
 
-/** Returns the token (for the dev log and tests) or null when no such account; callers show the same message either way. */
+/** Returns the token (for the caller to email) or null when no such account; callers show the same message either way. */
 export async function requestPasswordReset(rawEmail: string): Promise<string | null> {
   const email = parse(emailSchema, rawEmail);
   const sql = getSql();
@@ -63,8 +63,26 @@ export async function requestPasswordReset(rawEmail: string): Promise<string | n
   await sql`DELETE FROM verification_tokens WHERE identifier = ${`reset:${email}`}`;
   await sql`INSERT INTO verification_tokens (identifier, token, expires)
             VALUES (${`reset:${email}`}, ${tokenHash(token)}, now() + make_interval(secs => ${RESET_TTL_S}))`;
-  logNotification(u.id, "password_reset", `/login/reset?token=${token}`);
   return token;
+}
+
+/** Absolute reset link on the configured site, or null when SITE_URL is not usable (nothing is sent then). */
+export function resetLink(token: string) {
+  const base = siteUrl();
+  return base && `${base}/login/reset?token=${token}`;
+}
+
+export async function sendResetEmail(email: string, token: string) {
+  const link = resetLink(token);
+  if (!link) {
+    console.error("[mail] SITE_URL is not set; password reset email not sent");
+    return;
+  }
+  await sendMail({
+    to: email,
+    subject: "Reset your KhetiRental password",
+    text: `Open this link to choose a new password. It works once and expires in 1 hour.\n\n${link}\n\nIf you did not ask for this, ignore this email.`,
+  });
 }
 
 export async function resetPassword(token: string, password: string) {

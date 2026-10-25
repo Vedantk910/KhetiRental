@@ -2,8 +2,10 @@ import { useLocale, useTranslations } from "next-intl";
 import type { CSSProperties, ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/button";
 import { config } from "@/config/site";
+import { helplineHref } from "@/lib/contact";
 import { formatRupees } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useParts } from "./prices";
 import { S2Bars } from "./s2-bars";
 import { StoryMotion } from "./story-motion";
 import { TractorSlot } from "./tractor-slot";
@@ -50,8 +52,8 @@ export function Story({ ownerHref }: { ownerHref: string }) {
   const locale = useLocale();
   const rupees = (n: number) => formatRupees(n * 100, locale);
   const helpline = config.helplinePhone;
-  const dialable = /^[+\d\s-]{6,}$/.test(helpline);
   const tb = useTranslations("booking");
+  const parts = useParts();
 
   return (
     <div id="story">
@@ -77,7 +79,7 @@ export function Story({ ownerHref }: { ownerHref: string }) {
 
       <Section tone="surface" labelledBy="s2" pin="s2">
         <H2 id="s2">{t("s2.title")}</H2>
-        <TractorSlot />
+        <TractorSlot parts={parts} />
         <S2Bars />
       </Section>
 
@@ -208,15 +210,9 @@ export function Story({ ownerHref }: { ownerHref: string }) {
       <Section tone="bg" labelledBy="s7">
         <H2 id="s7">{t("s7.title")}</H2>
         <div>
-          {dialable ? (
-            <ButtonLink href={`tel:${helpline.replace(/[^+\d]/g, "")}`} variant="outline-dark" size="lg">
-              {t("s7.call", { phone: helpline })}
-            </ButtonLink>
-          ) : (
-            <span className="inline-flex min-h-tap-lg items-center rounded-control border-2 border-text px-6 text-body font-bold">
-              {t("s7.call", { phone: helpline })}
-            </span>
-          )}
+          <ButtonLink href={helplineHref()} variant="outline-dark" size="lg">
+            {t("s7.call", { phone: helpline })}
+          </ButtonLink>
         </div>
       </Section>
     </div>

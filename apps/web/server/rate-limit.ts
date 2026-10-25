@@ -10,6 +10,7 @@ export const LIMITS = {
   passwordAccount: [5, 600],
   passwordIp: [50, 600],
   signupIp: [20, 3600],
+  resetEmail: [5, 3600],
   bookingCreate: [5, 3600],
   upload: [60, 3600],
   problemReport: [10, 3600],

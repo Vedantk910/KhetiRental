@@ -106,3 +106,21 @@ export async function checkLayout(page: Page, label: string, full: boolean) {
   await page.setViewportSize({ width: 390, height: 844 });
   await setTheme(page, "light");
 }
+
+export type Mode = "rich" | "lite" | "none";
+
+/** Makes the page look like a capable desktop (rich), a Save-Data phone (lite), or a reduced-motion user (none). */
+export async function asDevice(page: Page, mode: Mode) {
+  if (mode === "none") await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.addInitScript((m) => {
+    const define = (o: object, k: string, v: unknown) =>
+      Object.defineProperty(o, k, { get: () => v, configurable: true });
+    define(navigator, "deviceMemory", 8);
+    define(navigator, "hardwareConcurrency", 8);
+    define(navigator, "connection", {
+      saveData: m === "lite",
+      effectiveType: "4g",
+      addEventListener() {},
+    });
+  }, mode);
+}

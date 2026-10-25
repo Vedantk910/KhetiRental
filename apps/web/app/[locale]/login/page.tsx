@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { LoginForm, type GoogleMode } from "@/components/auth/login-form";
 import type { Locale } from "@/i18n/routing";
 import { mockGoogleEnabled } from "@/server/mocks/flags";
+import { phoneLoginAvailable } from "@/server/mocks/sms";
 import { redirectIfSignedIn } from "@/server/page-user";
 
 type Search = { mode?: string; next?: string; role?: string; error?: string; code?: string };
@@ -37,6 +38,7 @@ export default async function LoginPage({
       initialRole={q.role === "owner" ? "owner" : "renter"}
       next={next}
       google={google}
+      phoneLogin={phoneLoginAvailable()}
       authFailed={q.error !== undefined && q.error !== "CredentialsSignin"}
     />
   );

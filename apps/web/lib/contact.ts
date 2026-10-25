@@ -1,13 +1,8 @@
 import { config } from "@/config/site";
 
-/** `tel:` link for the helpline, or null while it is still a placeholder (no dialling a made-up number). */
-export function helplineHref(phone: string = config.helplinePhone): string | null {
-  const d = phone.replace(/[\s()-]/g, "");
-  return /^\+?\d{8,15}$/.test(d) ? `tel:${d}` : null;
-}
+/** `tel:` link for the helpline. */
+export const helplineHref = (phone: string = config.helplinePhone) => `tel:${phone.replace(/[^+\d]/g, "")}`;
 
-/** `wa.me` link for WhatsApp support, or null while it is still a placeholder. */
-export function whatsappHref(phone: string = config.whatsappPhone): string | null {
-  const d = phone.replace(/[\s()+-]/g, "");
-  return /^\d{8,15}$/.test(d) ? `https://wa.me/${d}` : null;
-}
+/** `wa.me` link for WhatsApp support. */
+export const whatsappHref = (phone: string = config.whatsappPhone) =>
+  `https://wa.me/${phone.replace(/\D/g, "")}`;

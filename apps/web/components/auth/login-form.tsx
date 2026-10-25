@@ -54,12 +54,15 @@ export function LoginForm({
   initialRole,
   next,
   google,
+  phoneLogin,
   authFailed,
 }: {
   initialMode: Mode;
   initialRole: "renter" | "owner";
   next: string | null;
   google: GoogleMode;
+  /** False on a deployment with no way to send an SMS code: the Mobile method is not offered. */
+  phoneLogin: boolean;
   authFailed: boolean;
 }) {
   const t = useTranslations("login");
@@ -68,7 +71,8 @@ export function LoginForm({
   const router = useRouter();
   const toast = useToast();
   const [mode, setModeState] = useState<Mode>(initialMode);
-  const [method, setMethod] = useSessionState<"mobile" | "email">("login.method", "mobile");
+  const [chosen, setMethod] = useSessionState<"mobile" | "email">("login.method", "mobile");
+  const method = phoneLogin ? chosen : "email";
   const [name, setName] = useSessionState("login.name", "");
   const [mobile, setMobile] = useSessionState("login.mobile", "");
   const [email, setEmail] = useSessionState("login.email", "");
@@ -304,20 +308,22 @@ export function LoginForm({
             </div>
           )}
 
-          <ChipGroup
-            label={t("methodLabel")}
-            className="grid grid-cols-2"
-            value={method}
-            onChange={(v) => {
-              setMethod(v as "mobile" | "email");
-              setErrors({});
-              setApiError(null);
-            }}
-            options={[
-              { value: "mobile", label: t("mobile") },
-              { value: "email", label: t("email") },
-            ]}
-          />
+          {phoneLogin && (
+            <ChipGroup
+              label={t("methodLabel")}
+              className="grid grid-cols-2"
+              value={method}
+              onChange={(v) => {
+                setMethod(v as "mobile" | "email");
+                setErrors({});
+                setApiError(null);
+              }}
+              options={[
+                { value: "mobile", label: t("mobile") },
+                { value: "email", label: t("email") },
+              ]}
+            />
+          )}
 
           {mode === "signup" && (
             <Input

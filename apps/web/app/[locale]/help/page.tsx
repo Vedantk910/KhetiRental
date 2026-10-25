@@ -2,7 +2,8 @@ import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ReadPage } from "@/components/pages/page-shell";
-import { ButtonLink, buttonClass } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
+import { buttonClass } from "@/components/ui/button-class";
 import { Card } from "@/components/ui/card";
 import { config } from "@/config/site";
 import type { Locale } from "@/i18n/routing";
@@ -25,19 +26,6 @@ export default async function HelpPage({ params }: { params: Promise<{ locale: s
   // eslint-disable-next-line @typescript-eslint/no-deprecated -- next/root-params needs Next 16; this is the Next 15 API
   setRequestLocale(locale as Locale);
   const t = await getTranslations("help");
-  const call = helplineHref();
-  const wa = whatsappHref();
-  // Until a number is set the buttons show the placeholder as plain text, never a dead link.
-  const contact = (href: string | null, label: string, variant: "primary" | "secondary") =>
-    href ? (
-      <a href={href} className={buttonClass(variant, "lg", "w-full")}>
-        {label}
-      </a>
-    ) : (
-      <p className="rounded-control border-2 border-dashed border-border-control p-3 text-center text-label">
-        {label}
-      </p>
-    );
   return (
     <ReadPage title={t("title")}>
       <p className="text-body text-text-muted">{t("intro")}</p>
@@ -45,12 +33,13 @@ export default async function HelpPage({ params }: { params: Promise<{ locale: s
         <h2 id="help-contact" className="sr-only">
           {t("callCard")}
         </h2>
-        {contact(call, t("call", { phone: config.helplinePhone }), "primary")}
-        {contact(wa, t("whatsapp", { phone: config.whatsappPhone }), "secondary")}
-        <p className="text-caption text-text-subtle">
-          {t("hours")}
-          {(!call || !wa) && ` ${t("placeholder")}`}
-        </p>
+        <a href={helplineHref()} className={buttonClass("primary", "lg", "w-full")}>
+          {t("call", { phone: config.helplinePhone })}
+        </a>
+        <a href={whatsappHref()} className={buttonClass("secondary", "lg", "w-full")}>
+          {t("whatsapp", { phone: config.whatsappPhone })}
+        </a>
+        <p className="text-caption text-text-subtle">{t("hours")}</p>
       </Card>
       <section aria-labelledby="help-faq" className="flex flex-col gap-3">
         <h2 id="help-faq" className="text-h2">

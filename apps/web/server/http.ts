@@ -33,6 +33,7 @@ export const API_ERRORS = [
   "file_too_large",
   "file_type",
   "too_many_photos",
+  "phone_login_unavailable",
   "internal",
 ] as const;
 export type ApiErrorCode = (typeof API_ERRORS)[number];
