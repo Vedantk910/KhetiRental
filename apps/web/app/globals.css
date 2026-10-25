@@ -132,3 +132,7 @@ body:has([data-sheet-open]) [data-tab-bar] {
 .leaflet-container {
   font-family: inherit;
 }
+/* Attribution is a link inside a sentence: underline it so it isn't told apart by colour alone. */
+.leaflet-container .leaflet-control-attribution a {
+  text-decoration: underline;
+}

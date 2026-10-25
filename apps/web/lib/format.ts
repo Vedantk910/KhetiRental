@@ -41,3 +41,9 @@ export function toAsciiNumber(s: string): number {
     .replace(/^(-?\d+),(\d+)$/, "$1.$2");
   return /^-?\d+(\.\d+)?$/.test(ascii) ? Number(ascii) : NaN;
 }
+
+/** "Ramesh Patil" → "Ramesh P." (other people see no more than this). */
+export function shortName(name: string | null): string {
+  const [first = "", last] = (name ?? "").trim().split(/\s+/);
+  return last ? `${first} ${last[0]}.` : first;
+}

@@ -229,3 +229,30 @@ export const forgotSchema = z.object({ email: emailSchema }).strict();
 export const resetSchema = z
   .object({ token: z.string().regex(/^[A-Za-z0-9_-]{20,100}$/), password: passwordSchema })
   .strict();
+
+// ---- owner tools and demo admin (M5) --------------------------------------------------------------------
+
+export const monthSchema = z.string().regex(/^20[2-5]\d-(0[1-9]|1[0-2])$/);
+export const priceHintSchema = z
+  .object({
+    category: z.enum(CATEGORIES),
+    unit: z.enum(PRICE_UNITS),
+    lat: num.pipe(z.number().min(-90).max(90)),
+    lng: num.pipe(z.number().min(-180).max(180)),
+  })
+  .strict();
+export const emptySchema = z.object({}).strict();
+export const rcDecisionSchema = z.object({ decision: z.enum(["checked", "rejected"]) }).strict();
+export const problemReviewSchema = z
+  .object({ status: z.enum(["open", "resolved"]), note: note(1000).optional() })
+  .strict();
+export const userSearchSchema = z.object({ q: z.string().trim().max(60).default("") }).strict();
+export const userRolesSchema = z
+  .object({
+    roles: z
+      .array(z.enum(["renter", "owner", "admin"]))
+      .min(1)
+      .max(6)
+      .transform((r) => [...new Set(r)]),
+  })
+  .strict();

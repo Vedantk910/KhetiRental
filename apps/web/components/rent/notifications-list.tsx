@@ -76,7 +76,10 @@ export function NotificationsList({ items }: { items: NotificationItem[] }) {
               : n.type;
             const open = () => {
               if (!n.readAt) void post({ ids: [n.id] });
-              if (n.code) router.push(`/bookings/${n.code}`);
+              if (n.code)
+                router.push(
+                  n.type === "booking_requested" ? `/owner/requests/${n.code}` : `/bookings/${n.code}`,
+                );
             };
             return (
               <Card key={n.id} as="li" className="p-0">

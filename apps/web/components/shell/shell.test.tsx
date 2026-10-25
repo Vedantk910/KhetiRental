@@ -6,6 +6,8 @@ import { SkipLink } from "./skip-link";
 import { TabBar } from "./tab-bar";
 
 let pathname = "/";
+let roles: ("renter" | "owner" | "admin")[] | null = null;
+vi.mock("./use-roles", () => ({ useRoles: () => roles }));
 vi.mock("@/i18n/navigation", async () => {
   const React = await import("react");
   return {
@@ -53,6 +55,25 @@ describe("TabBar", () => {
     const links = within(nav).getAllByRole("link");
     expect(links.map((l) => l.textContent)).toEqual(["किराया", "मेरी बुकिंग", "मदद"]);
     expect(links.map((l) => l.getAttribute("aria-current"))).toEqual([null, "page", null]);
+  });
+
+  it("owner-only accounts get Dashboard · My machines · Help", () => {
+    pathname = "/owner";
+    roles = ["owner"];
+    renderIntl(<TabBar />, { locale: "en" });
+    const links = within(screen.getByRole("navigation", { name: "Sections" })).getAllByRole("link");
+    expect(links.map((l) => l.textContent)).toEqual(["Dashboard", "My machines", "Help"]);
+    expect(links.map((l) => l.getAttribute("aria-current"))).toEqual(["page", null, null]);
+    roles = null;
+  });
+
+  it("a renter who also owns gets an Owner tab", () => {
+    pathname = "/rent";
+    roles = ["renter", "owner"];
+    renderIntl(<TabBar />, { locale: "en" });
+    const links = within(screen.getByRole("navigation", { name: "Sections" })).getAllByRole("link");
+    expect(links.map((l) => l.textContent)).toEqual(["Rent", "My bookings", "Owner", "Help"]);
+    roles = null;
   });
 
   it("is absent on public pages", () => {

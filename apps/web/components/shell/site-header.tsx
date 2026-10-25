@@ -7,17 +7,20 @@ import { LanguageSwitch } from "@/components/ui/language-switch";
 import { Link, usePathname } from "@/i18n/navigation";
 import { isActive } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { useRoles } from "./use-roles";
 
 const NAV = [
   { href: "/rent", key: "rent" },
   { href: "/bookings", key: "bookings" },
   { href: "/help", key: "help" },
 ] as const;
+const OWNER = { href: "/owner", key: "owner" } as const;
 
 /** Phone/tablet: 56 px bar with logo, bell, language. From 1024 px: 64 px with the top nav (UI-SPEC §3.2). */
 export function SiteHeader() {
   const t = useTranslations();
   const pathname = usePathname();
+  const nav = useRoles()?.includes("owner") ? [...NAV.slice(0, 2), OWNER, NAV[2]] : NAV;
   // The login pages draw their own back arrow and language switch.
   if (isActive(pathname, "/login")) return null;
   // Welcome page: floats transparent over the field scene (UI-SPEC §4.1.1).
@@ -48,7 +51,7 @@ export function SiteHeader() {
         </Link>
         <nav aria-label={t("nav.label")} className={cn("hidden", !overlay && "lg:block")}>
           <ul className="flex items-center gap-1">
-            {NAV.map((n) => (
+            {nav.map((n) => (
               <li key={n.href}>
                 <Link
                   href={n.href}
