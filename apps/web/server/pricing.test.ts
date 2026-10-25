@@ -5,6 +5,7 @@ import {
   bookingWindow,
   cancelDeadline,
   depositFloorPaise,
+  estimateHintRupees,
   quote,
   roundKm,
   type PricedMachine,
@@ -54,6 +55,7 @@ describe("depositFloorPaise", () => {
   });
   it("has a category floor for implements", () => {
     expect(depositFloorPaise({ category: "sprayer", hp: null })).toBeGreaterThan(0);
+    expect(depositFloorPaise({ category: "baler", hp: 55 })).toBe(150_000);
   });
 });
 
@@ -132,5 +134,25 @@ describe("roundKm (S-07)", () => {
     expect(roundKm(1.24)).toBe(1);
     expect(roundKm(1.26)).toBe(1.5);
     expect(roundKm(9.9)).toBe(10);
+  });
+});
+
+describe("estimateHintRupees (price-hint fallback)", () => {
+  it("turns the pricing engine's hourly rate into a ±10 % range per hour, acre or day", () => {
+    const hour = estimateHintRupees({ hp: 45, ageYears: 5, unit: "hour" });
+    expect(hour.minRupees).toBeLessThan(hour.maxRupees);
+    expect(hour.minRupees % 10).toBe(0);
+    expect(hour.maxRupees % 10).toBe(0);
+    const acre = estimateHintRupees({ hp: 45, ageYears: 5, unit: "acre" });
+    const day = estimateHintRupees({ hp: 45, ageYears: 5, unit: "day" });
+    expect(acre.maxRupees).toBeLessThan(hour.maxRupees);
+    expect(day.minRupees).toBeGreaterThan(hour.maxRupees);
+  });
+  it("bigger and newer machines estimate higher; the age is clamped", () => {
+    expect(estimateHintRupees({ hp: 75, ageYears: 3, unit: "hour" }).minRupees).toBeGreaterThan(
+      estimateHintRupees({ hp: 35, ageYears: 3, unit: "hour" }).minRupees,
+    );
+    expect(() => estimateHintRupees({ hp: 45, ageYears: -3, unit: "hour" })).not.toThrow();
+    expect(() => estimateHintRupees({ hp: 45, ageYears: 900, unit: "hour" })).not.toThrow();
   });
 });

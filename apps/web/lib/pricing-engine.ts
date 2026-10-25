@@ -9,7 +9,7 @@ export const SOIL_COEFF = { loam: 1.0, black_cotton: 1.25, sandy: 0.9 } as const
 export const SEASONAL_SURGE = { off_season: 1.0, sowing: 1.2, harvest_compressed: 1.45 } as const;
 const DEPRECIATION_HOURS = 10_000;
 const TAKE_RATE_BAND = [0.12, 0.15] as const;
-export const DEFAULT_TAKE_RATE = 0.135;
+const DEFAULT_TAKE_RATE = 0.135;
 
 export type HpTier = keyof typeof BASE_RATE_BY_HP;
 export type Soil = keyof typeof SOIL_COEFF;

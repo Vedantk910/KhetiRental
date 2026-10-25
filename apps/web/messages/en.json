@@ -628,6 +628,7 @@
     "perDay": "Per day",
     "yourPrice": "Your price {per}",
     "similar": "Similar machines near you charge {range}.",
+    "similarEstimate": "Our pricing model estimates {range}. This is a rough guide, not what machines nearby charge.",
     "farmerPays": "Farmer pays",
     "fee": "Our fee ({pct})",
     "keep": "You keep",

@@ -2,7 +2,7 @@
 // Money is integer paise; the four ledger buckets always sum to what the
 // renter pre-authorised, whatever order events arrive in.
 
-export const DEPOSIT_RATE = 0.15;
+const DEPOSIT_RATE = 0.15;
 const GEOFENCE_M = 500; // D-01
 const GEOFENCE_GRACE_S = 60; // D-01 T_grace
 const HOUR_TAMPER = 0.1; // D-02

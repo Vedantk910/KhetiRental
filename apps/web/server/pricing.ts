@@ -1,5 +1,6 @@
 // Booking maths: slot windows, quotes, deposits, ratings. Pure, integer paise (UI-SPEC §4.7, F-15, F-18).
 import type { Category, PriceUnit, Slot } from "@/lib/domain";
+import { hourlyRate, type HpTier } from "@/lib/pricing-engine";
 
 const IST_OFFSET = "+05:30";
 export const SLOT_HOURS: Record<Slot, { from: number; to: number }> = {
@@ -63,6 +64,7 @@ const CATEGORY_FLOOR: Record<Exclude<Category, "tractor">, number> = {
   sprayer: 500,
   trolley: 1000,
   thresher: 1500,
+  baler: 1500,
   combine_harvester: 12_500,
 };
 
@@ -70,6 +72,34 @@ export function depositFloorPaise(m: { category: Category; hp: number | null }):
   if (m.category !== "tractor") return CATEGORY_FLOOR[m.category] * 100;
   const hp = m.hp ?? 35;
   return (TRACTOR_FLOORS.find(([max]) => hp <= max)?.[1] ?? TOP_TRACTOR_FLOOR) * 100;
+}
+
+// What a new tractor of each tier costs, for the engine's wear term; and a typical diesel price (INR/litre).
+const TIER_COST_INR: Record<HpTier, number> = {
+  "35": 550_000,
+  "45": 700_000,
+  "55": 850_000,
+  "75_4wd": 1_400_000,
+};
+const DIESEL_INR = 90;
+const hpTier = (hp: number): HpTier => (hp <= 35 ? "35" : hp <= 45 ? "45" : hp <= 55 ? "55" : "75_4wd");
+
+/** An estimate, not a market rate: the pricing engine's hourly rate for a tractor, ±10 %, per hour, acre or day. */
+export function estimateHintRupees(m: { hp: number; ageYears: number; unit: PriceUnit }) {
+  const tier = hpTier(m.hp);
+  const hourly = hourlyRate(
+    {
+      hp: tier,
+      ageYears: Math.min(Math.max(m.ageYears, 0), 40),
+      acquisitionCostInr: TIER_COST_INR[tier],
+      soil: "loam",
+      season: "off_season",
+    },
+    DIESEL_INR,
+  ).total;
+  const perUnit = hourly * { hour: 1, acre: HOURS_PER_ACRE, day: slotLength("full") }[m.unit];
+  const tens = (x: number) => Math.max(10, Math.round(x / 10) * 10);
+  return { minRupees: tens(perUnit * 0.9), maxRupees: tens(perUnit * 1.1) };
 }
 
 export interface PricedMachine {
