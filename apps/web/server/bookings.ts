@@ -8,6 +8,7 @@ import { createPayment } from "./mocks/payments";
 import { notify } from "./notifications";
 import { bookingWindow, cancelDeadline, type PricedMachine, quote, REPLY_WINDOW_MS } from "./pricing";
 import { limit } from "./rate-limit";
+import { bookingCodeSchema } from "./validation";
 import type { SessionUser } from "./session";
 
 const PAST_GRACE_MS = 3600_000; // F-21: "start < now() - 1 hour" is in the past
@@ -24,6 +25,8 @@ interface BookingRow {
   renter_id: string;
   owner_id: string;
   machine_name: string;
+  attachments: string[];
+  photo: string | null;
   village: string;
   start_date: string;
   end_date: string;
@@ -54,6 +57,7 @@ interface BookingRow {
 
 const SELECT = (sql: ReturnType<typeof getSql>) => sql`
   SELECT b.id, b.code, b.status, b.machine_id, b.renter_id, m.owner_id, m.make || ' ' || m.model AS machine_name,
+    m.attachments, (SELECT p.url FROM machine_photos p WHERE p.machine_id = m.id AND p.kind <> 'rc' ORDER BY p.sort, p.created_at LIMIT 1) AS photo,
     m.village, b.start_date::text, b.end_date::text, b.slot, b.est_qty::text, b.unit, b.rate_paise, b.rent_paise,
     b.deposit_paise, b.diesel_included, b.total_paise, b.reply_by, lower(b.during) AS starts_at, b.created_at,
     b.confirmed_at, b.closed_at, b.decline_reason, b.cancel_reason,
@@ -67,14 +71,20 @@ const CONTACT_STATUSES: BookingStatus[] = ["CONFIRMED", "IN_PROGRESS", "COMPLETE
 
 /** What a viewer may see: phones and the exact place only after the owner accepts (UI-SPEC §4.8, S-07). */
 function view(b: BookingRow, viewer: SessionUser) {
-  const role = b.renter_id === viewer.id ? "renter" : "owner";
+  const role: "renter" | "owner" = b.renter_id === viewer.id ? "renter" : "owner";
   const contact = CONTACT_STATUSES.includes(b.status);
   return {
     id: b.id,
     code: b.code,
     status: b.status,
     role,
-    machine: { id: b.machine_id, name: b.machine_name, village: b.village },
+    machine: {
+      id: b.machine_id,
+      name: b.machine_name,
+      village: b.village,
+      attachments: b.attachments,
+      photoUrl: b.photo,
+    },
     startDate: b.start_date,
     endDate: b.end_date,
     slot: b.slot,
@@ -234,6 +244,8 @@ export async function cancelBooking(u: SessionUser, id: string, reason?: string,
   const b = await visible(u, id);
   const isRenter = b.renter_id === u.id;
   const allowed: BookingStatus[] = isRenter ? ["REQUESTED", "CONFIRMED"] : ["CONFIRMED"];
+  // Once the start time has passed the job is under way: report a problem instead.
+  if (now.getTime() >= new Date(b.starts_at).getTime()) throw new ApiError(409, "invalid_state");
   const rows = await getSql()`
     UPDATE bookings SET status = 'CANCELLED', cancelled_by = ${u.id}, cancel_reason = ${reason ?? null}, closed_at = now()
     WHERE id = ${id} AND status = ANY(${allowed}::text[]) RETURNING id`;
@@ -308,4 +320,55 @@ export async function payBooking(
 export async function bookingParty(u: SessionUser, id: string) {
   const b = await visible(u, id);
   return { role: b.renter_id === u.id ? ("renter" as const) : ("owner" as const), booking: b };
+}
+
+/** What a booking page shows besides the booking: the viewer's own problem reports, newest first. */
+export async function myProblems(u: SessionUser, bookingId: string) {
+  return getSql()<{ type: string; createdAt: Date }[]>`
+    SELECT type, created_at AS "createdAt" FROM problem_reports
+    WHERE booking_id = ${bookingId} AND reporter_id = ${u.id} ORDER BY created_at DESC`;
+}
+
+/** "KR-4821" → the viewer's most recent booking with that code (codes repeat once old bookings close). */
+export async function getBookingByCode(u: SessionUser, rawCode: string) {
+  const parsed = bookingCodeSchema.safeParse(rawCode);
+  if (!parsed.success) throw new ApiError(404, "not_found");
+  await expireStale();
+  const sql = getSql();
+  const b = one(
+    await sql<BookingRow[]>`${SELECT(sql)}
+    WHERE b.code = ${parsed.data} AND (b.renter_id = ${u.id} OR m.owner_id = ${u.id})
+    ORDER BY (b.status IN ('REQUESTED','CONFIRMED','IN_PROGRESS')) DESC, b.created_at DESC LIMIT 1`,
+  );
+  if (!b) throw new ApiError(404, "not_found");
+  return view(b, u);
+}
+
+const icsText = (s: string) => s.replace(/[\r\n]+/g, " ").replace(/[\\;,]/g, (c) => `\\${c}`);
+const icsTime = (d: Date) =>
+  d
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
+
+/** A one-event calendar file for a confirmed booking (UI-SPEC §4.8). Text is escaped so names can't add lines. */
+export async function bookingIcs(u: SessionUser, id: string) {
+  const b = await visible(u, id);
+  if (!CONTACT_STATUSES.includes(b.status)) throw new ApiError(409, "invalid_state");
+  const w = bookingWindow(b.start_date, b.end_date, b.slot);
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//KhetiRental//Booking//EN",
+    "BEGIN:VEVENT",
+    `UID:${b.id}@khetirental`,
+    `DTSTAMP:${icsTime(new Date())}`,
+    `DTSTART:${icsTime(w.start)}`,
+    `DTEND:${icsTime(w.end)}`,
+    `SUMMARY:${icsText(`${b.machine_name} (${b.code})`)}`,
+    `LOCATION:${icsText(b.village)}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ];
+  return { code: b.code, body: lines.join("\r\n") + "\r\n" };
 }
