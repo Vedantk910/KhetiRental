@@ -51,4 +51,18 @@ describe("message catalogues", () => {
     expect(en.units.acre).toBe("/ acre");
     expect(en.story.s1.caption).toMatch(/^Each square/);
   });
+
+  // REVIEW T-01: words a farmer may not know stay out of the farmer-facing copy ("demo" is allowed: payments are mock only).
+  it("English copy avoids the jargon the review banned", () => {
+    const banned =
+      /escrow|authoris|authoriz|pre-auth|telematics|geofence|dossier|sandbox|\bADR\b|take rate|k-ring|Res 8|marketplace|implements|\blistings?\b|tier floor/i;
+    const hits = flat(files.en).filter(([k, v]) => banned.test(v) && !k.startsWith("engineering."));
+    expect(hits).toEqual([]);
+  });
+
+  // REVIEW T-02: sentence case in the navigation.
+  it("navigation labels are in sentence case", () => {
+    for (const [k, v] of flat(files.en).filter(([k]) => k.startsWith("nav.") && !k.endsWith("Label")))
+      expect(v, k).toMatch(/^[A-Z][^A-Z]*$/);
+  });
 });

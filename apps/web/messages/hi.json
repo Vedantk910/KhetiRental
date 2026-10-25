@@ -53,6 +53,7 @@
   "welcome": {
     "h1": "खेती, आसान।",
     "tag": "अपने गाँव से मशीन किराए पर लें",
+    "meta": "TODO-translate: Find tractors, rotavators and harvesters for rent near your village. See the full price before you book. Owners: earn from idle machines.",
     "login": "लॉग इन",
     "signup": "साइन अप",
     "how": "कैसे काम करता है ↓",

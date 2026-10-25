@@ -227,7 +227,7 @@ export function EscrowStateMachine() {
             onClick={() => {
               dispatch({ reset: true });
             }}
-            className="mt-4 text-caption font-bold text-text-muted underline"
+            className="mt-4 inline-flex min-h-tap min-w-tap items-center justify-center text-caption font-bold text-text-muted underline"
           >
             Reset
           </button>
@@ -286,7 +286,7 @@ function Action({
       type="button"
       {...p}
       className={cn(
-        "min-h-tap rounded-card px-3 py-2 text-caption font-bold disabled:cursor-not-allowed disabled:opacity-40",
+        "min-h-tap-lg rounded-card px-3 py-2 text-caption font-bold disabled:cursor-not-allowed disabled:opacity-40 md:min-h-tap",
         tone === "warn" ? "border border-warning text-warning" : "bg-action text-action-on",
         className,
       )}

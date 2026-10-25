@@ -1,16 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  LabelList,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { BarList } from "@/components/engineering/bar-list";
 import {
   HP_TIERS,
   SEASONAL_SURGE,
@@ -102,7 +93,7 @@ export function PricingCalculator() {
           </select>
         </label>
         <label className="block text-caption font-bold">
-          Season surge (μ = {SEASONAL_SURGE[season].toFixed(2)})
+          Season ({SEASON_LABEL[season].toLowerCase()}: ×{SEASONAL_SURGE[season].toFixed(2)})
           <select
             className={field}
             value={season}
@@ -118,7 +109,7 @@ export function PricingCalculator() {
           </select>
         </label>
         <label className="block text-caption font-bold">
-          Soil type (δ = {SOIL_COEFF[soil].toFixed(2)})
+          Soil ({SOIL_LABEL[soil].toLowerCase()}: ×{SOIL_COEFF[soil].toFixed(2)})
           <select
             className={field}
             value={soil}
@@ -203,36 +194,25 @@ export function PricingCalculator() {
 
             <div className="rounded-card border border-border-subtle bg-surface p-[20px]">
               <h2 className="font-bold">KhetiRental rate vs informal local broker rate (₹/h)</h2>
-              <div className="mt-3 h-[224px] overflow-hidden">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={[
-                      { name: "KhetiRental", rate: result.rate.total, fill: "rgb(var(--success))" },
-                      {
-                        name: "Local broker",
-                        rate: Math.round(result.broker.brokerRate * 100) / 100,
-                        fill: "rgb(var(--text-muted))",
-                      },
-                    ]}
-                    margin={{ top: 24, right: 8, left: 8, bottom: 0 }}
-                  >
-                    <CartesianGrid vertical={false} stroke="rgb(var(--border-subtle))" />
-                    <XAxis dataKey="name" stroke="rgb(var(--text-muted))" tickLine={false} />
-                    <YAxis stroke="rgb(var(--text-muted))" tickLine={false} axisLine={false} width={48} />
-                    <Tooltip
-                      cursor={{ fill: "rgb(var(--border-subtle))", opacity: 0.4 }}
-                      formatter={(v) => [inr(Number(v)), "per hour"]}
-                    />
-                    <Bar dataKey="rate" barSize={56} radius={[4, 4, 0, 0]} isAnimationActive={false}>
-                      <LabelList
-                        dataKey="rate"
-                        position="top"
-                        formatter={(v: unknown) => inr(Number(v))}
-                        className="fill-text text-caption"
-                      />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="mt-3">
+                <BarList
+                  label="Hourly rate"
+                  max={Math.max(result.rate.total, result.broker.brokerRate)}
+                  bars={[
+                    {
+                      label: "KhetiRental",
+                      value: result.rate.total,
+                      text: inr(result.rate.total),
+                      tone: "success",
+                    },
+                    {
+                      label: "Local broker",
+                      value: result.broker.brokerRate,
+                      text: inr(Math.round(result.broker.brokerRate * 100) / 100),
+                      tone: "muted",
+                    },
+                  ]}
+                />
               </div>
             </div>
 

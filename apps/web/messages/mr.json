@@ -53,6 +53,7 @@
   "welcome": {
     "h1": "शेती, सोपी.",
     "tag": "गावातूनच यंत्रे भाड्याने घ्या",
+    "meta": "TODO-translate: Find tractors, rotavators and harvesters for rent near your village. See the full price before you book. Owners: earn from idle machines.",
     "login": "लॉग इन",
     "signup": "साइन अप",
     "how": "कसे चालते ↓",
