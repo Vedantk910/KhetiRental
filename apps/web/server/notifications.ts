@@ -20,10 +20,18 @@ export async function notify(userId: string, type: NotificationType, bookingId: 
 export async function listNotifications(u: SessionUser) {
   const sql = getSql();
   const items = await sql<
-    { id: string; type: string; bookingId: string | null; readAt: Date | null; createdAt: Date }[]
+    {
+      id: string;
+      type: string;
+      bookingId: string | null;
+      code: string | null;
+      readAt: string | null;
+      createdAt: string;
+    }[]
   >`
-    SELECT id, type, booking_id AS "bookingId", read_at AS "readAt", created_at AS "createdAt"
-    FROM notifications WHERE user_id = ${u.id} ORDER BY created_at DESC, id LIMIT 100`;
+    SELECT n.id, n.type, n.booking_id AS "bookingId", b.code, n.read_at AS "readAt", n.created_at AS "createdAt"
+    FROM notifications n LEFT JOIN bookings b ON b.id = n.booking_id
+    WHERE n.user_id = ${u.id} ORDER BY n.created_at DESC, n.id LIMIT 100`;
   const [{ unread }] = await sql<{ unread: number }[]>`
     SELECT count(*)::int AS unread FROM notifications WHERE user_id = ${u.id} AND read_at IS NULL`;
   return { items, unread };

@@ -78,6 +78,14 @@ export const searchSchema = z
       )
       .optional(),
     job: z.enum(JOBS).optional(),
+    driver: z
+      .enum(["1", "true"])
+      .transform(() => true as const)
+      .optional(),
+    map: z
+      .literal("1")
+      .transform(() => true as const)
+      .optional(),
     from: day.optional(),
     to: day.optional(),
     slot: z.enum(SLOTS).default("full"),
@@ -104,6 +112,36 @@ export const searchSchema = z
   .transform(({ radius, ...q }) => ({ ...q, radiusKm: radius ?? 10 }));
 export type SearchQuery = z.infer<typeof searchSchema>;
 
+/** Autocomplete text, or a GPS fix for "Near you". Never both. */
+export const placesSchema = z.union([
+  z
+    .object({
+      q: z
+        .string()
+        .min(1)
+        .max(60)
+
+        .transform((s) =>
+          s.replace(DEVA, (d) => String(d.charCodeAt(0) - 0x0966)).replace(/[\u0000-\u001f]/g, ""),
+        ),
+    })
+    .strict(),
+  z
+    .object({ lat: num.pipe(z.number().min(-90).max(90)), lng: num.pipe(z.number().min(-180).max(180)) })
+    .strict(),
+]);
+export const cursorSchema = z.object({
+  cursor: z
+    .string()
+    .regex(/^\d{1,5}$/)
+    .optional(),
+});
+/** "KR-4821", any case. */
+export const bookingCodeSchema = z
+  .string()
+  .regex(/^KR-\d{4}$/i)
+  .transform((s) => s.toUpperCase());
+
 export const idempotencyKeySchema = z.string().regex(/^[A-Za-z0-9_-]{8,100}$/);
 
 const qty = z.number().positive().max(10_000);
@@ -120,7 +158,13 @@ export const bookingCreateSchema = z
   .refine((b) => daySpan(b.startDate, b.endDate) >= 0, { message: "dates", path: ["endDate"] })
   .refine((b) => daySpan(b.startDate, b.endDate) < MAX_BOOKING_DAYS, { message: "dates", path: ["endDate"] });
 
-export const cancelSchema = z.object({ reason: z.string().trim().max(200).optional() }).strict();
+const note = (max: number) =>
+  // NUL breaks Postgres text; other control characters have no place in a note.
+  z
+    .string()
+    .max(max)
+    .transform((v) => v.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, "").trim());
+export const cancelSchema = z.object({ reason: note(200).optional() }).strict();
 export const declineSchema = z.object({ reason: z.enum(DECLINE_REASONS) }).strict();
 export const paySchema = z
   .object({ method: z.enum(PAYMENT_METHODS), amountPaise: z.number().int().positive().max(1e10) })
@@ -174,7 +218,7 @@ export const markReadSchema = z
   .refine((b) => b.ids ?? b.all, { message: "ids or all", path: ["ids"] });
 export const problemFieldsSchema = z.object({
   type: z.string().max(40),
-  text: z.string().trim().max(1000).optional(),
+  text: note(1000).optional(),
 });
 
 export const otpSendSchema = z.object({ phone: phoneSchema }).strict();

@@ -12,6 +12,7 @@ export const LIMITS = {
   signupIp: [20, 3600],
   bookingCreate: [5, 3600],
   upload: [60, 3600],
+  problemReport: [10, 3600],
 } as const satisfies Record<string, readonly [number, number]>;
 
 export async function hit(key: string, limit: number, windowSec: number) {

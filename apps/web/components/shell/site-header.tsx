@@ -1,8 +1,8 @@
 "use client";
 
-import { Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Pictogram } from "@/components/pictograms/pictogram";
+import { NotificationBell } from "@/components/shell/notification-bell";
 import { LanguageSwitch } from "@/components/ui/language-switch";
 import { Link, usePathname } from "@/i18n/navigation";
 import { isActive } from "@/lib/nav";
@@ -32,14 +32,14 @@ export function SiteHeader() {
     >
       <div
         className={cn(
-          "mx-auto flex max-w-app items-center gap-2 px-4 sm:px-6 lg:gap-6",
+          "mx-auto flex max-w-app items-center gap-1 px-4 min-[360px]:gap-2 sm:px-6 lg:gap-6",
           overlay ? "py-3 lg:px-6" : "h-[56px] lg:h-16",
         )}
       >
         <Link
           href="/"
           className={cn(
-            "flex min-h-tap shrink-0 items-center gap-2 rounded-control text-[1.25rem] font-bold leading-7 text-text",
+            "flex min-h-tap shrink-0 items-center gap-2 rounded-control text-[1.125rem] font-bold leading-7 text-text min-[360px]:text-[1.25rem]",
             overlay && "rounded-pill bg-white/85 px-3 text-[#13100D]",
           )}
         >
@@ -63,15 +63,7 @@ export function SiteHeader() {
           </ul>
         </nav>
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          {!overlay && (
-            <Link
-              href="/notifications"
-              aria-label={t("nav.notifications")}
-              className="flex h-tap w-tap shrink-0 items-center justify-center rounded-pill text-text hover:bg-surface-muted"
-            >
-              <Bell aria-hidden className="h-6 w-6" />
-            </Link>
-          )}
+          <NotificationBell overlay={overlay} />
           <LanguageSwitch name="header" tight />
         </div>
       </div>
