@@ -41,6 +41,8 @@ export const users = pgTable("users", {
     .notNull()
     .default(sql`'{renter}'`),
   isSample: boolean("is_sample").notNull().default(false),
+  /** Set when the person deleted their account: the row stays (bookings point at it) with no personal data. */
+  deletedAt: ts("deleted_at"),
   createdAt: createdAt(),
 });
 

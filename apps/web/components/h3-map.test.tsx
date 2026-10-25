@@ -25,9 +25,9 @@ describe("H3Map", () => {
 
   it("k slider and resolution change the ring", () => {
     render(<H3Map />);
-    fireEvent.change(screen.getByLabelText(/ring depth/i), { target: { value: "5" } });
+    fireEvent.change(screen.getByLabelText(/rings of neighbours/i), { target: { value: "5" } });
     expect(ringSize()).toBe(91);
-    fireEvent.change(screen.getByLabelText(/ring depth/i), { target: { value: "1" } });
+    fireEvent.change(screen.getByLabelText(/rings of neighbours/i), { target: { value: "1" } });
     expect(ringSize()).toBe(7);
     fireEvent.change(screen.getByLabelText(/resolution/i), { target: { value: "9" } });
     expect(ringSize()).toBe(7);
@@ -35,7 +35,7 @@ describe("H3Map", () => {
 
   it("lists only Available tractors, at most 20, sorted by score", () => {
     render(<H3Map />);
-    fireEvent.change(screen.getByLabelText(/ring depth/i), { target: { value: "5" } });
+    fireEvent.change(screen.getByLabelText(/rings of neighbours/i), { target: { value: "5" } });
     const items = within(screen.getByTestId("results")).getAllByRole("listitem");
     expect(items.length).toBeGreaterThan(0);
     expect(items.length).toBeLessThanOrEqual(20);

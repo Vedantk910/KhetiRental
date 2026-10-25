@@ -1,6 +1,6 @@
 import { type Page, expect, test } from "@playwright/test";
 
-const URL = "/en/architecture/h3-spatial";
+const URL = "/en/about/engineering/h3-spatial";
 const RING = (k: number) => 3 * k * (k + 1) + 1;
 
 function watch(page: Page) {
@@ -11,7 +11,7 @@ function watch(page: Page) {
 }
 
 async function assertInvariants(page: Page) {
-  const k = Number(await page.getByLabel(/ring depth/i).inputValue());
+  const k = Number(await page.getByLabel(/rings of neighbours/i).inputValue());
   await expect(page.getByTestId("ring-size")).toHaveText(String(RING(k)));
   expect(await page.getByTestId("ring-cell").count()).toBe(RING(k));
   const n = await page.getByTestId("results").locator("li").count();
@@ -26,7 +26,7 @@ test("click sets farmer, ring, ranked results, pipeline and measured latency", a
   const box = (await page.getByTestId("h3-map").boundingBox())!;
   await page.mouse.click(box.x + box.width * 0.55, box.y + box.height * 0.4);
   await expect(page.getByTestId("farmer-coords")).not.toHaveText(before!);
-  await page.getByLabel(/ring depth/i).fill("5");
+  await page.getByLabel(/rings of neighbours/i).fill("5");
   await expect(page.getByTestId("ring-size")).toHaveText("91");
   expect((await page.getByTestId("pipeline").textContent())!.trim().split("\n")).toHaveLength(91);
   await expect(page.getByTestId("live-ms")).toHaveText(/^\d+\.\d\d ms$/);
@@ -124,7 +124,7 @@ test("adversarial: 5 parallel users hammer clicks, resolution, k and keyboard", 
         else if (r < 0.6)
           await page.getByLabel(/h3 resolution/i).selectOption(String(7 + Math.floor(Math.random() * 3)));
         else if (r < 0.8)
-          await page.getByLabel(/ring depth/i).fill(String(1 + Math.floor(Math.random() * 5)));
+          await page.getByLabel(/rings of neighbours/i).fill(String(1 + Math.floor(Math.random() * 5)));
         else {
           await map.focus();
           await page.keyboard.press(
@@ -151,7 +151,7 @@ test("screenshots light, dark, 375", async ({ browser }) => {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, colorScheme: scheme });
     const page = await ctx.newPage();
     await page.goto(URL);
-    await page.getByLabel(/ring depth/i).fill("3");
+    await page.getByLabel(/rings of neighbours/i).fill("3");
     await page.screenshot({ path: `test-results/h3-${name}.png`, fullPage: true });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     await ctx.close();
