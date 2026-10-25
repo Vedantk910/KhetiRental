@@ -1,6 +1,7 @@
 // Machines: search (F-02/F-03/F-04/F-07/F-41, S-07), detail, and the owner's listing CRUD.
 import { and, eq, sql as dsql } from "drizzle-orm";
 import { ACTIVE_STATUSES, JOB_MACHINES, type Slot } from "@/lib/domain";
+import { shortName } from "@/lib/format";
 import { getDb, getSql, one } from "./db";
 import { machines } from "./db/schema";
 import { ApiError } from "./http";
@@ -24,12 +25,6 @@ const NEXT_FREE_HORIZON_DAYS = 60;
 const MAX_PHOTOS = 8;
 
 const roundTo = (n: number, dp: number) => Math.round(n * 10 ** dp) / 10 ** dp;
-
-/** "Ramesh Patil" → "Ramesh P." */
-const shortName = (name: string | null) => {
-  const [first = "", last] = (name ?? "").trim().split(/\s+/);
-  return last ? `${first} ${last[0]}.` : first;
-};
 
 export async function resolvePlace(q: SearchQuery) {
   const sql = getSql();
@@ -371,12 +366,16 @@ export async function setBlocks(u: SessionUser, id: string, days: string[], bloc
     await sql`DELETE FROM machine_blocks WHERE machine_id = ${id} AND day = ANY(${unique}::text[]::date[])`;
     return { days: unique, blocked };
   }
-  const clash = await sql<{ day: string }[]>`
-    SELECT d::text AS day FROM unnest(${unique}::text[]::date[]) d
-    WHERE EXISTS (SELECT 1 FROM bookings b WHERE b.machine_id = ${id} AND b.status = ANY(${ACTIVE}::text[])
-      AND b.during && tstzrange((d + time '00:00') AT TIME ZONE 'Asia/Kolkata', (d + 1 + time '00:00') AT TIME ZONE 'Asia/Kolkata', '[)'))`;
-  if (clash.length > 0) throw new ApiError(409, "day_booked", "days", undefined, { day: clash[0].day });
-  await sql`INSERT INTO machine_blocks (machine_id, day) SELECT ${id}, d FROM unnest(${unique}::text[]::date[]) d ON CONFLICT DO NOTHING`;
+  // Same lock as createBooking, so a booking and a block for one day can't both land.
+  await sql.begin(async (tx) => {
+    await tx`SELECT pg_advisory_xact_lock(hashtextextended(${id}, 0))`;
+    const clash = await tx<{ day: string }[]>`
+      SELECT d::text AS day FROM unnest(${unique}::text[]::date[]) d
+      WHERE EXISTS (SELECT 1 FROM bookings b WHERE b.machine_id = ${id} AND b.status = ANY(${ACTIVE}::text[])
+        AND b.during && tstzrange((d + time '00:00') AT TIME ZONE 'Asia/Kolkata', (d + 1 + time '00:00') AT TIME ZONE 'Asia/Kolkata', '[)'))`;
+    if (clash.length > 0) throw new ApiError(409, "day_booked", "days", undefined, { day: clash[0].day });
+    await tx`INSERT INTO machine_blocks (machine_id, day) SELECT ${id}, d FROM unnest(${unique}::text[]::date[]) d ON CONFLICT DO NOTHING`;
+  });
   return { days: unique, blocked };
 }
 
@@ -389,19 +388,24 @@ export async function addPhoto(u: SessionUser, id: string, file: unknown, kind: 
   >`SELECT count(*)::int AS n FROM machine_photos WHERE machine_id = ${id}`;
   if (n >= MAX_PHOTOS) throw new ApiError(409, "too_many_photos");
   const url = await saveImage(file);
+  // One RC at a time: a new one replaces the old and goes back to review.
+  if (kind === "rc") await sql`DELETE FROM machine_photos WHERE machine_id = ${id} AND kind = 'rc'`;
   const [p] = await sql<{ id: string; url: string; kind: string }[]>`
     INSERT INTO machine_photos (machine_id, url, kind, sort) VALUES (${id}, ${url}, ${kind}, ${n}) RETURNING id, url, kind`;
-  if (kind === "rc")
-    await sql`UPDATE machines SET rc_status = 'pending' WHERE id = ${id} AND rc_status = 'none'`;
+  if (kind === "rc") await sql`UPDATE machines SET rc_status = 'pending' WHERE id = ${id}`;
   return p;
 }
 
 export async function deletePhoto(u: SessionUser, id: string, photoId: string) {
   requireRole(u, "owner");
   await ownMachine(u, id);
-  const rows =
-    await getSql()`DELETE FROM machine_photos WHERE id = ${photoId} AND machine_id = ${id} RETURNING id`;
+  const sql = getSql();
+  const rows = await sql<
+    { kind: string }[]
+  >`DELETE FROM machine_photos WHERE id = ${photoId} AND machine_id = ${id} RETURNING kind`;
   if (rows.length === 0) throw new ApiError(404, "not_found");
+  // No RC photo, nothing to review.
+  if (rows[0].kind === "rc") await sql`UPDATE machines SET rc_status = 'none' WHERE id = ${id}`;
 }
 
 /** The owner's reviews for a machine's page, newest first, 10 a page (UI-SPEC §4.6). Paused machines: owner only. */
