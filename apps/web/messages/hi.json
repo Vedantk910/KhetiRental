@@ -80,7 +80,11 @@
     "s2": {
       "title": "मशीन ख़रीदने की ज़रूरत नहीं। ज़रूरत है समय पर मिलने की।",
       "buy": "ख़रीदें",
-      "rent": "4 घंटे किराया"
+      "rent": "4 घंटे किराया",
+      "tagBuy": "ख़रीदें",
+      "tagRent": "किराया",
+      "pricesLabel": "ख़रीदने और किराये के सामान्य दाम",
+      "pricesNote": "महाराष्ट्र के सामान्य बाज़ार भाव, 2025–26। लगभग।"
     },
     "s3": {
       "title": "वह आपके पास ही है।",
@@ -735,6 +739,7 @@
       "otp_wrong": "कोड गलत है। {n} कोशिश बाकी।",
       "otp_expired": "कोड की समय-सीमा खत्म। नया कोड भेजें।",
       "otp_locked": "TODO-translate: Too many wrong codes. Send a new one.",
+      "phone_login_unavailable": "मोबाइल से लॉगिन अभी उपलब्ध नहीं है। कृपया ईमेल से लॉगिन करें।",
       "otp_resend_wait": "TODO-translate: Wait a few seconds before asking for a new code.",
       "email_taken": "इस ईमेल से पहले से खाता है। लॉग इन करें।",
       "token_invalid": "TODO-translate: This link has expired. Ask for a new one.",
@@ -752,14 +757,15 @@
     "title": "TODO-translate: Page not found – KhetiRental"
   },
   "machines": {
-    "tractor": "TODO-translate: Tractor",
-    "rotavator": "TODO-translate: Rotavator",
+    "tractor": "ट्रैक्टर",
+    "rotavator": "रोटावेटर",
     "combine": "TODO-translate: Combine harvester",
     "sprayer": "TODO-translate: Sprayer",
-    "seedDrill": "TODO-translate: Seed drill",
-    "trolley": "TODO-translate: Trolley",
+    "seedDrill": "सीड ड्रिल",
+    "trolley": "ट्रॉली",
     "thresher": "TODO-translate: Thresher",
-    "baler": "TODO-translate: Baler"
+    "baler": "TODO-translate: Baler",
+    "plough": "प्लाऊ"
   },
   "dev": {
     "title": "TODO-translate: Component gallery",
@@ -905,8 +911,7 @@
     "a6": "TODO-translate: This is a demo; no real money moves.",
     "report": "TODO-translate: Report a problem",
     "reportBody": "TODO-translate: Something wrong with a booking? Open it from My bookings and tap Report a problem.",
-    "reportGo": "TODO-translate: Go to My bookings",
-    "placeholder": "TODO-translate: Support numbers are not set yet."
+    "reportGo": "TODO-translate: Go to My bookings"
   },
   "price": {
     "title": "हम कीमत कैसे तय करते हैं",

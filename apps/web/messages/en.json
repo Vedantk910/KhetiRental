@@ -80,7 +80,11 @@
     "s2": {
       "title": "You don't need to own it. You need it on time.",
       "buy": "Buy",
-      "rent": "Rent 4 hours"
+      "rent": "Rent 4 hours",
+      "tagBuy": "Buy",
+      "tagRent": "Rent",
+      "pricesLabel": "Typical prices to buy or rent",
+      "pricesNote": "Typical Maharashtra market prices, 2025–26. Approximate."
     },
     "s3": {
       "title": "It's already near you.",
@@ -735,6 +739,7 @@
       "otp_wrong": "That code is wrong. {n, plural, one {# try} other {# tries}} left.",
       "otp_expired": "This code has expired. Send a new one.",
       "otp_locked": "Too many wrong codes. Send a new one.",
+      "phone_login_unavailable": "Mobile login is not available right now. Please use your email.",
       "otp_resend_wait": "Wait a few seconds before asking for a new code.",
       "email_taken": "This email already has an account. Log in instead.",
       "token_invalid": "This link has expired. Ask for a new one.",
@@ -759,7 +764,8 @@
     "seedDrill": "Seed drill",
     "trolley": "Trolley",
     "thresher": "Thresher",
-    "baler": "Baler"
+    "baler": "Baler",
+    "plough": "Plough"
   },
   "dev": {
     "title": "Component gallery",
@@ -905,8 +911,7 @@
     "a6": "This is a demo; no real money moves.",
     "report": "Report a problem",
     "reportBody": "Something wrong with a booking? Open it from My bookings and tap Report a problem.",
-    "reportGo": "Go to My bookings",
-    "placeholder": "Support numbers are not set yet."
+    "reportGo": "Go to My bookings"
   },
   "price": {
     "title": "How we price",
