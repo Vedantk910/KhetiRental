@@ -195,6 +195,16 @@
     background-color: rgb(var(--n-200));
   }
 }
+/* The buy bar rests at its short stub; scrolling in starts it full width. */
+.kr-shrink {
+  transform: scaleX(0.12);
+  transform-origin: left center;
+}
+@keyframes kr-shrink {
+  from {
+    transform: none;
+  }
+}
 @keyframes kr-grow {
   from {
     transform: scaleX(0);
@@ -232,6 +242,7 @@
     .kr-reveal,
     .kr-fill,
     .kr-grow,
+    .kr-shrink,
     .kr-draw,
     .kr-pop,
     .kr-stamp,
@@ -248,6 +259,10 @@
     .kr-fill {
       animation-name: kr-fill;
       animation-range: entry calc(var(--k) * 3%) entry calc(30% + var(--k) * 3%);
+    }
+    .kr-shrink {
+      animation-name: kr-shrink;
+      animation-range: entry 10% entry 70%;
     }
     .kr-grow {
       transform-origin: left center;
@@ -274,4 +289,19 @@
       animation-range: entry calc(var(--k) * 10%) entry calc(30% + var(--k) * 10%);
     }
   }
+}
+
+/* Reduced motion: every story piece sits in its final state. With the GSAP pins on, they own the pinned sections. */
+html[data-motion="none"]
+  :is(.kr-reveal, .kr-fill, .kr-grow, .kr-shrink, .kr-draw, .kr-pop, .kr-stamp, .kr-row),
+html[data-pins]
+  [data-pin]
+  :is(.kr-reveal, .kr-fill, .kr-grow, .kr-shrink, .kr-draw, .kr-pop, .kr-stamp, .kr-row) {
+  animation: none;
+}
+/* A pinned section fills the screen so the next section never shows through below it. */
+[data-pinned] {
+  display: flex;
+  min-height: 100svh;
+  align-items: center;
 }

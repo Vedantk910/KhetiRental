@@ -4,6 +4,8 @@ import { ButtonLink } from "@/components/ui/button";
 import { config } from "@/config/site";
 import { formatRupees } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { StoryMotion } from "./story-motion";
+import { TractorSlot } from "./tractor-slot";
 
 const k = (n: number) => ({ "--k": n }) as CSSProperties;
 const SQUARES = Array.from({ length: 182 }, (_, i) => i);
@@ -14,7 +16,9 @@ function Section({
   className,
   children,
   labelledBy,
+  pin,
 }: {
+  pin?: string;
   id?: string;
   tone: "bg" | "surface";
   className?: string;
@@ -24,10 +28,11 @@ function Section({
   return (
     <section
       id={id}
+      data-pin={pin}
       aria-labelledby={labelledBy}
       className={cn(tone === "bg" ? "bg-bg" : "bg-surface", "px-4 py-[40px] md:py-24", className)}
     >
-      <div className="kr-reveal mx-auto flex max-w-[720px] flex-col gap-4 md:gap-6">{children}</div>
+      <div className="kr-reveal mx-auto flex w-full max-w-[720px] flex-col gap-4 md:gap-6">{children}</div>
     </section>
   );
 }
@@ -38,7 +43,7 @@ const H2 = ({ id, children }: { id: string; children: ReactNode }) => (
   </h2>
 );
 
-/** S1–S7 (UI-SPEC §4.1.4). The 3D tractor (S2) is a later milestone; its slot shows the still. */
+/** S1–S7 (UI-SPEC §4.1.4). Rich motion adds GSAP pins and the 3D tractor (story-motion, tractor-slot). */
 export function Story({ ownerHref }: { ownerHref: string }) {
   const t = useTranslations("story");
   const locale = useLocale();
@@ -49,7 +54,8 @@ export function Story({ ownerHref }: { ownerHref: string }) {
 
   return (
     <div id="story">
-      <Section id="how" tone="bg" labelledBy="s1">
+      <StoryMotion />
+      <Section id="how" tone="bg" labelledBy="s1" pin="s1">
         <p className="text-[14px] font-bold leading-5 tracking-[1px] text-warning">{t("problem")}</p>
         <H2 id="s1">{t("s1.title")}</H2>
         <div aria-hidden="true" className="grid grid-cols-[repeat(26,minmax(0,1fr))] gap-[3px] pt-2">
@@ -68,36 +74,15 @@ export function Story({ ownerHref }: { ownerHref: string }) {
         <p className="text-small text-text-muted">{t("s1.caption")}</p>
       </Section>
 
-      <Section tone="surface" labelledBy="s2">
+      <Section tone="surface" labelledBy="s2" pin="s2">
         <H2 id="s2">{t("s2.title")}</H2>
-        {/* Slot for the 3D tractor (rich motion only, a later milestone); the still stays for everyone else. */}
-        <div
-          aria-hidden="true"
-          className="flex h-[160px] items-center justify-center rounded-card bg-surface-muted md:h-[360px]"
-        >
-          <svg viewBox="0 0 170 110" className="h-4/5 max-w-full">
-            <rect x="20" y="66" width="34" height="10" rx="2" fill="#483F37" />
-            <rect x="54" y="48" width="86" height="30" rx="6" fill="#223585" />
-            <path
-              d="M88 48 V20 H124 L132 48"
-              fill="#FFD45C"
-              stroke="#13100D"
-              strokeWidth="4"
-              strokeLinejoin="round"
-            />
-            <rect x="92" y="18" width="5" height="18" fill="#13100D" />
-            <circle cx="76" cy="80" r="26" fill="#13100D" />
-            <circle cx="76" cy="80" r="10" fill="#FBC02D" />
-            <circle cx="138" cy="90" r="16" fill="#13100D" />
-            <circle cx="138" cy="90" r="6" fill="#FBC02D" />
-          </svg>
-        </div>
+        <TractorSlot />
         <div>
           <div className="flex justify-between text-small">
             <span>{t("s2.buy")}</span>
             <strong>{rupees(640000)}</strong>
           </div>
-          <div className="kr-grow mt-[6px] h-[18px] rounded-[9px] bg-[#483F37]" />
+          <div className="kr-shrink mt-[6px] h-[18px] rounded-[9px] bg-[#483F37]" />
         </div>
         <div>
           <div className="flex justify-between text-small">
@@ -196,7 +181,7 @@ export function Story({ ownerHref }: { ownerHref: string }) {
         </dl>
       </Section>
 
-      <Section tone="bg" labelledBy="s5">
+      <Section tone="bg" labelledBy="s5" pin="s5">
         <H2 id="s5">{t("s5.title")}</H2>
         <ol className="grid grid-cols-3 gap-2 md:gap-4">
           {(["handover", "work", "return"] as const).map((key, i) => (

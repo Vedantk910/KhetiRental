@@ -13,6 +13,7 @@ const config = tseslint.config(
       "test-results/**",
       "next-env.d.ts",
       "*.config.{js,mjs,ts}",
+      "scripts/**", // plain Node build scripts
     ],
   },
   // next/core-web-vitals registers react, react-hooks, jsx-a11y and @next/next.

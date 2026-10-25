@@ -130,7 +130,7 @@ test("story sections S1–S7 are there, owner CTA and helpline placeholder", asy
   await expect(page.getByRole("link", { name: "How it works ↓" })).toHaveAttribute("href", "/en#how");
   // alternating backgrounds, S6 indigo
   const bg = await page
-    .locator("#story > section")
+    .locator("#story section")
     .evaluateAll((s) => s.map((e) => getComputedStyle(e).backgroundColor));
   expect(bg[5]).toBe("rgb(34, 53, 133)");
   expect(bg[0]).not.toBe(bg[1]);
