@@ -14,6 +14,7 @@ interface Conn {
 }
 
 export function connect(url: string, max = 10): Conn {
+  // drizzle() makes this client return timestamps as strings, so raw `sql` rows hold strings, not Dates.
   const sql = postgres(url, { max, onnotice: () => undefined });
   return { sql, db: drizzle(sql, { schema }) };
 }
