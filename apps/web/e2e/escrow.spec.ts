@@ -2,10 +2,10 @@ import { type Page, expect, test } from "@playwright/test";
 
 const ACTIONS = [
   /authorise escrow/i,
-  /complete handover/i,
+  /hand over the machine/i,
   /simulate no-show/i,
-  /simulate geofence breach/i,
-  /simulate hour tamper/i,
+  /too far from the field/i,
+  /hour meter doesn't match/i,
   /return machine/i,
   /^settle$/i,
   /renter at fault/i,
@@ -18,9 +18,9 @@ async function ledgerBalanced(page: Page) {
 }
 
 test("happy path settles with a balanced ledger", async ({ page }) => {
-  await page.goto("/en/escrow");
+  await page.goto("/en/about/engineering/escrow");
   await page.getByRole("button", { name: /authorise escrow/i }).click();
-  await page.getByRole("button", { name: /complete handover/i }).click();
+  await page.getByRole("button", { name: /hand over the machine/i }).click();
   await page.getByRole("button", { name: /return machine/i }).click();
   await page.getByRole("button", { name: /^settle$/i }).click();
   await expect(page.getByTestId("escrow-stage")).toHaveText("Settled");
@@ -28,10 +28,10 @@ test("happy path settles with a balanced ledger", async ({ page }) => {
 });
 
 test("breach freezes the deposit and blocks settlement", async ({ page }) => {
-  await page.goto("/en/escrow");
+  await page.goto("/en/about/engineering/escrow");
   await page.getByRole("button", { name: /authorise escrow/i }).click();
-  await page.getByRole("button", { name: /complete handover/i }).click();
-  await page.getByRole("button", { name: /simulate geofence breach/i }).click();
+  await page.getByRole("button", { name: /hand over the machine/i }).click();
+  await page.getByRole("button", { name: /too far from the field/i }).click();
   await expect(page.getByTestId("rule-fired")).toHaveText("D-01");
   await expect(page.getByText("Deposit frozen")).toBeVisible();
   await expect(page.getByRole("button", { name: /^settle$/i })).toBeDisabled();
@@ -48,7 +48,7 @@ test("5 parallel users mashing escrow actions cannot unbalance the ledger", asyn
       const errors: string[] = [];
       page.on("pageerror", (e) => errors.push(e.message));
       page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-      await page.goto("/en/escrow");
+      await page.goto("/en/about/engineering/escrow");
       let seed = 7 + u;
       const rnd = () => (seed = (seed * 1103515245 + 12345) % 2 ** 31) / 2 ** 31;
       for (let i = 0; i < 60; i++) {

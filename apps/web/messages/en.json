@@ -741,7 +741,9 @@
       "file_too_large": "This photo is too big. Use one under 5 MB.",
       "file_type": "Use a JPG, PNG or WebP photo.",
       "too_many_photos": "You've added the most photos allowed.",
-      "internal": "Something went wrong on our side. Try again, or call {phone}."
+      "internal": "Something went wrong on our side. Try again, or call {phone}.",
+      "active_bookings": "You have bookings in progress. Finish or cancel them first.",
+      "phone_taken": "This number already has an account."
     }
   },
   "notFound": {
@@ -833,5 +835,168 @@
     "failed": "That didn't work. Try again.",
     "photosLabel": "Photos",
     "photoN": "Photo {n}"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "profile": "Your details",
+    "name": "Name",
+    "save": "Save",
+    "saved": "Saved.",
+    "phone": "Mobile number",
+    "phoneNone": "Not added",
+    "changePhone": "Change number",
+    "newPhone": "New mobile number",
+    "sendCode": "Send code",
+    "codeSent": "We sent a 6-digit code to {phone}.",
+    "code": "6-digit code",
+    "verify": "Verify and change",
+    "phoneChanged": "Your number is changed.",
+    "email": "Email",
+    "emailNone": "Not added",
+    "emailNote": "Email can't be changed yet.",
+    "roles": "What you do here",
+    "rent": "I rent machines",
+    "own": "I list machines",
+    "ownHint": "Turning this on lets you add your machines.",
+    "needOne": "Keep at least one on.",
+    "ownerCta": "Add a machine",
+    "rolesSaved": "Saved.",
+    "appearance": "Appearance",
+    "system": "Same as phone",
+    "light": "Light",
+    "dark": "Dark",
+    "notifs": "Notifications",
+    "notifsNote": "Alerts inside the app are always on.",
+    "sms": "SMS (coming soon)",
+    "logout": "Log out",
+    "deleteTitle": "Delete my account",
+    "deleteBody": "This removes your name, mobile number, email and sign-in for good. Your machines are paused. Past bookings stay for the other person, without your details. This can't be undone.",
+    "deleteAdmin": "Admin accounts can't be deleted here.",
+    "deleteAsk": "Delete your account?",
+    "deleteType": "Type {word} to confirm",
+    "deleteGo": "Delete my account",
+    "deleteKeep": "Keep my account",
+    "deleted": "Your account is deleted.",
+    "signedOut": "You are not logged in."
+  },
+  "help": {
+    "title": "Help",
+    "intro": "Questions about a booking or a machine? Talk to a person.",
+    "call": "Call {phone}",
+    "whatsapp": "WhatsApp {phone}",
+    "callCard": "Call us",
+    "waCard": "WhatsApp us",
+    "hours": "Every day, 7 am to 8 pm.",
+    "faq": "Common questions",
+    "q1": "How do I book a machine?",
+    "a1": "Pick the job, your village and your dates, then choose a machine and send the request. The owner has 2 hours to say yes. Your booking code, like KR-1234, appears in My bookings.",
+    "q2": "When do I pay?",
+    "a2": "In the last step of booking you choose UPI, card, net banking or pay after the work. The deposit is shown separately and is not part of what you pay.",
+    "q3": "How do I cancel?",
+    "a3": "Open the booking in My bookings and tap Cancel. It is free until 24 hours before the start time.",
+    "q4": "What if the machine breaks down?",
+    "a4": "Call the owner from the booking page, then tap Report a problem so we know. We read every report.",
+    "q5": "How do I list my machine?",
+    "a5": "Go to Settings, turn on I list machines, then add your machine with its price, place and photos. Upload a photo of the RC (registration certificate) too; we check it.",
+    "q6": "Is my money safe?",
+    "a6": "This is a demo; no real money moves.",
+    "report": "Report a problem",
+    "reportBody": "Something wrong with a booking? Open it from My bookings and tap Report a problem.",
+    "reportGo": "Go to My bookings",
+    "placeholder": "Support numbers are not set yet."
+  },
+  "price": {
+    "title": "How we price",
+    "lead": "You see the full price before you ask for a machine. There are no extras at the end.",
+    "formulaTitle": "Your price",
+    "formula": "Your price = the owner's rate + diesel (if it is not included). The deposit comes back after the job.",
+    "exTitle": "A worked example",
+    "exIntro": "A {hp} HP tractor at {rate} for {hours} hours, diesel included:",
+    "rent": "Rent ({hours} h × {rate})",
+    "diesel": "Diesel",
+    "included": "Included",
+    "deposit": "Deposit (comes back after the job)",
+    "youPay": "You pay",
+    "depositTitle": "How the deposit is set",
+    "deposit1": "For a job under 8 hours the deposit is 25% of the rent, but never more than a fixed amount for that kind of machine.",
+    "deposit2": "For a longer job it is 15% of the rent, or the fixed amount, whichever is higher.",
+    "deposit3": "The fixed amounts start at ₹500 for a sprayer and ₹1,950 for a small tractor, and go up to ₹12,500 for a combine harvester. All amounts are whole rupees.",
+    "feeTitle": "Our fee",
+    "fee": "We take 13.5% of the rent. It comes out of the owner's share and is never added to your bill.",
+    "feeEx": "On {rent} of rent the owner keeps {keep}.",
+    "ratesTitle": "How owners set the rate",
+    "rates": "Each owner sets one rate per hour, per acre or per day. We show owners what similar machines nearby charge, and they decide.",
+    "cancelTitle": "Cancelling",
+    "cancel": "Cancel for free until 24 hours before the start. After that, cancelling may cost the deposit.",
+    "sourcesTitle": "Sources",
+    "sourcesIntro": "The numbers on our welcome page come from these.",
+    "src1": "Agriculture Census 2015–16 (Government of India): 86.21% of farm holdings are small or marginal, under 2 hectares.",
+    "src2": "Agriculture Census 2015–16: the average operational holding is 1.08 hectares.",
+    "src3": "Reports in 2025 put India's farm mechanisation at about 47%, against about 95% in the United States.",
+    "srcNote": "If newer census figures are published, we update the page.",
+    "more": "Want the detailed model?",
+    "moreLink": "How we built it"
+  },
+  "legal": {
+    "review": "[LEGAL REVIEW NEEDED] This text is a placeholder. It must be reviewed by a lawyer before launch.",
+    "updated": "Placeholder text. Not legal advice.",
+    "terms": {
+      "title": "Terms",
+      "s1": {
+        "h": "Using KhetiRental",
+        "p": "[LEGAL REVIEW NEEDED] KhetiRental helps farmers find farm machines and helps owners rent them out. By using it you agree to these terms."
+      },
+      "s2": {
+        "h": "Bookings",
+        "p": "[LEGAL REVIEW NEEDED] A booking is a request to the owner. It is confirmed only when the owner accepts. Cancelling is free until 24 hours before the start."
+      },
+      "s3": {
+        "h": "Payments",
+        "p": "[LEGAL REVIEW NEEDED] Payments in this version are simulated. No real money moves."
+      },
+      "s4": {
+        "h": "Owners",
+        "p": "[LEGAL REVIEW NEEDED] Owners must be the lawful owner of the machine, keep their details true, and keep the machine safe to use."
+      },
+      "s5": {
+        "h": "Responsibility",
+        "p": "[LEGAL REVIEW NEEDED] Terms about damage, accidents and disputes between renters and owners are to be written."
+      },
+      "s6": {
+        "h": "Changes",
+        "p": "[LEGAL REVIEW NEEDED] We may update these terms. The date of the latest version will be shown here."
+      }
+    },
+    "privacy": {
+      "title": "Privacy",
+      "s1": {
+        "h": "What we collect",
+        "p": "Your name, mobile number or email, and the places and dates you search or book. Owners also upload photos of their machine and its RC."
+      },
+      "s2": {
+        "h": "How we use it",
+        "p": "Your mobile number, email and location are used only for bookings: to find machines near you, to show the owner who is asking, and to send you updates."
+      },
+      "s3": {
+        "h": "Exact location",
+        "p": "The exact location of a farm or a machine is shared only after a booking is confirmed."
+      },
+      "s4": {
+        "h": "What we do not collect",
+        "p": "We do not collect Aadhaar. Payments are simulated, so we hold no card or bank details."
+      },
+      "s5": {
+        "h": "Deleting your account",
+        "p": "In Settings you can delete your account. We remove your name, mobile number, email and sign-in. Past bookings stay for the other person, without your details."
+      },
+      "s6": {
+        "h": "Legal text",
+        "p": "[LEGAL REVIEW NEEDED] The full privacy policy, including retention periods, the data controller and a grievance contact, is to be written."
+      }
+    }
+  },
+  "about": {
+    "back": "How we built it"
   }
 }

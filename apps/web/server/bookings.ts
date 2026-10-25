@@ -198,6 +198,12 @@ export async function createBooking(
       // check (each deadlock costs deadlock_timeout, 1 s). The constraint still decides who wins.
       const [row] = await sql.begin(async (tx) => {
         await tx`SELECT pg_advisory_xact_lock(hashtextextended(${m.id}, 0))`;
+        // Settings can pause the machine or delete either account while this request was in flight.
+        const live = one(
+          await tx`SELECT 1 FROM machines mm, users uu
+                   WHERE mm.id = ${m.id} AND mm.active AND uu.id = ${u.id} AND uu.deleted_at IS NULL FOR SHARE OF uu`,
+        );
+        if (!live) throw new ApiError(404, "not_found", "machineId");
         // Under the same lock as setBlocks, so a day can't be blocked and booked at once.
         const blocked = one(
           await tx`SELECT 1 FROM machine_blocks WHERE machine_id = ${m.id}

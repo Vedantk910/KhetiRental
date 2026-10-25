@@ -16,7 +16,7 @@ const TERMS = { hourlyRateInr: 1053, contractedHours: 10, takeRate: 0.135 };
 const H0 = 500;
 
 const STAGES: { id: Stage; label: string }[] = [
-  { id: "PRE_AUTH", label: "Pre-auth: funds held" },
+  { id: "PRE_AUTH", label: "Money held" },
   { id: "HANDOVER", label: "Stage 1: handover" },
   { id: "ACTIVE", label: "Stage 2: telematics window" },
   { id: "RETURN_AUDIT", label: "Stage 3: return audit" },
@@ -58,21 +58,21 @@ export function EscrowStateMachine() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_minmax(0,22rem)]">
-      <div className="space-y-5">
+      <div className="space-y-[20px]">
         <ol className="grid gap-2 sm:grid-cols-5" aria-label="Escrow stages">
           {STAGES.map((s, i) => (
             <li
               key={s.id}
               aria-current={s.id === state.stage ? "step" : undefined}
               className={cn(
-                "rounded-lg border px-3 py-2 text-sm",
+                "rounded-card border px-3 py-2 text-caption",
                 disputed && i === idx
-                  ? "border-soil text-soil"
+                  ? "border-warning text-warning"
                   : s.id === state.stage
-                    ? "border-primary bg-primary text-primary-fg"
+                    ? "border-action bg-action text-action-on"
                     : i < idx
-                      ? "border-primary text-primary"
-                      : "border-line text-muted",
+                      ? "border-action text-link"
+                      : "border-border-subtle text-text-muted",
               )}
             >
               {s.label}
@@ -81,20 +81,20 @@ export function EscrowStateMachine() {
           ))}
         </ol>
 
-        <div className="rounded-xl border border-line bg-surface p-5">
-          <p className="text-sm text-muted">Current stage</p>
+        <div className="rounded-card border border-border-subtle bg-surface p-[20px]">
+          <p className="text-caption text-text-muted">Current stage</p>
           <p
             data-testid="escrow-stage"
-            className={cn("text-2xl font-bold", state.stage === "DISPUTE_OPEN" && "text-soil")}
+            className={cn("text-h2 font-bold", state.stage === "DISPUTE_OPEN" && "text-warning")}
           >
             {STAGE_LABEL[state.stage]}
           </p>
-          <p className="mt-1 text-sm">
-            Rule fired:{" "}
-            <span data-testid="rule-fired" className="font-semibold">
+          <p className="mt-1 text-caption">
+            Problem detected:{" "}
+            <span data-testid="rule-fired" className="font-bold">
               {state.ruleFired ?? "none"}
             </span>
-            {state.depositFrozen && <span className="ml-2 font-semibold text-soil">Deposit frozen</span>}
+            {state.depositFrozen && <span className="ml-2 font-bold text-warning">Deposit frozen</span>}
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2">
@@ -120,7 +120,7 @@ export function EscrowStateMachine() {
                 });
               }}
             >
-              Complete handover (OTP + 3 photos + meter lock)
+              Hand over the machine
             </Action>
             <Action
               tone="warn"
@@ -144,7 +144,7 @@ export function EscrowStateMachine() {
                 });
               }}
             >
-              Simulate geofence breach &gt;500 m
+              Machine taken too far from the field
             </Action>
             <Action
               tone="warn"
@@ -159,13 +159,17 @@ export function EscrowStateMachine() {
                 });
               }}
             >
-              Simulate hour tamper &gt;10%
+              Hour meter doesn&apos;t match GPS
             </Action>
           </div>
 
+          <p className="mt-3 text-caption text-text-muted">
+            Handover needs the one-time codes from both sides, 3 photos near the field, and the hour meter
+            locked.
+          </p>
           <div className="mt-4 flex flex-wrap items-end gap-3">
-            <label className="text-sm font-medium">
-              Engine hours used (ΔH): {deltaH} h of {TERMS.contractedHours}
+            <label className="text-caption font-bold">
+              Hours used: {deltaH} of {TERMS.contractedHours} booked
               <input
                 type="range"
                 min={0}
@@ -174,7 +178,7 @@ export function EscrowStateMachine() {
                 onChange={(e) => {
                   setDeltaH(Number(e.target.value));
                 }}
-                className="mt-2 block w-56 accent-[var(--primary)]"
+                className="mt-2 block w-[224px] accent-[rgb(var(--action))]"
               />
             </label>
             <Action
@@ -223,7 +227,7 @@ export function EscrowStateMachine() {
             onClick={() => {
               dispatch({ reset: true });
             }}
-            className="mt-4 text-sm font-medium text-muted underline"
+            className="mt-4 text-caption font-bold text-text-muted underline"
           >
             Reset
           </button>
@@ -231,9 +235,9 @@ export function EscrowStateMachine() {
       </div>
 
       <aside className="space-y-4">
-        <div className="rounded-xl border border-line bg-surface p-5">
-          <h3 className="font-semibold">Ledger</h3>
-          <dl className="mt-2 space-y-1 text-sm">
+        <div className="rounded-card border border-border-subtle bg-surface p-[20px]">
+          <h2 className="font-bold">Ledger</h2>
+          <dl className="mt-2 space-y-1 text-caption">
             {(
               [
                 ["Held in escrow", state.ledger.escrow],
@@ -243,23 +247,23 @@ export function EscrowStateMachine() {
               ] as const
             ).map(([k, v]) => (
               <div key={k} className="flex justify-between gap-2">
-                <dt className="text-muted">{k}</dt>
+                <dt className="text-text-muted">{k}</dt>
                 <dd className="tabular-nums">{rupees(v)}</dd>
               </div>
             ))}
           </dl>
           <p
             data-testid="ledger-check"
-            className={cn("mt-3 text-sm font-semibold", balanced ? "text-primary" : "text-soil")}
+            className={cn("mt-3 text-caption font-bold", balanced ? "text-link" : "text-warning")}
           >
             {balanced ? "Balanced" : "Unbalanced"}: {rupees(totalPaise(state.ledger))} of{" "}
             {rupees(state.renterPaidPaise)} pre-authorised (rental {rupees(state.basePaise)} + 15% deposit{" "}
             {rupees(state.depositPaise)})
           </p>
         </div>
-        <div className="rounded-xl border border-line bg-surface p-5">
-          <h3 className="font-semibold">Event log</h3>
-          <ol aria-live="polite" className="mt-2 space-y-1 text-sm text-muted">
+        <div className="rounded-card border border-border-subtle bg-surface p-[20px]">
+          <h2 className="font-bold">Event log</h2>
+          <ol aria-live="polite" className="mt-2 space-y-1 text-caption text-text-muted">
             {log.length === 0 ? (
               <li>No events yet.</li>
             ) : (
@@ -282,8 +286,8 @@ function Action({
       type="button"
       {...p}
       className={cn(
-        "rounded-md px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40",
-        tone === "warn" ? "border border-soil text-soil" : "bg-primary text-primary-fg",
+        "min-h-tap rounded-card px-3 py-2 text-caption font-bold disabled:cursor-not-allowed disabled:opacity-40",
+        tone === "warn" ? "border border-warning text-warning" : "bg-action text-action-on",
         className,
       )}
     />

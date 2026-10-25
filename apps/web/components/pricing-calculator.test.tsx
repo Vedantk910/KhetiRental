@@ -44,4 +44,19 @@ describe("PricingCalculator", () => {
     fireEvent.change(screen.getByLabelText(/diesel price/i), { target: { value: "-50" } });
     expect(document.body.textContent).not.toMatch(/NaN|Infinity/);
   });
+
+  it("T-07: a bad diesel price gets a plain message next to the field, never the engine's error text", () => {
+    render(<PricingCalculator />);
+    const before = screen.getByTestId("hourly-rate").textContent;
+    const field = screen.getByLabelText(/diesel price/i);
+    for (const bad of ["", "0", "5000", "-3"]) {
+      fireEvent.change(field, { target: { value: bad } });
+      expect(screen.getByText("Enter a diesel price between ₹1 and ₹1,000 a litre.")).toBeInTheDocument();
+      expect(field).toHaveAttribute("aria-invalid", "true");
+      expect(document.body.textContent).not.toMatch(/dieselPriceInr|finite number|got /);
+      expect(screen.getByTestId("hourly-rate").textContent).toBe(before);
+    }
+    fireEvent.change(field, { target: { value: "95" } });
+    expect(screen.queryByText(/Enter a diesel price/)).toBeNull();
+  });
 });

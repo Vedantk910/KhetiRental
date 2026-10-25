@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -49,7 +49,7 @@ const SOIL_LABEL: Record<Soil, string> = {
 export const inr = (n: number) =>
   `₹${n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-const field = "mt-1 w-full rounded-md border border-line bg-surface px-3 py-2 text-fg";
+const field = "mt-1 w-full rounded-card border border-border-subtle bg-surface px-3 py-2 text-text";
 
 export function PricingCalculator() {
   const [hp, setHp] = useState<HpTier>("45");
@@ -59,25 +59,33 @@ export function PricingCalculator() {
   const [cost, setCost] = useState(640_000);
   const [diesel, setDiesel] = useState("91");
 
+  const dieselNum = Number(diesel);
+  const dieselBad = diesel.trim() === "" || !(dieselNum >= 1 && dieselNum <= 1000);
+  // While the field is invalid the results keep the last good price instead of flashing an error.
+  const lastGood = useRef(91);
+  if (!dieselBad) lastGood.current = dieselNum;
+  const dieselUsed = dieselBad ? lastGood.current : dieselNum;
+
   const result = useMemo(() => {
     try {
-      const rate = hourlyRate({ hp, ageYears: age, acquisitionCostInr: cost, soil, season }, Number(diesel));
+      const rate = hourlyRate({ hp, ageYears: age, acquisitionCostInr: cost, soil, season }, dieselUsed);
       const net = netHourlyToOwner(rate);
       return { rate, net, broker: brokerComparison(rate.total, BROKER_MARKUP), error: null };
-    } catch (e) {
-      return { error: (e as Error).message };
+    } catch {
+      // The engine's own message names variables; people get a plain line (REVIEW T-07).
+      return { error: "Something went wrong. Change an input and try again." };
     }
-  }, [hp, season, soil, age, cost, diesel]);
+  }, [hp, season, soil, age, cost, dieselUsed]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,22rem)_1fr]">
       <form
-        className="space-y-4 rounded-xl border border-line bg-surface p-5"
+        className="space-y-4 rounded-card border border-border-subtle bg-surface p-[20px]"
         onSubmit={(e) => {
           e.preventDefault();
         }}
       >
-        <label className="block text-sm font-medium">
+        <label className="block text-caption font-bold">
           Horsepower tier
           <select
             className={field}
@@ -93,7 +101,7 @@ export function PricingCalculator() {
             ))}
           </select>
         </label>
-        <label className="block text-sm font-medium">
+        <label className="block text-caption font-bold">
           Season surge (μ = {SEASONAL_SURGE[season].toFixed(2)})
           <select
             className={field}
@@ -109,7 +117,7 @@ export function PricingCalculator() {
             ))}
           </select>
         </label>
-        <label className="block text-sm font-medium">
+        <label className="block text-caption font-bold">
           Soil type (δ = {SOIL_COEFF[soil].toFixed(2)})
           <select
             className={field}
@@ -125,7 +133,7 @@ export function PricingCalculator() {
             ))}
           </select>
         </label>
-        <label className="block text-sm font-medium">
+        <label className="block text-caption font-bold">
           Tractor age: {age} yr
           <input
             type="range"
@@ -136,10 +144,10 @@ export function PricingCalculator() {
             onChange={(e) => {
               setAge(Number(e.target.value));
             }}
-            className="mt-2 w-full accent-[var(--primary)]"
+            className="mt-2 w-full accent-[rgb(var(--action))]"
           />
         </label>
-        <label className="block text-sm font-medium">
+        <label className="block text-caption font-bold">
           Acquisition cost: {inr(cost)}
           <input
             type="range"
@@ -150,10 +158,10 @@ export function PricingCalculator() {
             onChange={(e) => {
               setCost(Number(e.target.value));
             }}
-            className="mt-2 w-full accent-[var(--primary)]"
+            className="mt-2 w-full accent-[rgb(var(--action))]"
           />
         </label>
-        <label className="block text-sm font-medium">
+        <label className="block text-caption font-bold">
           Diesel price (₹/L)
           <input
             type="number"
@@ -164,48 +172,55 @@ export function PricingCalculator() {
             onChange={(e) => {
               setDiesel(e.target.value);
             }}
+            aria-invalid={dieselBad || undefined}
+            aria-describedby={dieselBad ? "diesel-err" : undefined}
             className={field}
           />
+          {dieselBad && (
+            <span id="diesel-err" className="mt-1 block text-caption font-bold text-warning">
+              Enter a diesel price between ₹1 and ₹1,000 a litre.
+            </span>
+          )}
         </label>
       </form>
 
       <div className="space-y-4">
         {result.error !== null ? (
-          <p role="alert" className="rounded-xl border border-soil p-4 text-soil">
-            Check the inputs: {result.error}
+          <p role="alert" className="rounded-card border border-warning p-4 text-warning">
+            {result.error}
           </p>
         ) : (
           <>
             <RateCard rate={result.rate} net={result.net} />
-            <p className="text-sm text-muted">
+            <p className="text-caption text-text-muted">
               Farmers pay{" "}
-              <span data-testid="broker-savings" className="font-semibold text-fg">
+              <span data-testid="broker-savings" className="font-bold text-text">
                 {result.broker.farmerSavingsPct.toFixed(1)}%
               </span>{" "}
               less than through a broker, assuming the broker adds {BROKER_MARKUP * 100}% on top (pilot
               assumption, not yet surveyed).
             </p>
 
-            <div className="rounded-xl border border-line bg-surface p-5">
-              <h3 className="font-semibold">KhetiRental rate vs informal local broker rate (₹/h)</h3>
-              <div className="mt-3 h-56 overflow-hidden">
+            <div className="rounded-card border border-border-subtle bg-surface p-[20px]">
+              <h2 className="font-bold">KhetiRental rate vs informal local broker rate (₹/h)</h2>
+              <div className="mt-3 h-[224px] overflow-hidden">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={[
-                      { name: "KhetiRental", rate: result.rate.total, fill: "var(--viz-1)" },
+                      { name: "KhetiRental", rate: result.rate.total, fill: "rgb(var(--success))" },
                       {
                         name: "Local broker",
                         rate: Math.round(result.broker.brokerRate * 100) / 100,
-                        fill: "var(--muted)",
+                        fill: "rgb(var(--text-muted))",
                       },
                     ]}
                     margin={{ top: 24, right: 8, left: 8, bottom: 0 }}
                   >
-                    <CartesianGrid vertical={false} stroke="var(--line)" />
-                    <XAxis dataKey="name" stroke="var(--muted)" tickLine={false} />
-                    <YAxis stroke="var(--muted)" tickLine={false} axisLine={false} width={48} />
+                    <CartesianGrid vertical={false} stroke="rgb(var(--border-subtle))" />
+                    <XAxis dataKey="name" stroke="rgb(var(--text-muted))" tickLine={false} />
+                    <YAxis stroke="rgb(var(--text-muted))" tickLine={false} axisLine={false} width={48} />
                     <Tooltip
-                      cursor={{ fill: "var(--line)", opacity: 0.4 }}
+                      cursor={{ fill: "rgb(var(--border-subtle))", opacity: 0.4 }}
                       formatter={(v) => [inr(Number(v)), "per hour"]}
                     />
                     <Bar dataKey="rate" barSize={56} radius={[4, 4, 0, 0]} isAnimationActive={false}>
@@ -213,7 +228,7 @@ export function PricingCalculator() {
                         dataKey="rate"
                         position="top"
                         formatter={(v: unknown) => inr(Number(v))}
-                        className="fill-[var(--fg)] text-xs"
+                        className="fill-text text-caption"
                       />
                     </Bar>
                   </BarChart>
@@ -221,16 +236,19 @@ export function PricingCalculator() {
               </div>
             </div>
 
-            <div data-testid="payback" className="rounded-xl border border-line bg-surface p-5">
-              <h3 className="font-semibold">Owner capital payback</h3>
-              <p className="mt-2 text-2xl font-bold">
+            <div
+              data-testid="payback"
+              className="rounded-card border border-border-subtle bg-surface p-[20px]"
+            >
+              <h2 className="font-bold">Owner capital payback</h2>
+              <p className="mt-2 text-h2 font-bold">
                 {paybackYears(cost, result.net, 250).toFixed(2)} yr{" "}
-                <span className="text-muted">at 250 h/yr</span>
+                <span className="text-text-muted">at 250 h/yr</span>
                 {" → "}
                 {paybackYears(cost, result.net, 620).toFixed(2)} yr{" "}
-                <span className="text-muted">at 620 h/yr</span>
+                <span className="text-text-muted">at 620 h/yr</span>
               </p>
-              <p className="mt-1 text-sm text-muted">
+              <p className="mt-1 text-caption text-text-muted">
                 Before operator wages, maintenance and insurance, so real payback is longer.
               </p>
             </div>
@@ -242,22 +260,22 @@ export function PricingCalculator() {
 }
 
 const PARTS = [
-  { key: "base", label: "Market rate", hint: "B × μ season × δ soil", color: "var(--viz-1)" },
-  { key: "fuel", label: "Diesel pass-through", hint: "F × P diesel, no margin", color: "var(--viz-2)" },
-  { key: "wear", label: "Wear recovery", hint: "D wear × κ age", color: "var(--viz-3)" },
+  { key: "base", label: "Market rate", hint: "B × μ season × δ soil", color: "rgb(var(--success))" },
+  { key: "fuel", label: "Diesel pass-through", hint: "F × P diesel, no margin", color: "rgb(var(--info))" },
+  { key: "wear", label: "Wear recovery", hint: "D wear × κ age", color: "rgb(var(--warning))" },
 ] as const;
 
 // The rate as a bill: one stacked bar of its three components, each segment
 // direct-labelled so identity never rests on colour alone.
 function RateCard({ rate, net }: { rate: PriceBreakdown; net: number }) {
   return (
-    <div className="rounded-2xl border-2 border-primary bg-surface p-6">
-      <p className="text-sm text-muted">Hourly rate</p>
-      <p data-testid="hourly-rate" className="mt-1 text-5xl font-bold tabular-nums tracking-tight">
+    <div className="rounded-card border-2 border-action bg-surface p-6">
+      <p className="text-caption text-text-muted">Hourly rate</p>
+      <p data-testid="hourly-rate" className="mt-1 text-display font-bold tabular-nums tracking-tight">
         {inr(rate.total)}
       </p>
       <div
-        className="mt-5 flex h-4 gap-[2px] overflow-hidden rounded"
+        className="mt-[20px] flex h-4 gap-[2px] overflow-hidden rounded-control"
         role="img"
         aria-label={PARTS.map((p) => `${p.label} ${inr(rate[p.key])}`).join(", ")}
       >
@@ -271,23 +289,21 @@ function RateCard({ rate, net }: { rate: PriceBreakdown; net: number }) {
       </div>
       <dl className="mt-4 grid gap-3 sm:grid-cols-3">
         {PARTS.map((p) => (
-          <div key={p.key} className="flex gap-2">
+          <div key={p.key} className="relative pl-[18px]">
             <span
               aria-hidden
-              className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-sm"
+              className="absolute left-0 top-[8px] h-[10px] w-[10px] rounded-pill"
               style={{ background: p.color }}
             />
-            <div>
-              <dt className="text-sm text-muted">{p.label}</dt>
-              <dd className="font-semibold tabular-nums">{inr(rate[p.key])}</dd>
-              <dd className="text-xs text-muted">{p.hint}</dd>
-            </div>
+            <dt className="text-caption text-text-muted">{p.label}</dt>
+            <dd className="font-bold tabular-nums">{inr(rate[p.key])}</dd>
+            <dd className="text-caption text-text-muted">{p.hint}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-4 border-t border-line pt-3 text-sm">
-        Owner keeps <span className="font-semibold tabular-nums">{inr(net)}</span> per hour after diesel and
-        the 13.5% platform fee.
+      <p className="mt-4 border-t border-border-subtle pt-3 text-caption">
+        Owner keeps <span className="font-bold tabular-nums">{inr(net)}</span> per hour after diesel and the
+        13.5% platform fee.
       </p>
     </div>
   );

@@ -741,7 +741,9 @@
       "file_too_large": "TODO-translate: This photo is too big. Use one under 5 MB.",
       "file_type": "TODO-translate: Use a JPG, PNG or WebP photo.",
       "too_many_photos": "TODO-translate: You've added the most photos allowed.",
-      "internal": "आमच्याकडून चूक झाली. पुन्हा प्रयत्न करा किंवा {phone} वर कॉल करा."
+      "internal": "आमच्याकडून चूक झाली. पुन्हा प्रयत्न करा किंवा {phone} वर कॉल करा.",
+      "active_bookings": "TODO-translate: You have bookings in progress. Finish or cancel them first.",
+      "phone_taken": "TODO-translate: This number already has an account."
     }
   },
   "notFound": {
@@ -833,5 +835,168 @@
     "failed": "TODO-translate: That didn't work. Try again.",
     "photosLabel": "TODO-translate: Photos",
     "photoN": "TODO-translate: Photo {n}"
+  },
+  "settings": {
+    "title": "सेटिंग्ज",
+    "language": "भाषा",
+    "profile": "TODO-translate: Your details",
+    "name": "TODO-translate: Name",
+    "save": "TODO-translate: Save",
+    "saved": "TODO-translate: Saved.",
+    "phone": "TODO-translate: Mobile number",
+    "phoneNone": "TODO-translate: Not added",
+    "changePhone": "TODO-translate: Change number",
+    "newPhone": "TODO-translate: New mobile number",
+    "sendCode": "TODO-translate: Send code",
+    "codeSent": "TODO-translate: We sent a 6-digit code to {phone}.",
+    "code": "TODO-translate: 6-digit code",
+    "verify": "TODO-translate: Verify and change",
+    "phoneChanged": "TODO-translate: Your number is changed.",
+    "email": "TODO-translate: Email",
+    "emailNone": "TODO-translate: Not added",
+    "emailNote": "TODO-translate: Email can't be changed yet.",
+    "roles": "TODO-translate: What you do here",
+    "rent": "TODO-translate: I rent machines",
+    "own": "TODO-translate: I list machines",
+    "ownHint": "TODO-translate: Turning this on lets you add your machines.",
+    "needOne": "TODO-translate: Keep at least one on.",
+    "ownerCta": "TODO-translate: Add a machine",
+    "rolesSaved": "TODO-translate: Saved.",
+    "appearance": "TODO-translate: Appearance",
+    "system": "TODO-translate: Same as phone",
+    "light": "TODO-translate: Light",
+    "dark": "TODO-translate: Dark",
+    "notifs": "TODO-translate: Notifications",
+    "notifsNote": "TODO-translate: Alerts inside the app are always on.",
+    "sms": "TODO-translate: SMS (coming soon)",
+    "logout": "लॉग आउट",
+    "deleteTitle": "TODO-translate: Delete my account",
+    "deleteBody": "TODO-translate: This removes your name, mobile number, email and sign-in for good. Your machines are paused. Past bookings stay for the other person, without your details. This can't be undone.",
+    "deleteAdmin": "TODO-translate: Admin accounts can't be deleted here.",
+    "deleteAsk": "TODO-translate: Delete your account?",
+    "deleteType": "TODO-translate: Type {word} to confirm",
+    "deleteGo": "TODO-translate: Delete my account",
+    "deleteKeep": "TODO-translate: Keep my account",
+    "deleted": "TODO-translate: Your account is deleted.",
+    "signedOut": "TODO-translate: You are not logged in."
+  },
+  "help": {
+    "title": "मदत",
+    "intro": "TODO-translate: Questions about a booking or a machine? Talk to a person.",
+    "call": "TODO-translate: Call {phone}",
+    "whatsapp": "TODO-translate: WhatsApp {phone}",
+    "callCard": "TODO-translate: Call us",
+    "waCard": "TODO-translate: WhatsApp us",
+    "hours": "TODO-translate: Every day, 7 am to 8 pm.",
+    "faq": "TODO-translate: Common questions",
+    "q1": "TODO-translate: How do I book a machine?",
+    "a1": "TODO-translate: Pick the job, your village and your dates, then choose a machine and send the request. The owner has 2 hours to say yes. Your booking code, like KR-1234, appears in My bookings.",
+    "q2": "TODO-translate: When do I pay?",
+    "a2": "TODO-translate: In the last step of booking you choose UPI, card, net banking or pay after the work. The deposit is shown separately and is not part of what you pay.",
+    "q3": "TODO-translate: How do I cancel?",
+    "a3": "TODO-translate: Open the booking in My bookings and tap Cancel. It is free until 24 hours before the start time.",
+    "q4": "TODO-translate: What if the machine breaks down?",
+    "a4": "TODO-translate: Call the owner from the booking page, then tap Report a problem so we know. We read every report.",
+    "q5": "TODO-translate: How do I list my machine?",
+    "a5": "TODO-translate: Go to Settings, turn on I list machines, then add your machine with its price, place and photos. Upload a photo of the RC (registration certificate) too; we check it.",
+    "q6": "TODO-translate: Is my money safe?",
+    "a6": "TODO-translate: This is a demo; no real money moves.",
+    "report": "TODO-translate: Report a problem",
+    "reportBody": "TODO-translate: Something wrong with a booking? Open it from My bookings and tap Report a problem.",
+    "reportGo": "TODO-translate: Go to My bookings",
+    "placeholder": "TODO-translate: Support numbers are not set yet."
+  },
+  "price": {
+    "title": "आम्ही किंमत कशी ठरवतो",
+    "lead": "TODO-translate: You see the full price before you ask for a machine. There are no extras at the end.",
+    "formulaTitle": "TODO-translate: Your price",
+    "formula": "TODO-translate: Your price = the owner's rate + diesel (if it is not included). The deposit comes back after the job.",
+    "exTitle": "TODO-translate: A worked example",
+    "exIntro": "TODO-translate: A {hp} HP tractor at {rate} for {hours} hours, diesel included:",
+    "rent": "TODO-translate: Rent ({hours} h × {rate})",
+    "diesel": "TODO-translate: Diesel",
+    "included": "TODO-translate: Included",
+    "deposit": "TODO-translate: Deposit (comes back after the job)",
+    "youPay": "TODO-translate: You pay",
+    "depositTitle": "TODO-translate: How the deposit is set",
+    "deposit1": "TODO-translate: For a job under 8 hours the deposit is 25% of the rent, but never more than a fixed amount for that kind of machine.",
+    "deposit2": "TODO-translate: For a longer job it is 15% of the rent, or the fixed amount, whichever is higher.",
+    "deposit3": "TODO-translate: The fixed amounts start at ₹500 for a sprayer and ₹1,950 for a small tractor, and go up to ₹12,500 for a combine harvester. All amounts are whole rupees.",
+    "feeTitle": "TODO-translate: Our fee",
+    "fee": "TODO-translate: We take 13.5% of the rent. It comes out of the owner's share and is never added to your bill.",
+    "feeEx": "TODO-translate: On {rent} of rent the owner keeps {keep}.",
+    "ratesTitle": "TODO-translate: How owners set the rate",
+    "rates": "TODO-translate: Each owner sets one rate per hour, per acre or per day. We show owners what similar machines nearby charge, and they decide.",
+    "cancelTitle": "TODO-translate: Cancelling",
+    "cancel": "TODO-translate: Cancel for free until 24 hours before the start. After that, cancelling may cost the deposit.",
+    "sourcesTitle": "TODO-translate: Sources",
+    "sourcesIntro": "TODO-translate: The numbers on our welcome page come from these.",
+    "src1": "TODO-translate: Agriculture Census 2015–16 (Government of India): 86.21% of farm holdings are small or marginal, under 2 hectares.",
+    "src2": "TODO-translate: Agriculture Census 2015–16: the average operational holding is 1.08 hectares.",
+    "src3": "TODO-translate: Reports in 2025 put India's farm mechanisation at about 47%, against about 95% in the United States.",
+    "srcNote": "TODO-translate: If newer census figures are published, we update the page.",
+    "more": "TODO-translate: Want the detailed model?",
+    "moreLink": "TODO-translate: How we built it"
+  },
+  "legal": {
+    "review": "TODO-translate: [LEGAL REVIEW NEEDED] This text is a placeholder. It must be reviewed by a lawyer before launch.",
+    "updated": "TODO-translate: Placeholder text. Not legal advice.",
+    "terms": {
+      "title": "अटी",
+      "s1": {
+        "h": "TODO-translate: Using KhetiRental",
+        "p": "TODO-translate: [LEGAL REVIEW NEEDED] KhetiRental helps farmers find farm machines and helps owners rent them out. By using it you agree to these terms."
+      },
+      "s2": {
+        "h": "TODO-translate: Bookings",
+        "p": "TODO-translate: [LEGAL REVIEW NEEDED] A booking is a request to the owner. It is confirmed only when the owner accepts. Cancelling is free until 24 hours before the start."
+      },
+      "s3": {
+        "h": "TODO-translate: Payments",
+        "p": "TODO-translate: [LEGAL REVIEW NEEDED] Payments in this version are simulated. No real money moves."
+      },
+      "s4": {
+        "h": "TODO-translate: Owners",
+        "p": "TODO-translate: [LEGAL REVIEW NEEDED] Owners must be the lawful owner of the machine, keep their details true, and keep the machine safe to use."
+      },
+      "s5": {
+        "h": "TODO-translate: Responsibility",
+        "p": "TODO-translate: [LEGAL REVIEW NEEDED] Terms about damage, accidents and disputes between renters and owners are to be written."
+      },
+      "s6": {
+        "h": "TODO-translate: Changes",
+        "p": "TODO-translate: [LEGAL REVIEW NEEDED] We may update these terms. The date of the latest version will be shown here."
+      }
+    },
+    "privacy": {
+      "title": "गोपनीयता",
+      "s1": {
+        "h": "TODO-translate: What we collect",
+        "p": "TODO-translate: Your name, mobile number or email, and the places and dates you search or book. Owners also upload photos of their machine and its RC."
+      },
+      "s2": {
+        "h": "TODO-translate: How we use it",
+        "p": "TODO-translate: Your mobile number, email and location are used only for bookings: to find machines near you, to show the owner who is asking, and to send you updates."
+      },
+      "s3": {
+        "h": "TODO-translate: Exact location",
+        "p": "TODO-translate: The exact location of a farm or a machine is shared only after a booking is confirmed."
+      },
+      "s4": {
+        "h": "TODO-translate: What we do not collect",
+        "p": "TODO-translate: We do not collect Aadhaar. Payments are simulated, so we hold no card or bank details."
+      },
+      "s5": {
+        "h": "TODO-translate: Deleting your account",
+        "p": "TODO-translate: In Settings you can delete your account. We remove your name, mobile number, email and sign-in. Past bookings stay for the other person, without your details."
+      },
+      "s6": {
+        "h": "TODO-translate: Legal text",
+        "p": "TODO-translate: [LEGAL REVIEW NEEDED] The full privacy policy, including retention periods, the data controller and a grievance contact, is to be written."
+      }
+    }
+  },
+  "about": {
+    "back": "TODO-translate: How we built it"
   }
 }
