@@ -5,8 +5,8 @@ import { toAsciiNumber } from "./format";
 import type { Locale } from "@/i18n/routing";
 import { addDays, HOURS_PER_ACRE, MAX_BOOKING_DAYS, parseDay, slotLength, todayIst } from "@/server/pricing";
 
-export type Sort = (typeof SORTS)[number];
-export type Radius = (typeof RADII_KM)[number];
+type Sort = (typeof SORTS)[number];
+type Radius = (typeof RADII_KM)[number];
 export type Raw = Record<string, string | string[] | undefined>;
 
 export interface Filters {
@@ -129,8 +129,6 @@ export function apiParams(f: Filters, extra: Record<string, string> = {}): URLSe
 
 export const hasPlace = (f: Filters) => f.place !== "" || (f.lat !== null && f.lng !== null);
 
-// ---- dates -----------------------------------------------------------------------------------------------
-
 export type Range = { from: string; to: string };
 
 export function presetRange(preset: "tomorrow" | "week", today = todayIst()): Range {
@@ -203,8 +201,6 @@ export const shiftMonth = (month: string, by: number) => {
   const d = new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1 + by, 1));
   return d.toISOString().slice(0, 7);
 };
-
-// ---- estimates -------------------------------------------------------------------------------------------
 
 /** The starting quantity for a booking (UI-SPEC §4.7.1); the server prices it again. */
 export function estimateQty(unit: PriceUnit, acres: number | null, days: number, slot: Slot): number {

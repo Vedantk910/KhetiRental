@@ -11,7 +11,7 @@ import { fmtDays } from "@/lib/rent";
 import { ReplyButtons, ReplyTimer } from "./reply";
 
 /** "2.5 acres", "4 h", "2 days" for the quantity the renter asked for. */
-export function useQtyText() {
+function useQtyText() {
   const tr = useTranslations();
   return (unit: PriceUnit, qty: number) =>
     unit === "hour"

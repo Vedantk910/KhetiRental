@@ -17,7 +17,7 @@ import { SLOT_HOURS } from "@/server/pricing";
 import { DateRangeSheet } from "./date-range-sheet";
 import type { DayState } from "./availability-grid";
 
-export interface QuoteView {
+interface QuoteView {
   qty: number;
   ratePaise: number;
   rentPaise: number;
@@ -173,7 +173,6 @@ export function BookingSheet(p: Props) {
         code: string;
         status: string;
         payment: unknown;
-        code_?: string;
       };
       // The same key finding a closed booking means this is "book again": start a fresh attempt.
       if (res.ok && !["REQUESTED", "CONFIRMED"].includes(booking.status)) {
@@ -181,7 +180,7 @@ export function BookingSheet(p: Props) {
         booking = (await res.json()) as typeof booking;
       }
       if (!res.ok) {
-        const code = (booking as unknown as { code: string }).code;
+        const { code } = booking;
         setError({
           code,
           key: code === "machine_unavailable" ? "booking.taken" : `errors.api.${code}`,

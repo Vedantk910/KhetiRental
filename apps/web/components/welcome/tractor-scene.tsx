@@ -6,8 +6,8 @@ import type { Group, Object3D } from "three";
 import { parseGlb } from "./glb";
 
 /** Marker the network test looks for in the lazy chunk. */
-export const SCENE = "kr-3d-scene";
-export const MODEL_URL = "/models/tractor.glb";
+const SCENE = "kr-3d-scene";
+const MODEL_URL = "/models/tractor.glb";
 
 const TURN = (300 * Math.PI) / 180; // 0 → 300° over the section (UI-SPEC §4.1.5)
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));

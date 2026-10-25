@@ -76,3 +76,33 @@ export async function untilInteractive(locator: Locator) {
     .poll(() => locator.evaluate((el) => Object.keys(el).some((k) => k.startsWith("__reactProps"))))
     .toBe(true);
 }
+
+/** Map tiles and any other outside host stay unreachable, so the run never depends on the network. */
+export async function offline(page: Page) {
+  await page.route(
+    (u) => !["localhost", "127.0.0.1"].includes(u.hostname),
+    (r) => r.abort(),
+  );
+}
+
+/** axe in light and dark at 390 and 1440, and no sideways scroll at 320 (the page must already be open). */
+export async function checkLayout(page: Page, label: string, full: boolean) {
+  const combos = full
+    ? ([
+        [390, "light"],
+        [390, "dark"],
+        [1440, "light"],
+        [1440, "dark"],
+      ] as const)
+    : ([[390, "light"]] as const);
+  for (const [w, theme] of combos) {
+    await page.setViewportSize({ width: w, height: 900 });
+    await setTheme(page, theme);
+    await expectNoAxeViolations(page, `${label} ${w} ${theme}`);
+    expect(await hasHScroll(page), `${label} at ${w}`).toBe(false);
+  }
+  await page.setViewportSize({ width: 320, height: 800 });
+  expect(await hasHScroll(page), `${label} at 320`).toBe(false);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await setTheme(page, "light");
+}

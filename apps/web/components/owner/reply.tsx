@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 const TICK_MS = 15_000;
 
 /** Milliseconds left until `replyBy`, ticking; at zero the page reloads once so the server marks it expired. */
-export function useReplyLeft(replyBy: string | Date) {
+function useReplyLeft(replyBy: string | Date) {
   const router = useRouter();
   const end = new Date(replyBy).getTime();
   const [left, setLeft] = useState(() => Math.max(0, end - Date.now()));

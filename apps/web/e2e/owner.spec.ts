@@ -1,6 +1,6 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { devCode, freshPhone, newVisitor, requestCode, sql, typeCode, watchHealth } from "./auth-helpers";
-import { expectNoAxeViolations, hasHScroll, setTheme, untilInteractive } from "./helpers";
+import { newVisitor, signUp as signUpShared, sql, watchHealth } from "./auth-helpers";
+import { checkLayout, untilInteractive } from "./helpers";
 import { MESSAGES } from "./messages";
 import { formatRupees } from "../lib/format";
 
@@ -14,47 +14,8 @@ const png = (name = "p.png") => ({ name, mimeType: "image/png", buffer: PNG });
 const inDays = (d: number) =>
   new Date(Date.now() + 5.5 * 3600_000 + d * 86_400_000).toISOString().slice(0, 10);
 
-async function offline(page: Page) {
-  await page.route(
-    (u) => !["localhost", "127.0.0.1"].includes(u.hostname),
-    (r) => r.abort(),
-  );
-}
-
-/** Signs a fresh person up by phone (the OTP shows in the dev toast) and leaves them signed in. */
-async function signUp(browser: Browser, name: string, role: "owner" | "renter") {
-  const v = await newVisitor(browser);
-  v.page.setDefaultTimeout(10_000);
-  await offline(v.page);
-  const phone = freshPhone();
-  await requestCode(v.page, phone, { signup: { name, role } });
-  await typeCode(v.page, await devCode(v.page));
-  await v.page.getByRole("button", { name: "Verify" }).click();
-  await expect(v.page).toHaveURL(role === "owner" ? /\/owner/ : /\/rent$/);
-  return { ...v, phone: `+91${phone}` };
-}
-
-/** axe in light and dark at 390 and 1440, and no sideways scroll at 320 (the page must already be open). */
-async function checkLayout(page: Page, label: string, full: boolean) {
-  const combos = full
-    ? ([
-        [390, "light"],
-        [390, "dark"],
-        [1440, "light"],
-        [1440, "dark"],
-      ] as const)
-    : ([[390, "light"]] as const);
-  for (const [w, theme] of combos) {
-    await page.setViewportSize({ width: w, height: 900 });
-    await setTheme(page, theme);
-    await expectNoAxeViolations(page, `${label} ${w} ${theme}`);
-    expect(await hasHScroll(page), `${label} at ${w}`).toBe(false);
-  }
-  await page.setViewportSize({ width: 320, height: 800 });
-  expect(await hasHScroll(page), `${label} at 320`).toBe(false);
-  await page.setViewportSize({ width: 390, height: 844 });
-  await setTheme(page, "light");
-}
+const signUp = (browser: Browser, name: string, role: "owner" | "renter") =>
+  signUpShared(browser, name, role, true);
 
 const stepButton = (page: Page) => page.locator("[data-sticky-cta] button");
 
@@ -71,7 +32,7 @@ for (const locale of LOCALES) {
     const page = owner.page;
     const health = watchHealth(owner.ctx);
 
-    // ---- List a machine: 4 steps ---------------------------------------------------------------------------
+    // List a machine: 4 steps
     await page.goto(`/${locale}/owner/machines/new?step=1`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(m.list.s1);
     await page.getByLabel(m.list.company, { exact: true }).selectOption("swaraj");
@@ -131,7 +92,7 @@ for (const locale of LOCALES) {
     const sundays = await sql((s) => s`SELECT 1 FROM machine_blocks WHERE machine_id = ${listed.id}`);
     expect(sundays.length).toBeGreaterThan(5);
 
-    // ---- A renter finds it and asks for it -----------------------------------------------------------------
+    // A renter finds it and asks for it
     const renter = await signUp(browser, "Kisan Rao", "renter");
     const rp = renter.page;
     const ask = async (offset: number) => {
@@ -158,7 +119,7 @@ for (const locale of LOCALES) {
     const code1 = await ask(accept);
     const code2 = await ask(decline);
 
-    // ---- The owner sees the requests with their reply timers -------------------------------------------------
+    // The owner sees the requests with their reply timers
     await page.goto(`/${locale}/owner`);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const [pre, post] = m.owner.replyIn.split("{time}");
@@ -197,7 +158,7 @@ for (const locale of LOCALES) {
     await rp.goto(`/${locale}/notifications`);
     await expect(rp.getByText(m.notif.type.booking_declined.replace("{code}", code2))).toBeVisible();
 
-    // ---- Calendar: block a day, see the booked one, open it --------------------------------------------------
+    // Calendar: block a day, see the booked one, open it
     await page.goto(`/${locale}/owner`);
     let free = 3;
     while (new Date(inDays(free)).getUTCDay() === 0) free++;
@@ -230,7 +191,7 @@ for (const locale of LOCALES) {
     await page.goBack();
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
-    // ---- Edit: the price changes ----------------------------------------------------------------------------
+    // Edit: the price changes
     await page.goto(`/${locale}/owner/machines/${listed.id}/edit?step=4`);
     await expect(page.locator("input[inputmode=numeric]")).toHaveValue("1400");
     await page.locator("input[inputmode=numeric]").fill("1500");
@@ -247,7 +208,7 @@ for (const locale of LOCALES) {
       )
       .toBe(150_000);
 
-    // ---- Pause: it disappears from search -------------------------------------------------------------------
+    // Pause: it disappears from search
     await page.getByRole("button", { name: m.owner.more.replace("{name}", name) }).click();
     await page.getByRole("button", { name: m.owner.pause, exact: true }).click();
     await expect
@@ -261,7 +222,7 @@ for (const locale of LOCALES) {
     await expect(rp.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(rp.locator('a[href*="/rent/m/"]', { hasText: model })).toHaveCount(0);
 
-    // ---- Demo admin -----------------------------------------------------------------------------------------
+    // Demo admin
     const bid = (await sql((s) => s<{ id: string }[]>`SELECT id FROM bookings WHERE code = ${code1}`))[0].id;
     const rep = await rp.request.post(`/api/bookings/${bid}/problems`, {
       multipart: { type: "no_show", text: "Tractor came late <b>x</b>" },

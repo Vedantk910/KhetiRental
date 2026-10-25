@@ -1,4 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
+import { formatNumber } from "@/lib/format";
 import type { MachineName } from "@/components/pictograms/pictogram";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -50,7 +51,7 @@ export function MachineDetailView({
   const slot: Slot = filters.slot;
   const qs = filtersToQuery({ ...filters, from: range.from, to: range.to, view: "list" }).toString();
   const name = m.name;
-  const n = (x: number) => x.toLocaleString(`${locale}-IN`, { maximumFractionDigits: 1 });
+  const n = (x: number) => formatNumber(x, locale);
   const spec = [
     m.hp ? t("hp", { hp: n(m.hp) }) : null,
     String(m.year),

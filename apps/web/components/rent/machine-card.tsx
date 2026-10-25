@@ -5,8 +5,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Attachment } from "@/lib/domain";
 import { Link } from "@/i18n/navigation";
-import type { Locale } from "@/i18n/routing";
-import { formatRupees } from "@/lib/format";
+import { formatNumber, formatRupees } from "@/lib/format";
 import { fmtShort } from "@/lib/rent";
 import { addDays } from "@/server/pricing";
 import type { searchMachines } from "@/server/machines";
@@ -24,8 +23,6 @@ const PICTO: Record<string, MachineName> = {
   trolley: "trolley",
 };
 
-const num = (n: number, locale: Locale) => n.toLocaleString(`${locale}-IN`, { maximumFractionDigits: 1 });
-
 /** The title line "Swaraj 744 FE + rotavator · 48 HP". */
 function useTitle(m: Pick<CardItem, "name" | "attachments" | "hp">) {
   const t = useTranslations();
@@ -34,7 +31,7 @@ function useTitle(m: Pick<CardItem, "name" | "attachments" | "hp">) {
     m.name,
     ...m.attachments.map((a) => t(`attach.${a as Attachment}`).toLocaleLowerCase(locale)),
   ];
-  return parts.join(" + ") + (m.hp ? ` · ${t("detail.hp", { hp: num(m.hp, locale) })}` : "");
+  return parts.join(" + ") + (m.hp ? ` · ${t("detail.hp", { hp: formatNumber(m.hp, locale) })}` : "");
 }
 
 function useUnit(m: Pick<CardItem, "unit" | "operatorIncluded">) {
@@ -128,11 +125,13 @@ export function MachineCard({
           </Link>
         </h3>
         <p className="text-small text-text-muted">
-          {t("results.away", { km: num(m.distanceKm, locale), village: m.village })}
+          {t("results.away", { km: formatNumber(m.distanceKm, locale), village: m.village })}
         </p>
         <p className="text-small text-text-muted">
-          {rating ? `★ ${num(m.rating ?? 0, locale)} (${num(m.reviewCount, locale)})` : t("results.new")} ·{" "}
-          {m.ownerShortName}
+          {rating
+            ? `★ ${formatNumber(m.rating ?? 0, locale)} (${formatNumber(m.reviewCount, locale)})`
+            : t("results.new")}{" "}
+          · {m.ownerShortName}
           {serviced ? ` · ${serviced}` : ""}
         </p>
         <ButtonLink
@@ -188,7 +187,7 @@ export function BusyCard({
           </Link>
         </h3>
         <p className="text-small text-text-muted">
-          {formatRupees(m.priceRupees * 100, locale)} {unit} · {num(m.distanceKm, locale)} km
+          {formatRupees(m.priceRupees * 100, locale)} {unit} · {formatNumber(m.distanceKm, locale)} km
         </p>
       </div>
       {m.nextFreeDate && (

@@ -64,6 +64,6 @@ export const RADII_KM = [5, 10, 25] as const;
 export const SORTS = ["nearest", "cheapest", "top_rated"] as const;
 
 /** Our fee on the rent (UI-SPEC §4.11); the owner keeps the rest. */
-export const TAKE_RATE = 0.135;
+const TAKE_RATE = 0.135;
 /** What the owner keeps of a rent, in whole rupees (paise, a multiple of 100). */
 export const keepPaise = (rentPaise: number) => Math.round((rentPaise * (1 - TAKE_RATE)) / 100) * 100;

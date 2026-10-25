@@ -16,10 +16,10 @@ export function mobileDigits(s: string): string {
 /** "98765 43210" */
 export const groupMobile = (d: string) => (d.length > 5 ? `${d.slice(0, 5)} ${d.slice(5)}` : d);
 
-export const isValidMobile = (d: string) => /^[6-9]\d{9}$/.test(d);
+const isValidMobile = (d: string) => /^[6-9]\d{9}$/.test(d);
 
-export type Field = "name" | "mobile" | "email" | "password";
-export type ErrorKey = "mobile" | "name" | "email" | "passwordShort";
+type Field = "name" | "mobile" | "email" | "password";
+type ErrorKey = "mobile" | "name" | "email" | "passwordShort";
 export type Errors = Partial<Record<Field, ErrorKey>>;
 
 export interface LoginValues {

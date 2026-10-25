@@ -13,6 +13,14 @@ export function formatRupees(paise: number, locale: Locale): string {
   }).format(Math.round(paise / 100) || 0);
 }
 
+/** A number with at most one decimal, in the locale's own digits (mr → Devanagari). */
+export const formatNumber = (n: number, locale: Locale) =>
+  n.toLocaleString(tag(locale), { maximumFractionDigits: 1 });
+
+/** ₹ with two decimals and Indian grouping, always English digits (engineering pages). */
+export const formatInr2 = (rupees: number) =>
+  `₹${rupees.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
 /** "Mon 2 Nov – Wed 4 Nov" in India time, localised names and digits. */
 export function formatDateRange(from: Date, to: Date, locale: Locale): string {
   const f = new Intl.DateTimeFormat(tag(locale), {

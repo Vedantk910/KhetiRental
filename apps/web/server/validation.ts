@@ -230,8 +230,6 @@ export const resetSchema = z
   .object({ token: z.string().regex(/^[A-Za-z0-9_-]{20,100}$/), password: passwordSchema })
   .strict();
 
-// ---- owner tools and demo admin (M5) --------------------------------------------------------------------
-
 export const monthSchema = z.string().regex(/^20[2-5]\d-(0[1-9]|1[0-2])$/);
 export const priceHintSchema = z
   .object({

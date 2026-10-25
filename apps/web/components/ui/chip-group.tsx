@@ -3,7 +3,7 @@
 import { useRef, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export type ChipOption = { value: string; label: ReactNode; icon?: ReactNode };
+type ChipOption = { value: string; label: ReactNode; icon?: ReactNode };
 
 type Common = {
   /** Accessible name of the group. */

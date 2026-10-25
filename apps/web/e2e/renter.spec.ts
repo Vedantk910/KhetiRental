@@ -1,17 +1,9 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { devCode, freshPhone, newVisitor, requestCode, sql, typeCode, watchHealth } from "./auth-helpers";
-import { expectNoAxeViolations, hasHScroll, setTheme } from "./helpers";
+import { expectNoAxeViolations, hasHScroll, offline, setTheme } from "./helpers";
 import { MESSAGES } from "./messages";
 
 const LOCALES = ["mr", "hi", "en"] as const;
-
-/** Map tiles and any other outside host stay unreachable, so the run never depends on the network. */
-async function offline(page: Page) {
-  await page.route(
-    (u) => !["localhost", "127.0.0.1"].includes(u.hostname),
-    (r) => r.abort(),
-  );
-}
 
 for (const locale of LOCALES) {
   const m = MESSAGES[locale];

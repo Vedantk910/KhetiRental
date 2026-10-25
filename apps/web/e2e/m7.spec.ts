@@ -1,32 +1,20 @@
 // M7: Settings, Help, How we price, Terms, Privacy, How we built it (D-16), 404, and the old URLs.
-import { expect, test, type Browser, type Page } from "@playwright/test";
-import { devCode, freshPhone, newVisitor, requestCode, sql, typeCode, watchHealth } from "./auth-helpers";
-import { expectNoAxeViolations, hasHScroll, setTheme } from "./helpers";
+import { expect, test, type Page } from "@playwright/test";
+import {
+  devCode,
+  freshPhone,
+  newVisitor,
+  requestCode,
+  signUp,
+  sql,
+  typeCode,
+  watchHealth,
+} from "./auth-helpers";
+import { checkLayout, setTheme } from "./helpers";
 import { MESSAGES } from "./messages";
 
 const LOCALES = ["mr", "hi", "en"] as const;
 const SHOTS = process.env.M7_SHOTS;
-
-async function checkLayout(page: Page, label: string, full: boolean) {
-  const combos = full
-    ? ([
-        [390, "light"],
-        [390, "dark"],
-        [1440, "light"],
-        [1440, "dark"],
-      ] as const)
-    : ([[390, "light"]] as const);
-  for (const [w, theme] of combos) {
-    await page.setViewportSize({ width: w, height: 900 });
-    await setTheme(page, theme);
-    await expectNoAxeViolations(page, `${label} ${w} ${theme}`);
-    expect(await hasHScroll(page), `${label} at ${w}`).toBe(false);
-  }
-  await page.setViewportSize({ width: 320, height: 800 });
-  expect(await hasHScroll(page), `${label} at 320`).toBe(false);
-  await page.setViewportSize({ width: 390, height: 844 });
-  await setTheme(page, "light");
-}
 
 async function shoot(page: Page, name: string) {
   if (!SHOTS) return;
@@ -41,17 +29,6 @@ async function shoot(page: Page, name: string) {
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await setTheme(page, "light");
-}
-
-async function signUp(browser: Browser, name: string, role: "owner" | "renter") {
-  const v = await newVisitor(browser);
-  v.page.setDefaultTimeout(10_000);
-  const phone = freshPhone();
-  await requestCode(v.page, phone, { signup: { name, role } });
-  await typeCode(v.page, await devCode(v.page));
-  await v.page.getByRole("button", { name: "Verify" }).click();
-  await expect(v.page).toHaveURL(role === "owner" ? /\/owner/ : /\/rent$/);
-  return { ...v, phone: `+91${phone}` };
 }
 
 const STATIC = ["help", "how-we-price", "terms", "privacy"] as const;

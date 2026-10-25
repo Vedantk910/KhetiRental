@@ -3,5 +3,5 @@
   "next": true,
   "vitest": true,
   "playwright": true,
-  "ignore": ["next-env.d.ts"]
+  "ignoreDependencies": ["eslint-config-next"]
 }

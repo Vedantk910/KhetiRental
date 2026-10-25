@@ -1,6 +1,7 @@
 import { expect, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import postgres from "postgres";
 import { E2E_DATABASE_URL } from "./db";
+import { offline } from "./helpers";
 
 const rnd = (n: number) => Math.floor(Math.random() * n);
 /** A fresh visitor address: the OTP and sign-up limits count per IP, and every test must have its own. */
@@ -80,4 +81,17 @@ export async function requestCode(
   await page.getByLabel("Mobile number").fill(phone);
   await page.getByRole("button", { name: "Send OTP" }).click();
   await expect(page).toHaveURL(/\/login\/otp/);
+}
+
+/** Signs a fresh person up by phone (the OTP shows in the dev toast) and leaves them signed in. */
+export async function signUp(browser: Browser, name: string, role: "owner" | "renter", blockOutside = false) {
+  const v = await newVisitor(browser);
+  v.page.setDefaultTimeout(10_000);
+  if (blockOutside) await offline(v.page);
+  const phone = freshPhone();
+  await requestCode(v.page, phone, { signup: { name, role } });
+  await typeCode(v.page, await devCode(v.page));
+  await v.page.getByRole("button", { name: "Verify" }).click();
+  await expect(v.page).toHaveURL(role === "owner" ? /\/owner/ : /\/rent$/);
+  return { ...v, phone: `+91${phone}` };
 }
