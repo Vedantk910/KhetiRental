@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { BarList } from "@/components/engineering/bar-list";
+import { formatInr2 } from "@/lib/format";
 import {
   HP_TIERS,
   SEASONAL_SURGE,
@@ -36,9 +37,6 @@ const SOIL_LABEL: Record<Soil, string> = {
   black_cotton: "Black-cotton clay",
   sandy: "Sandy",
 };
-
-export const inr = (n: number) =>
-  `₹${n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const field = "mt-1 w-full rounded-card border border-border-subtle bg-surface px-3 py-2 text-text";
 
@@ -139,7 +137,7 @@ export function PricingCalculator() {
           />
         </label>
         <label className="block text-caption font-bold">
-          Acquisition cost: {inr(cost)}
+          Acquisition cost: {formatInr2(cost)}
           <input
             type="range"
             min={300_000}
@@ -202,13 +200,13 @@ export function PricingCalculator() {
                     {
                       label: "KhetiRental",
                       value: result.rate.total,
-                      text: inr(result.rate.total),
+                      text: formatInr2(result.rate.total),
                       tone: "success",
                     },
                     {
                       label: "Local broker",
                       value: result.broker.brokerRate,
-                      text: inr(Math.round(result.broker.brokerRate * 100) / 100),
+                      text: formatInr2(Math.round(result.broker.brokerRate * 100) / 100),
                       tone: "muted",
                     },
                   ]}
@@ -252,17 +250,17 @@ function RateCard({ rate, net }: { rate: PriceBreakdown; net: number }) {
     <div className="rounded-card border-2 border-action bg-surface p-6">
       <p className="text-caption text-text-muted">Hourly rate</p>
       <p data-testid="hourly-rate" className="mt-1 text-display font-bold tabular-nums tracking-tight">
-        {inr(rate.total)}
+        {formatInr2(rate.total)}
       </p>
       <div
         className="mt-[20px] flex h-4 gap-[2px] overflow-hidden rounded-control"
         role="img"
-        aria-label={PARTS.map((p) => `${p.label} ${inr(rate[p.key])}`).join(", ")}
+        aria-label={PARTS.map((p) => `${p.label} ${formatInr2(rate[p.key])}`).join(", ")}
       >
         {PARTS.map((p) => (
           <div
             key={p.key}
-            title={`${p.label}: ${inr(rate[p.key])}`}
+            title={`${p.label}: ${formatInr2(rate[p.key])}`}
             style={{ flexGrow: rate[p.key], background: p.color }}
           />
         ))}
@@ -276,14 +274,14 @@ function RateCard({ rate, net }: { rate: PriceBreakdown; net: number }) {
               style={{ background: p.color }}
             />
             <dt className="text-caption text-text-muted">{p.label}</dt>
-            <dd className="font-bold tabular-nums">{inr(rate[p.key])}</dd>
+            <dd className="font-bold tabular-nums">{formatInr2(rate[p.key])}</dd>
             <dd className="text-caption text-text-muted">{p.hint}</dd>
           </div>
         ))}
       </dl>
       <p className="mt-4 border-t border-border-subtle pt-3 text-caption">
-        Owner keeps <span className="font-bold tabular-nums">{inr(net)}</span> per hour after diesel and the
-        13.5% platform fee.
+        Owner keeps <span className="font-bold tabular-nums">{formatInr2(net)}</span> per hour after diesel
+        and the 13.5% platform fee.
       </p>
     </div>
   );

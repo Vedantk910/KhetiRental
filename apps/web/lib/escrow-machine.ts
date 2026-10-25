@@ -3,16 +3,16 @@
 // renter pre-authorised, whatever order events arrive in.
 
 export const DEPOSIT_RATE = 0.15;
-export const GEOFENCE_M = 500; // D-01
-export const GEOFENCE_GRACE_S = 60; // D-01 T_grace
-export const HOUR_TAMPER = 0.1; // D-02
-export const OVERUSE_TOLERANCE = 0.1; // D-03
-export const MIN_PHOTOS = 3; // P1
-export const PHOTO_RADIUS_M = 500; // P1
+const GEOFENCE_M = 500; // D-01
+const GEOFENCE_GRACE_S = 60; // D-01 T_grace
+const HOUR_TAMPER = 0.1; // D-02
+const OVERUSE_TOLERANCE = 0.1; // D-03
+const MIN_PHOTOS = 3; // P1
+const PHOTO_RADIUS_M = 500; // P1
 
 export type Stage =
   "PRE_AUTH" | "HANDOVER" | "ACTIVE" | "RETURN_AUDIT" | "DISPUTE_OPEN" | "SETTLED" | "CANCELLED";
-export type Rule = "D-01" | "D-02" | "D-03" | "D-04" | "D-05" | "D-06" | "D-07";
+type Rule = "D-01" | "D-02" | "D-03" | "D-04" | "D-05" | "D-06" | "D-07";
 
 export interface Ledger {
   escrow: number;

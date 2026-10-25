@@ -37,10 +37,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-# --------------------------------------------------------------------------- #
-# Input models
-# --------------------------------------------------------------------------- #
-
 @dataclass(frozen=True)
 class DistrictSnapshot:
     """One H3-7 district's daily counts."""
@@ -65,10 +61,6 @@ class MachineUtilization:
     billed_hours: float
     active_days: int
 
-
-# --------------------------------------------------------------------------- #
-# KPI functions
-# --------------------------------------------------------------------------- #
 
 def liquidity_index(snap: DistrictSnapshot) -> float:
     """Return LI in [0, 1] for a district. 0.0 if either side is empty.
@@ -124,10 +116,6 @@ def fleet_eur(machines: list[MachineUtilization]) -> float:
         return 0.0
     return round(min(100.0, total_billed / total_avail * 100.0), 3)
 
-
-# --------------------------------------------------------------------------- #
-# Demo + report writer
-# --------------------------------------------------------------------------- #
 
 def _demo() -> dict:
     snaps = [

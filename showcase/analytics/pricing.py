@@ -32,9 +32,7 @@ from datetime import date
 from pathlib import Path
 from typing import Iterable
 
-# --------------------------------------------------------------------------- #
 # Base rate tables (INR per hour).
-# --------------------------------------------------------------------------- #
 
 BASE_RATE_BY_HP: dict[str, float] = {
     "35": 300.0,
@@ -69,10 +67,6 @@ FUEL_PER_HOUR: dict[str, float] = {
 DEPRECIATION_HOURS = 10_000
 
 
-# --------------------------------------------------------------------------- #
-# Domain types
-# --------------------------------------------------------------------------- #
-
 @dataclass(frozen=True)
 class Machine:
     """A listed tractor. Hourly rate is derived from these fields."""
@@ -98,10 +92,6 @@ class PriceBreakdown:
     def as_dict(self) -> dict:
         return asdict(self)
 
-
-# --------------------------------------------------------------------------- #
-# Price computation
-# --------------------------------------------------------------------------- #
 
 def hourly_rate(machine: Machine, diesel_price_inr: float) -> PriceBreakdown:
     """Return the itemised hourly rate for a machine under the current diesel price.
@@ -143,9 +133,7 @@ def _round2(x: float) -> float:
     return round(x + 1e-9, 2)
 
 
-# --------------------------------------------------------------------------- #
 # Batch pricing + utilization-expansion case (250h -> 620h)
-# --------------------------------------------------------------------------- #
 
 def batch_price(machines: Iterable[Machine], diesel_price_inr: float) -> list[PriceBreakdown]:
     return [hourly_rate(m, diesel_price_inr) for m in machines]
@@ -215,9 +203,7 @@ def breakeven_hours(acquisition_cost: float, net_hourly_to_owner: float, opex: O
     return (acquisition_cost / target_years + opex.fixed_per_year_inr) / margin
 
 
-# --------------------------------------------------------------------------- #
 # CLI: price a small fleet and write a JSON report.
-# --------------------------------------------------------------------------- #
 
 _DEMO_FLEET: list[Machine] = [
     Machine("M-001", "45", 6, 6_50_000, "pune", "loam", "harvest_compressed"),

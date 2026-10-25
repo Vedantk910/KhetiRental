@@ -1,6 +1,7 @@
 "use client";
 
 import { useReducer, useState } from "react";
+import { formatInr2 } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
   createEscrow,
@@ -28,8 +29,7 @@ const STAGE_LABEL: Record<Stage, string> = {
   CANCELLED: "Cancelled",
 };
 
-const rupees = (paise: number) =>
-  `₹${(paise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+const rupees = (paise: number) => formatInr2(paise / 100);
 
 type Log = { state: EscrowState; log: string[] };
 function reducer(s: Log, a: { event: EscrowEvent; label: string } | { reset: true }): Log {

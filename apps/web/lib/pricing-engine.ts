@@ -4,11 +4,11 @@
 //   R = (B_base × μ_season × δ_soil) + (D_wear × κ_age) + (F × P_diesel)
 
 export const BASE_RATE_BY_HP = { "35": 300, "45": 420, "55": 520, "75_4wd": 780 } as const;
-export const FUEL_PER_HOUR = { "35": 3.2, "45": 4.0, "55": 5.2, "75_4wd": 7.8 } as const;
+const FUEL_PER_HOUR = { "35": 3.2, "45": 4.0, "55": 5.2, "75_4wd": 7.8 } as const;
 export const SOIL_COEFF = { loam: 1.0, black_cotton: 1.25, sandy: 0.9 } as const;
 export const SEASONAL_SURGE = { off_season: 1.0, sowing: 1.2, harvest_compressed: 1.45 } as const;
-export const DEPRECIATION_HOURS = 10_000;
-export const TAKE_RATE_BAND = [0.12, 0.15] as const;
+const DEPRECIATION_HOURS = 10_000;
+const TAKE_RATE_BAND = [0.12, 0.15] as const;
 export const DEFAULT_TAKE_RATE = 0.135;
 
 export type HpTier = keyof typeof BASE_RATE_BY_HP;
