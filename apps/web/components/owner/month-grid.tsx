@@ -82,12 +82,12 @@ export function MonthGrid({
           </button>
         </div>
       </div>
-      <div aria-hidden className="grid grid-cols-7 gap-1 text-center text-caption text-text-subtle">
+      <div aria-hidden className="-mx-2 grid grid-cols-7 text-center text-caption text-text-subtle sm:mx-0">
         {heads.map((h, i) => (
           <span key={i}>{h}</span>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-1">
+      <div className="-mx-2 grid grid-cols-7 sm:mx-0">
         {monthGrid(month).map((d, i) => {
           if (!d) return <span key={`pad${i}`} />;
           const s = state(d);
@@ -113,7 +113,7 @@ export function MonthGrid({
                 if (s !== "past") onPick(d, s);
               }}
               className={cn(
-                "flex h-tap items-center justify-center rounded-control text-label tabular-nums",
+                "flex h-tap items-center justify-center rounded-control border-2 border-transparent bg-clip-padding text-label tabular-nums",
                 LOOK[s],
                 s === "past" && "cursor-not-allowed",
                 s === "blocked" && "line-through",

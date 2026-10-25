@@ -36,7 +36,7 @@ function Item({ b }: { b: BookingView }) {
         <Link
           href={`/bookings/${b.code}`}
           prefetch={false}
-          className="after:absolute after:inset-0 after:content-['']"
+          className="flex min-h-tap items-center after:absolute after:inset-0 after:content-['']"
         >
           {dates}
         </Link>

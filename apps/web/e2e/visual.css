@@ -1,0 +1,4 @@
+/* A fixed bar would be pasted into the middle of a full-page capture. */
+[data-tab-bar] nav {
+  visibility: hidden !important;
+}

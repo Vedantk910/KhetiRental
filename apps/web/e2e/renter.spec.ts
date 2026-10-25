@@ -1,12 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
 import { devCode, freshPhone, newVisitor, requestCode, sql, typeCode, watchHealth } from "./auth-helpers";
 import { expectNoAxeViolations, hasHScroll, setTheme } from "./helpers";
+import { MESSAGES } from "./messages";
 
-type Messages = typeof import("../messages/en.json");
-const load = (l: string) =>
-  JSON.parse(readFileSync(new URL(`../messages/${l}.json`, import.meta.url), "utf8")) as Messages;
-const MESSAGES = { en: load("en"), hi: load("hi"), mr: load("mr") };
 const LOCALES = ["mr", "hi", "en"] as const;
 
 /** Map tiles and any other outside host stay unreachable, so the run never depends on the network. */

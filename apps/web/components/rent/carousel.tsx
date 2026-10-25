@@ -29,7 +29,7 @@ export function Carousel({
       <Link
         href={backHref}
         aria-label={t("back")}
-        className="absolute left-3 top-3 z-10 flex h-[44px] w-[44px] items-center justify-center rounded-pill bg-white text-[#13100D] shadow-raised"
+        className="absolute left-3 top-3 z-10 flex h-tap w-tap items-center justify-center rounded-pill bg-white text-[#13100D] shadow-raised"
       >
         <ArrowLeft aria-hidden className="h-6 w-6" />
       </Link>

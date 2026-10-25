@@ -172,7 +172,7 @@ export function MachinesList({ items }: { items: MyMachine[] }) {
         </h2>
         <Link
           href="/owner/machines/new"
-          className="inline-flex min-h-tap items-center text-label text-link underline underline-offset-4"
+          className="inline-flex min-h-tap min-w-tap items-center justify-center text-label text-link underline underline-offset-4"
         >
           {t("add")}
         </Link>

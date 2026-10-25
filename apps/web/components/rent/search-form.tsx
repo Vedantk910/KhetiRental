@@ -3,6 +3,7 @@
 import { LocateFixed } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { useSessionState } from "@/lib/use-session-state";
 import { Pictogram } from "@/components/pictograms/pictogram";
 import { Button } from "@/components/ui/button";
 import { ChipGroup } from "@/components/ui/chip-group";
@@ -43,15 +44,22 @@ export function SearchForm({ initial, today }: { initial: Filters; today: string
   const locale = useLocale();
   const router = useRouter();
   const startRange = initial.from && initial.to ? { from: initial.from, to: initial.to } : null;
-  const [job, setJob] = useState<Job | "">(initial.job ?? "");
-  const [place, setPlace] = useState(initial.place);
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
+  const keep = { onlyAfterSwitch: true } as const; // typed text survives a language switch
+  const [job, setJob] = useSessionState<Job | "">("rent.job", initial.job ?? "", keep);
+  const [place, setPlace] = useSessionState("rent.place", initial.place, keep);
+  const [coords, setCoords] = useSessionState<{ lat: number; lng: number } | null>(
+    "rent.coords",
     initial.lat !== null && initial.lng !== null ? { lat: initial.lat, lng: initial.lng } : null,
+    keep,
   );
-  const [when, setWhen] = useState<When>(initialWhen(startRange, today));
-  const [range, setRange] = useState<Range>(startRange ?? presetRange("tomorrow", today));
+  const [when, setWhen] = useSessionState<When>("rent.when", initialWhen(startRange, today), keep);
+  const [range, setRange] = useSessionState<Range>(
+    "rent.range",
+    startRange ?? presetRange("tomorrow", today),
+    keep,
+  );
   const [picking, setPicking] = useState(false);
-  const [acres, setAcres] = useState<number | null>(initial.acres);
+  const [acres, setAcres] = useSessionState<number | null>("rent.acres", initial.acres, keep);
   const [locating, setLocating] = useState(false);
   const [locateFailed, setLocateFailed] = useState(false);
 

@@ -32,7 +32,25 @@ export default {
       raised: "var(--shadow-raised)",
     },
     fontFamily: {
-      ui: ["var(--font-ui)", "Noto Sans Devanagari", "Roboto", "system-ui", "sans-serif"],
+      ui: [
+        "var(--font-ui)",
+        "var(--font-ui-deva)",
+        "Noto Sans Devanagari",
+        "Roboto",
+        "system-ui",
+        "sans-serif",
+      ],
+      // The language names (मराठी · हिंदी) on English pages: the device's Devanagari font, so a 69 kB web font is not fetched
+      // (and nothing reflows when it arrives) just to label a button.
+      "ui-system": [
+        "var(--font-ui)",
+        "Noto Sans Devanagari",
+        "Nirmala UI",
+        "Devanagari Sangam MN",
+        "Roboto",
+        "system-ui",
+        "sans-serif",
+      ],
       display: ["var(--font-display)", "var(--font-ui)", "sans-serif"],
     },
     fontSize: {

@@ -5,6 +5,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Native selects and sliders are tap targets too (REVIEW A-01): at least 48 px tall wherever a page does not size them. */
+@layer base {
+  select,
+  input[type="range"],
+  input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]) {
+    min-height: 48px;
+  }
+}
+
 /* Responsive headings (UI-SPEC §2.4). */
 @media (min-width: 768px) {
   .text-h1 {
@@ -92,6 +101,7 @@ body:has([data-sheet-open]) [data-tab-bar] {
   color: #fff;
   font:
     700 14px/22px var(--font-ui),
+    var(--font-ui-deva),
     sans-serif;
   white-space: nowrap;
   border: 2px solid #fff;

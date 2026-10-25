@@ -123,7 +123,7 @@ test("skip link is first, becomes visible on focus and moves focus to main", asy
 
 for (const [locale, h1, home] of [
   ["en", "We couldn't find that page.", "Go home"],
-  ["mr", "ते पान सापडले नाही.", "TODO-translate: Go home"],
+  ["mr", "ते पान सापडले नाही.", "Go home"],
 ] as const) {
   test(`404 in ${locale}: status, title, message, actions, axe clean`, async ({ page }) => {
     const res = await page.goto(`/${locale}/no-such-page`);

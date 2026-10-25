@@ -6,6 +6,7 @@ import { Select } from "@/components/ui/field";
 import { useToast } from "@/components/ui/toast";
 import { useRouter } from "@/i18n/navigation";
 import { shiftMonth } from "@/lib/rent";
+import { UserError, userMessage } from "@/lib/user-error";
 import { MonthGrid } from "./month-grid";
 
 export interface CalDay {
@@ -60,11 +61,11 @@ export function OwnerCalendar({
       });
       if (!r.ok) {
         const j = (await r.json().catch(() => ({}))) as { code?: string };
-        throw new Error(j.code === "day_booked" ? te("day_booked") : t("blockFailed"));
+        throw new UserError(j.code === "day_booked" ? te("day_booked") : t("blockFailed"));
       }
     } catch (e) {
       if (was) setDays((m) => new Map(m).set(date, was));
-      toast({ tone: "error", message: e instanceof Error ? e.message : t("blockFailed") });
+      toast({ tone: "error", message: userMessage(e, t("blockFailed")) });
       void load(machine, month);
     }
   };

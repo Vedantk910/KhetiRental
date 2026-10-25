@@ -46,6 +46,7 @@ export default async function EditMachinePage({
       <div className="mx-auto max-w-app px-4 py-8 sm:px-6">
         <h1 className="sr-only">{t("notFound")}</h1>
         <EmptyState
+          as="h1"
           title={t("notFound")}
           actions={<ButtonLink href="/owner">{t("backToDashboard")}</ButtonLink>}
         />

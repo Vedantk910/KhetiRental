@@ -70,7 +70,7 @@ function RcRow({ r }: { r: Overview["rc"][number] }) {
         </a>
       </div>
       <div className="flex flex-wrap gap-2">
-        <Button size="md" loading={busy} onClick={() => void decide("checked")}>
+        <Button loading={busy} onClick={() => void decide("checked")}>
           {t("approve")}
         </Button>
         <Button size="md" variant="danger-outline" loading={busy} onClick={() => void decide("rejected")}>
@@ -146,7 +146,7 @@ function ProblemRow({ p }: { p: Overview["problems"][number] }) {
         >
           {t("saveNote")}
         </Button>
-        <Button size="md" loading={busy} onClick={() => void save(resolved ? "open" : "resolved")}>
+        <Button loading={busy} onClick={() => void save(resolved ? "open" : "resolved")}>
           {resolved ? t("reopen") : t("resolve")}
         </Button>
       </div>

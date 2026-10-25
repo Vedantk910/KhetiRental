@@ -79,6 +79,7 @@ export function Button({
       {...rest}
 
       type={type}
+      data-variant={variant}
       aria-busy={loading || undefined}
       aria-disabled={inert || undefined}
       aria-describedby={disabledReason ? reasonId : rest["aria-describedby"]}
@@ -106,5 +107,5 @@ export function ButtonLink({
   className,
   ...rest
 }: ComponentProps<typeof Link> & { variant?: ButtonVariant; size?: ButtonSize }) {
-  return <Link className={buttonClass(variant, size, className)} {...rest} />;
+  return <Link data-variant={variant} className={buttonClass(variant, size, className)} {...rest} />;
 }

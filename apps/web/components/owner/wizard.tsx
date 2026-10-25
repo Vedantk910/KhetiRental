@@ -17,6 +17,7 @@ import { useToast } from "@/components/ui/toast";
 import { useRouter } from "@/i18n/navigation";
 import { ATTACHMENTS, CATEGORIES, keepPaise, PRICE_UNITS, type Category, type PriceUnit } from "@/lib/domain";
 import { formatRupees, toAsciiNumber } from "@/lib/format";
+import { UserError, userMessage } from "@/lib/user-error";
 import {
   emptyDraft,
   fromMachine,
@@ -233,6 +234,10 @@ export function Wizard({
   const go = () => {
     if (Object.keys(errors).length > 0) {
       setTried(true);
+      // Once the errors are on screen, put the cursor on the first one (screen readers read its message).
+      requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>('main [aria-invalid="true"]')?.focus();
+      });
       return;
     }
     if (step < 4) setStep((step + 1) as 2 | 3 | 4);
@@ -282,7 +287,7 @@ export function Wizard({
   };
   const call = async (url: string, init: RequestInit) => {
     const r = await fetch(url, init);
-    if (!r.ok && r.status !== 204) throw new Error(await apiError(r));
+    if (!r.ok && r.status !== 204) throw new UserError(await apiError(r));
     return r;
   };
   const json = (method: string, body: unknown): RequestInit => ({
@@ -353,7 +358,7 @@ export function Wizard({
       router.push("/owner");
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : t("publishFailed"));
+      setError(userMessage(e, t("publishFailed")));
       setBusy(false);
     }
   };

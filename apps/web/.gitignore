@@ -6,3 +6,5 @@ playwright-report
 *.tsbuildinfo
 # Local uploads in dev (machine and problem photos)
 .uploads
+.lighthouseci
+.lighthouseci-server.log

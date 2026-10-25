@@ -90,6 +90,7 @@ export function MachineCard({
   const title = useTitle(m);
   const unit = useUnit(m);
   const dates = from && to ? fmtShort(from, to, locale) : null;
+  const book = dates ? t("results.book", { dates }) : t("detail.book", { dates: "" }).trim();
   const rating = m.reviewCount >= 3 && m.rating !== null;
   const serviced = m.servicedMonth
     ? t("detail.serviced", {
@@ -120,7 +121,7 @@ export function MachineCard({
           <Link
             href={`/rent/m/${m.id}?${qs}`}
             prefetch={false}
-            className="after:absolute after:inset-0 after:content-['']"
+            className="flex min-h-tap items-center after:absolute after:inset-0 after:content-['']"
             data-testid="machine-link"
           >
             {title}
@@ -139,8 +140,10 @@ export function MachineCard({
           prefetch={false}
           className="relative z-10 mt-2"
           data-priority={priority || undefined}
+          // The visible text first, then which machine: every card's button needs its own name.
+          aria-label={`${book}, ${title}`}
         >
-          {dates ? t("results.book", { dates }) : t("detail.book", { dates: "" }).trim()}
+          {book}
         </ButtonLink>
       </div>
     </Card>
@@ -176,7 +179,11 @@ export function BusyCard({
     <Card variant="busy" as="article" className="relative flex items-center justify-between gap-3">
       <div className="min-w-0">
         <h3 className="text-body font-bold">
-          <Link href={href} prefetch={false} className="after:absolute after:inset-0 after:content-['']">
+          <Link
+            href={href}
+            prefetch={false}
+            className="flex min-h-tap items-center after:absolute after:inset-0 after:content-['']"
+          >
             {title}
           </Link>
         </h3>

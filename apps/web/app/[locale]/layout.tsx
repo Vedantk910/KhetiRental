@@ -13,11 +13,20 @@ import { routing } from "@/i18n/routing";
 import { MOTION_SCRIPT } from "@/lib/motion";
 import { THEME_SCRIPT } from "@/lib/theme";
 
+// Latin is preloaded; Devanagari (~130 kB for both weights) is fetched only when a Hindi or Marathi
+// character is on the page, so English pages do not wait for it on a slow link.
 const ui = Mukta({
-  subsets: ["latin", "devanagari"],
+  subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-ui",
   display: "swap",
+});
+const uiDevanagari = Mukta({
+  subsets: ["devanagari"],
+  weight: ["400", "700"],
+  variable: "--font-ui-deva",
+  display: "swap",
+  preload: false,
 });
 const display = Baloo_2({
   subsets: ["latin", "devanagari"],
@@ -39,7 +48,11 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const t = await getTranslations({ locale, namespace: "common" });
-  return { title: { default: t("brand"), template: `%s – ${t("brand")}` } };
+  return {
+    // Only used to turn relative metadata URLs (canonical, language alternates) into absolute ones.
+    metadataBase: new URL(process.env.SITE_URL || "http://localhost:3000"),
+    title: { default: t("brand"), template: `%s – ${t("brand")}` },
+  };
 }
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
@@ -56,7 +69,11 @@ export default async function LocaleLayout({
   // eslint-disable-next-line @typescript-eslint/no-deprecated -- next/root-params needs Next 16; this is the Next 15 API
   setRequestLocale(locale);
   return (
-    <html lang={locale} className={`${ui.variable} ${display.variable}`} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={`${ui.variable} ${uiDevanagari.variable} ${display.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Sets data-motion before first paint, so nothing flashes (UI-SPEC §4.1.5). */}
         <script dangerouslySetInnerHTML={{ __html: MOTION_SCRIPT }} />

@@ -36,7 +36,10 @@ export default async function EngineeringIndex({ params }: { params: Promise<{ l
           <li key={p.href}>
             <Card as="div" className="flex h-full flex-col gap-2">
               <h2 className="text-h3">
-                <Link href={p.href} className="text-link underline underline-offset-4">
+                <Link
+                  href={p.href}
+                  className="inline-flex min-h-tap min-w-tap items-center text-link underline underline-offset-4"
+                >
                   {p.title}
                 </Link>
               </h2>

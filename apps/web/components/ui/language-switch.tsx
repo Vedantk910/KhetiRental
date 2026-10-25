@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useTransition } from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { markLanguageSwitch } from "@/lib/use-session-state";
 import { cn } from "@/lib/utils";
 
 const YEAR = 60 * 60 * 24 * 365;
@@ -54,6 +55,7 @@ export function LanguageSwitch({
     } catch {
       // storage blocked: focus restore is a nicety
     }
+    markLanguageSwitch();
     document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=${YEAR}; samesite=lax`;
     const { search, hash } = window.location;
     startTransition(() => {
@@ -83,6 +85,7 @@ export function LanguageSwitch({
           }}
           className={cn(
             "min-h-tap min-w-tap rounded-pill px-2 text-label sm:px-3",
+            current === "en" && "font-ui-system",
             l === current ? "bg-action text-action-on" : "bg-surface text-text hover:bg-surface-muted",
           )}
         >

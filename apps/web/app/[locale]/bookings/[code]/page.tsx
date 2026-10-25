@@ -36,6 +36,7 @@ export default async function BookingPage({
     return (
       <div className="mx-auto max-w-app px-4 py-8 sm:px-6">
         <EmptyState
+          as="h1"
           title={t("notFound")}
           actions={<ButtonLink href="/bookings">{t("backToBookings")}</ButtonLink>}
         />

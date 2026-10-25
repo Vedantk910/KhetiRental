@@ -51,7 +51,7 @@ describe("TabBar", () => {
   it("shows Rent · My bookings · Help on app routes, active one marked", () => {
     pathname = "/bookings/KR-4821";
     renderIntl(<TabBar />, { locale: "hi" });
-    const nav = screen.getByRole("navigation", { name: "TODO-translate: Sections" });
+    const nav = screen.getByRole("navigation", { name: "Sections" });
     const links = within(nav).getAllByRole("link");
     expect(links.map((l) => l.textContent)).toEqual(["किराया", "मेरी बुकिंग", "मदद"]);
     expect(links.map((l) => l.getAttribute("aria-current"))).toEqual([null, "page", null]);

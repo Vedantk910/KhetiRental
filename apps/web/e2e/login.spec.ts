@@ -291,10 +291,7 @@ test("language switch keeps what was typed (login form and OTP page)", async ({ 
   await expect(page).toHaveURL(/\/hi\/login\?mode=signup$/);
   await expect(page.getByLabel("पूरा नाम")).toHaveValue("Asha Patil");
   await expect(page.getByLabel("मोबाइल नंबर")).toHaveValue(`${phone.slice(0, 5)} ${phone.slice(5)}`);
-  await expect(page.getByRole("radio", { name: /TODO-translate|अपनी मशीन/ }).last()).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
+  await expect(page.getByRole("radio", { name: /अपनी मशीन/ }).last()).toHaveAttribute("aria-checked", "true");
   await page.getByRole("button", { name: "OTP भेजें" }).click();
   await expect(page).toHaveURL(/\/hi\/login\/otp/);
   await typeCode(page, "12");
@@ -333,9 +330,9 @@ test("forgot and reset password: same answer for any email, the link works once"
   const href = (await link.getAttribute("href"))!;
   await link.click();
   await expect(page).toHaveURL(/\/en\/login\/reset\?token=/);
+  await untilInteractive(page.getByRole("button", { name: "Save password" })); // typing before hydration is wiped
   await page.getByLabel("New password", { exact: true }).fill("new-password-22");
   await page.getByLabel("Confirm new password").fill("different-22");
-  await untilInteractive(page.getByRole("button", { name: "Save password" }));
   await page.getByRole("button", { name: "Save password" }).click();
   await expect(page.getByText("The two passwords don't match.")).toBeVisible();
   await page.getByLabel("Confirm new password").fill("new-password-22");

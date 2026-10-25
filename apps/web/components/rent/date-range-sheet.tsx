@@ -87,12 +87,15 @@ export function DateRangeSheet({ open, onClose, value, onApply, minDay, unavaila
             <ChevronRight aria-hidden className="h-6 w-6" />
           </button>
         </div>
-        <div className="grid grid-cols-7 text-center text-caption font-bold text-text-subtle" aria-hidden>
+        <div
+          className="-mx-2 grid grid-cols-7 text-center text-caption font-bold text-text-subtle sm:mx-0"
+          aria-hidden
+        >
           {weekdays.map((w, i) => (
             <span key={i}>{w}</span>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-y-1">
+        <div className="-mx-2 grid grid-cols-7 gap-y-1 sm:mx-0">
           {monthGrid(month).map((d, i) => {
             if (!d) return <span key={`pad${i}`} />;
             const isEnd = d === draft?.from || d === draft?.to;

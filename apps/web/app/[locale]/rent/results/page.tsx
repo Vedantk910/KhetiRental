@@ -50,6 +50,7 @@ export default async function ResultsPage({
       return (
         <div className="mx-auto max-w-app px-4 py-8 sm:px-6">
           <EmptyState
+            as="h1"
             title={t("errors.api.place_not_found")}
             actions={
               <ButtonLink href={`/rent?${filtersToQuery(f).toString()}`}>{t("results.change")}</ButtonLink>

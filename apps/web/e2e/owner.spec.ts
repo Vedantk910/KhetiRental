@@ -1,13 +1,9 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
 import { devCode, freshPhone, newVisitor, requestCode, sql, typeCode, watchHealth } from "./auth-helpers";
 import { expectNoAxeViolations, hasHScroll, setTheme, untilInteractive } from "./helpers";
+import { MESSAGES } from "./messages";
 import { formatRupees } from "../lib/format";
 
-type Messages = typeof import("../messages/en.json");
-const load = (l: string) =>
-  JSON.parse(readFileSync(new URL(`../messages/${l}.json`, import.meta.url), "utf8")) as Messages;
-const MESSAGES = { en: load("en"), hi: load("hi"), mr: load("mr") };
 const LOCALES = ["mr", "hi", "en"] as const;
 
 const PNG = Buffer.from(

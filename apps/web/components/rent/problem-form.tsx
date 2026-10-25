@@ -3,6 +3,7 @@
 import { Camera, Mic, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRef, useState } from "react";
+import { useSessionState } from "@/lib/use-session-state";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/field";
 import { TileGroup } from "@/components/ui/tile";
@@ -39,8 +40,8 @@ export function ProblemForm({
   const locale = useLocale();
   const router = useRouter();
   const toast = useToast();
-  const [type, setType] = useState("");
-  const [text, setText] = useState("");
+  const [type, setType] = useSessionState(`problem.${code}.type`, "", { onlyAfterSwitch: true });
+  const [text, setText] = useSessionState(`problem.${code}.text`, "", { onlyAfterSwitch: true });
   const [photos, setPhotos] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

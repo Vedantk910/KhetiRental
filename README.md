@@ -36,7 +36,17 @@ Using your own Postgres instead of Docker: the tests clone throwaway databases f
 ./test-all.sh            # website + showcase + repo checks
 ```
 
-In `apps/web`: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e`.
+In `apps/web`: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e` (build first: the e2e run starts the production build).
+
+Quality gates (after `npm run build`; Lighthouse needs the database from `db:setup`):
+
+```bash
+npm run test:budget      # first-load JavaScript per page, gzipped, measured in a real browser
+npm run lighthouse       # Lighthouse CI: mobile, simulated Slow 4G, 4x CPU (LH_RUNS=1 for a quick look)
+npm run test:visual      # screenshot snapshots at 390 / 768 / 1280 (test:visual:update after an intended change)
+```
+
+Hindi and Marathi text that is not translated yet is shown in English; the keys still marked `TODO-translate:` in `apps/web/messages/hi.json` and `mr.json` are the translators' work list.
 
 ## Deploy
 

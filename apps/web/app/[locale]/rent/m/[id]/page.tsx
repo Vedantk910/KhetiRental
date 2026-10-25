@@ -28,6 +28,7 @@ export default async function MachinePage({
     return (
       <div className="mx-auto max-w-app px-4 py-8 sm:px-6">
         <EmptyState
+          as="h1"
           title={t("unavailable")}
           actions={
             <ButtonLink href={`/rent/results?${filtersToQuery(f).toString()}`}>

@@ -158,7 +158,10 @@ export default function ProductDossier() {
           audit of the first design found 19 vulnerabilities, two of them critical, and every one was
           reproduced as a failing test. Remediations 1–13 are fixed in code; 14–22 are in the contract, with
           the GPS-spoof, breakdown and weather rules specified but not yet built. Try the escrow on the{" "}
-          <Link href="/about/engineering/escrow" className="text-link underline">
+          <Link
+            href="/about/engineering/escrow"
+            className="inline-flex min-h-tap min-w-tap items-center text-link underline"
+          >
             escrow page
           </Link>
           .

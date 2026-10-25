@@ -17,7 +17,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale: locale as Locale, namespace: "welcome" });
-  return { title: { absolute: `KhetiRental – ${t("h1")}` }, description: t("tag") };
+  return {
+    title: { absolute: `KhetiRental – ${t("h1")}` },
+    description: t("meta"),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { en: "/en", hi: "/hi", mr: "/mr", "x-default": "/en" },
+    },
+  };
 }
 
 export default async function Welcome({ params }: { params: Promise<{ locale: string }> }) {
@@ -73,7 +80,10 @@ export default async function Welcome({ params }: { params: Promise<{ locale: st
               sr: t(`stats.${s.sr}`),
             }))}
             source={
-              <Link href="/how-we-price#sources" className="underline underline-offset-4">
+              <Link
+                href="/how-we-price#sources"
+                className="inline-flex min-h-tap min-w-tap items-center justify-center underline underline-offset-4"
+              >
                 {t("stats.source")}
               </Link>
             }

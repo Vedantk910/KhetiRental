@@ -46,6 +46,7 @@ export default async function PayPage({
     return (
       <div className="mx-auto max-w-app px-4 py-8 sm:px-6">
         <EmptyState
+          as="h1"
           title={t("missing")}
           actions={<ButtonLink href="/bookings">{t("openBooking")}</ButtonLink>}
         />

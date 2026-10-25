@@ -263,7 +263,7 @@ export function LoginForm({
             onKeyDown={(e) => {
               onTabKey(e, i);
             }}
-            className={`min-h-[44px] rounded-[9px] text-label text-text ${mode === m ? "bg-surface" : "bg-transparent"}`}
+            className={`min-h-tap rounded-[9px] text-label text-text ${mode === m ? "bg-surface" : "bg-transparent"}`}
           >
             {t(`tab.${m}`)}
           </button>
@@ -426,11 +426,19 @@ export function LoginForm({
           <p className="text-center text-caption text-text-muted">
             {terms.map((part, i) =>
               part === "\u0000t" ? (
-                <Link key={i} href="/terms" className="text-link underline underline-offset-4">
+                <Link
+                  key={i}
+                  href="/terms"
+                  className="inline-flex min-h-tap min-w-tap items-center justify-center text-link underline underline-offset-4"
+                >
                   {tc("footer.terms")}
                 </Link>
               ) : part === "\u0000p" ? (
-                <Link key={i} href="/privacy" className="text-link underline underline-offset-4">
+                <Link
+                  key={i}
+                  href="/privacy"
+                  className="inline-flex min-h-tap min-w-tap items-center justify-center text-link underline underline-offset-4"
+                >
                   {tc("footer.privacy")}
                 </Link>
               ) : (

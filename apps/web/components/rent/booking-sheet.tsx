@@ -277,7 +277,7 @@ export function BookingSheet(p: Props) {
               )}
               <button
                 type="button"
-                aria-label={t("booking.changeDates")}
+                aria-label={`${fmtDays(range.from, range.to, locale)} · ${t("search.days", { n })}. ${t("booking.changeDates")}`}
                 onClick={() => {
                   setPicking(true);
                 }}

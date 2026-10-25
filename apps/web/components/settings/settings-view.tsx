@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, type SyntheticEvent, type ReactNode } from "react";
+import { useSessionState } from "@/lib/use-session-state";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChipGroup } from "@/components/ui/chip-group";
@@ -63,7 +64,7 @@ function Profile({ name, phone, email }: Pick<Props, "name" | "phone" | "email">
   const toast = useToast();
   const router = useRouter();
   const apiError = useApiError();
-  const [value, setValue] = useState(name);
+  const [value, setValue] = useSessionState("settings.name", name, { onlyAfterSwitch: true });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [change, setChange] = useState<"closed" | "ask" | "code">("closed");

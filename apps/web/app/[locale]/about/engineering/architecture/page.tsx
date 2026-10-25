@@ -76,7 +76,10 @@ export default function Architecture() {
         </dl>
         <p className="mt-4">
           See matching work in the{" "}
-          <Link href="/about/engineering/h3-spatial" className="text-link underline">
+          <Link
+            href="/about/engineering/h3-spatial"
+            className="inline-flex min-h-tap min-w-tap items-center text-link underline"
+          >
             H3 spatial sandbox
           </Link>
           .
@@ -99,7 +102,10 @@ export default function Architecture() {
         </ul>
         <p className="mt-4 text-text-muted">
           The reasoning behind each is walked through in the{" "}
-          <Link href="/about/engineering/product" className="text-link underline">
+          <Link
+            href="/about/engineering/product"
+            className="inline-flex min-h-tap min-w-tap items-center text-link underline"
+          >
             product dossier
           </Link>
           .

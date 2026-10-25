@@ -1,13 +1,9 @@
 // M7: Settings, Help, How we price, Terms, Privacy, How we built it (D-16), 404, and the old URLs.
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
 import { devCode, freshPhone, newVisitor, requestCode, sql, typeCode, watchHealth } from "./auth-helpers";
 import { expectNoAxeViolations, hasHScroll, setTheme } from "./helpers";
+import { MESSAGES } from "./messages";
 
-type Messages = typeof import("../messages/en.json");
-const load = (l: string) =>
-  JSON.parse(readFileSync(new URL(`../messages/${l}.json`, import.meta.url), "utf8")) as Messages;
-const MESSAGES = { en: load("en"), hi: load("hi"), mr: load("mr") };
 const LOCALES = ["mr", "hi", "en"] as const;
 const SHOTS = process.env.M7_SHOTS;
 
@@ -74,9 +70,7 @@ for (const locale of LOCALES) {
     };
     for (const p of STATIC) {
       await page.goto(`/${locale}/${p}`);
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-        titles[p].replace(/^TODO-translate: /, ""),
-      );
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(titles[p]);
       await checkLayout(page, `${p} ${locale}`, full);
       if (full) await shoot(page, p);
     }
@@ -90,12 +84,8 @@ for (const locale of LOCALES) {
   test(`404 in ${locale}`, async ({ page }) => {
     const res = await page.goto(`/${locale}/no-such-page`);
     expect(res!.status()).toBe(404);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      MESSAGES[locale].errors.notFound.replace(/^TODO-translate: /, ""),
-    );
-    await expect(
-      page.getByRole("link", { name: MESSAGES[locale].bookings.findOne.replace(/^TODO-translate: /, "") }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(MESSAGES[locale].errors.notFound);
+    await expect(page.getByRole("link", { name: MESSAGES[locale].bookings.findOne })).toBeVisible();
     await checkLayout(page, `404 ${locale}`, full);
     if (full) await shoot(page, "404");
   });
@@ -174,7 +164,7 @@ test.describe("How we built it (D-16)", () => {
 
   test("systems latency chart draws one bar per run", async ({ page }) => {
     await page.goto("/en/about/engineering/systems");
-    await expect(page.locator(".recharts-bar-rectangle")).toHaveCount(4);
+    await expect(page.locator("[data-bar]")).toHaveCount(4);
   });
 
   test("old URLs redirect with 308 to the new ones, in every locale and without a prefix", async ({
@@ -282,9 +272,7 @@ test.describe("Settings", () => {
       const u = await signUp(browser, "Kisan Settings", "renter");
       const health = watchHealth(u.ctx);
       await u.page.goto(`/${locale}/settings`);
-      await expect(u.page.getByRole("heading", { level: 1 })).toHaveText(
-        m.settings.title.replace(/^TODO-translate: /, ""),
-      );
+      await expect(u.page.getByRole("heading", { level: 1 })).toHaveText(m.settings.title);
       await expect(u.page.getByText(u.phone)).toBeVisible();
       await checkLayout(u.page, `settings ${locale}`, locale === "en");
       if (locale === "en") await shoot(u.page, "settings");

@@ -220,17 +220,19 @@ export function ResultsView({ initial, filters: f }: { initial: Page; filters: F
             <Link
               href={`/rent?${base}`}
               aria-label={t("back")}
-              className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-control text-text hover:bg-surface-muted"
+              className="flex h-tap w-tap shrink-0 items-center justify-center rounded-control text-text hover:bg-surface-muted"
             >
               <ArrowLeft aria-hidden className="h-6 w-6" />
             </Link>
             <Link
               href={`/rent?${base}`}
-              className="min-w-0 flex-1 rounded-control border-2 border-chip px-3 py-2 text-small"
+              className="flex min-h-tap min-w-0 flex-1 items-center rounded-control border-2 border-chip px-3 py-2 text-small"
             >
-              <strong>{f.job ? tj(f.job) : t("anyJob")}</strong>
-              {hasDates ? ` · ${dates}` : ""} · {place} ·{" "}
-              <span className="font-bold text-link">{t("change")}</span>
+              <span>
+                <strong>{f.job ? tj(f.job) : t("anyJob")}</strong>
+                {hasDates ? ` · ${dates}` : ""} · {place} ·{" "}
+                <span className="font-bold text-link">{t("change")}</span>
+              </span>
             </Link>
           </div>
           <div className="flex items-center gap-2">

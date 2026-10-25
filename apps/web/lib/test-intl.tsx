@@ -4,9 +4,14 @@ import type { ReactElement, ReactNode } from "react";
 import en from "@/messages/en.json";
 import hi from "@/messages/hi.json";
 import mr from "@/messages/mr.json";
+import { withEnglishFallback } from "@/i18n/messages";
 import type { Locale } from "@/i18n/routing";
 
-const all = { en, hi, mr };
+const all = {
+  en,
+  hi: withEnglishFallback(en, hi) as typeof en,
+  mr: withEnglishFallback(en, mr) as typeof en,
+};
 
 export function renderIntl(
   ui: ReactElement,

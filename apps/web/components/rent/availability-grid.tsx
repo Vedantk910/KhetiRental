@@ -22,7 +22,7 @@ export function AvailabilityGrid({ days }: { days: DayState[] }) {
   const month = new Intl.DateTimeFormat(tag, { month: "long", timeZone: "Asia/Kolkata" });
 
   return (
-    <div className="grid grid-cols-7 gap-1">
+    <div className="-mx-2 grid grid-cols-7 sm:mx-0">
       {days.map((d, i) => {
         const mine = d.date >= range.from && d.date <= range.to;
         const when = dayDate(d.date);
@@ -40,7 +40,7 @@ export function AvailabilityGrid({ days }: { days: DayState[] }) {
             }}
             data-state={mine ? "yours" : d.state}
             className={cn(
-              "flex h-tap flex-col items-center justify-center rounded-control leading-tight",
+              "flex h-tap flex-col items-center justify-center rounded-control border-2 border-transparent bg-clip-padding leading-tight",
               mine
                 ? "border-2 border-selected-border bg-selected text-selected-on"
                 : free

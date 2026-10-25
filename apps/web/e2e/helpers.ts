@@ -38,7 +38,9 @@ export const smallTargets = (page: Page) =>
         );
       })
       .filter((el) => {
-        const r = el.getBoundingClientRect();
+        // A checkbox or radio is tapped through its label.
+        const box = el.matches("input[type=checkbox], input[type=radio]") ? (el.closest("label") ?? el) : el;
+        const r = box.getBoundingClientRect();
         return r.width < 47.5 || r.height < 47.5;
       })
       .map(

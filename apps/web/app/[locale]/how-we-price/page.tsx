@@ -114,7 +114,10 @@ export default async function HowWePricePage({ params }: { params: Promise<{ loc
 
       <p className="text-body">
         {t("more")}{" "}
-        <Link href="/about/engineering" className="text-link underline underline-offset-4">
+        <Link
+          href="/about/engineering"
+          className="inline-flex min-h-tap min-w-tap items-center text-link underline underline-offset-4"
+        >
           {t("moreLink")}
         </Link>
       </p>
