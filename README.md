@@ -67,4 +67,10 @@ Hindi and Marathi text that is not translated yet is shown in English; the keys 
 
 ## Deploy
 
-The website deploys to Vercel with `apps/web` as the root directory. `.github/workflows/deploy-portal.yml` deploys on pushes to `main` once the `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` secrets exist.
+Free hosting: Vercel for the site, Neon for Postgres + PostGIS. Uploaded photos are stored in the database, so no extra storage service is needed.
+
+1. Neon: create a project (region Mumbai), copy the direct (non-pooled) connection string, then load the tables and sample data: `DATABASE_URL="…" npm --prefix apps/web run db:setup`.
+2. Vercel: import the GitHub repo with Root Directory `apps/web`; add `DATABASE_URL` and `AUTH_SECRET` (`openssl rand -base64 32`); deploy; then add `SITE_URL` (the site's https address) and redeploy. Every push to `main` deploys again.
+3. Optional: `SMTP_URL`/`MAIL_FROM` for reset emails, `AUTH_GOOGLE_ID`/`AUTH_GOOGLE_SECRET` for Google sign-in (see below). Run `db:migrate` against Neon after pulling new migrations.
+
+`.github/workflows/deploy-portal.yml` is an alternative to Vercel's GitHub integration: it deploys only when the `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` secrets exist.

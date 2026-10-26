@@ -1,15 +1,13 @@
-// Local-disk uploads for dev (apps/web/.uploads). Type is sniffed from the bytes, not trusted from the client.
+// Uploaded images live in the database (hosts like Vercel have no lasting disk). Type is sniffed from the bytes,
+// not trusted from the client.
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { getSql, one } from "./db";
 import { ApiError } from "./http";
 
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const TYPES = { jpg: "image/jpeg", png: "image/png", webp: "image/webp" } as const;
 type Ext = keyof typeof TYPES;
 const NAME = /^[0-9a-f-]{36}\.(jpg|png|webp)$/;
-
-const dir = () => process.env.UPLOAD_DIR || path.join(process.cwd(), ".uploads");
 
 function sniff(b: Uint8Array): Ext | null {
   if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "jpg";
@@ -27,26 +25,24 @@ export async function saveImage(file: unknown): Promise<string> {
   const ext = sniff(bytes);
   if (!ext) throw new ApiError(415, "file_type", "photo");
   const name = `${randomUUID()}.${ext}`;
-  await mkdir(dir(), { recursive: true });
-  await writeFile(path.join(dir(), name), bytes);
+  await getSql()`INSERT INTO uploads (name, type, bytes) VALUES (${name}, ${TYPES[ext]}, ${Buffer.from(bytes)})`;
   return `/api/uploads/${name}`;
 }
 
-/** Deletes a file saved by saveImage, given its url. Anything else (and a missing file) is ignored. */
+/** Deletes an image saved by saveImage, given its url. Anything else (and a missing one) is ignored. */
 export async function removeUpload(url: string) {
   const name = url.slice("/api/uploads/".length);
   if (url.startsWith("/api/uploads/") && NAME.test(name))
-    await unlink(path.join(dir(), name)).catch(() => undefined);
+    await getSql()`DELETE FROM uploads WHERE name = ${name}`;
 }
 
 export async function readUpload(name: string) {
-  const m = NAME.exec(name);
-  if (!m) throw new ApiError(404, "not_found");
-  try {
-    return { bytes: await readFile(path.join(dir(), name)), type: TYPES[m[1] as Ext] };
-  } catch {
-    throw new ApiError(404, "not_found");
-  }
+  if (!NAME.test(name)) throw new ApiError(404, "not_found");
+  const f = one(
+    await getSql()<{ bytes: Buffer; type: string }[]>`SELECT bytes, type FROM uploads WHERE name = ${name}`,
+  );
+  if (!f) throw new ApiError(404, "not_found");
+  return f;
 }
 
 /** Multipart forms: bounded before parsing. */

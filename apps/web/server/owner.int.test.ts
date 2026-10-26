@@ -1,8 +1,5 @@
 // @vitest-environment node
 // Listing CRUD, photos, blocked days, notifications and problem reports, with ownership checks.
-import { mkdtemp, readdir, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import path from "node:path";
 import { GET as listMine, POST as createRoute } from "@/app/api/owner/machines/route";
 import { DELETE as deleteRoute, PATCH as patchRoute } from "@/app/api/owner/machines/[id]/route";
 import { PUT as blocksRoute } from "@/app/api/owner/machines/[id]/blocks/route";
@@ -17,14 +14,10 @@ import { inDays, json, makeUser, req, type TestUser } from "./test/fixtures";
 import { createTestDb, type TestDb } from "./test/pg";
 
 let t: TestDb;
-let uploads: string;
 beforeAll(async () => {
   t = await createTestDb();
-  uploads = await mkdtemp(path.join(tmpdir(), "kheti-uploads-"));
-  process.env.UPLOAD_DIR = uploads;
 });
 afterAll(async () => {
-  await rm(uploads, { recursive: true, force: true });
   await t.drop();
 });
 
@@ -189,7 +182,7 @@ describe("photos (local disk, size/type limits)", () => {
     expect(ok.status).toBe(201);
     const photo = await ok.json();
     expect(photo.url).toMatch(/^\/api\/uploads\/[0-9a-f-]{36}\.png$/);
-    expect(await readdir(uploads)).toHaveLength(1);
+    expect(await t.sql`SELECT 1 FROM uploads`).toHaveLength(1);
     expect(
       (await upload(owner, id, new TextEncoder().encode("<script>alert(1)</script>"), "front", "image/png"))
         .status,

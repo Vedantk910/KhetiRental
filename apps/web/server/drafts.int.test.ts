@@ -1,9 +1,6 @@
 // @vitest-environment node
 // Server-side listing drafts (UI-SPEC §4.11). Adversarial: logged out and renters, one owner against another,
 // forged photo urls, hostile fields, parallel saves and attaches, replays, leftovers after publish.
-import { mkdtemp, readdir, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import path from "node:path";
 import { DELETE as draftDelete, GET as draftGet, PUT as draftPut } from "@/app/api/owner/draft/route";
 import { POST as draftPhotoPost } from "@/app/api/owner/draft/photos/route";
 import { DELETE as draftPhotoDelete } from "@/app/api/owner/draft/photos/[key]/route";
@@ -16,14 +13,10 @@ import { json, makeUser, req, type TestUser } from "./test/fixtures";
 import { createTestDb, type TestDb } from "./test/pg";
 
 let t: TestDb;
-let uploads: string;
 beforeAll(async () => {
   t = await createTestDb();
-  uploads = await mkdtemp(path.join(tmpdir(), "kheti-drafts-"));
-  process.env.UPLOAD_DIR = uploads;
 });
 afterAll(async () => {
-  await rm(uploads, { recursive: true, force: true });
   await t.drop();
 });
 
@@ -81,7 +74,7 @@ const newMachine = async (u: TestUser) =>
   ).id;
 const attach = (u: TestUser, id: string, fromDraft: string) =>
   photoRoute(req(`/api/owner/machines/${id}/photos`, json({ fromDraft }, { cookie: u.cookie })), p({ id }));
-const files = async () => (await readdir(uploads)).length;
+const files = async () => (await t.sql<{ n: number }[]>`SELECT count(*)::int AS n FROM uploads`)[0].n;
 
 describe("who may use drafts", () => {
   it("logged out is 401 everywhere; a renter is 403", async () => {

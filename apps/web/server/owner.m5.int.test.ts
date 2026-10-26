@@ -1,9 +1,6 @@
 // @vitest-environment node
 // M5: owner dashboard data, calendar, price hint, owner mode, upload privacy, demo admin, and the
 // owner-side races. Real Postgres + PostGIS, through the route handlers.
-import { mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import path from "node:path";
 import { GET as meRoute } from "@/app/api/me/route";
 import { POST as enableRoute } from "@/app/api/owner/enable/route";
 import { GET as calendarRoute } from "@/app/api/owner/machines/[id]/calendar/route";
@@ -30,14 +27,10 @@ import { inDays, json, makeMachine, makeUser, req, type TestUser } from "./test/
 import { createTestDb, type TestDb } from "./test/pg";
 
 let t: TestDb;
-let uploads: string;
 beforeAll(async () => {
   t = await createTestDb();
-  uploads = await mkdtemp(path.join(tmpdir(), "kheti-m5-"));
-  process.env.UPLOAD_DIR = uploads;
 });
 afterAll(async () => {
-  await rm(uploads, { recursive: true, force: true });
   await t.drop();
 });
 
