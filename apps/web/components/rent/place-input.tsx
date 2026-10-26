@@ -35,6 +35,7 @@ export function PlaceInput({ value, onText, onPick }: Props) {
   const [options, setOptions] = useState<PlaceOption[]>([]);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const [emptyFor, setEmptyFor] = useState<string | null>(null);
   const abort = useRef<AbortController | null>(null);
   const picked = useRef<string | null>(null);
   const speech = useSpeech(locale, (text) => {
@@ -55,6 +56,7 @@ export function PlaceInput({ value, onText, onPick }: Props) {
         .then((j) => {
           setOptions(j.items);
           setActive(-1);
+          setEmptyFor(j.items.length === 0 ? value : null);
         })
         .catch(() => undefined);
     }, 200);
@@ -71,6 +73,7 @@ export function PlaceInput({ value, onText, onPick }: Props) {
   };
 
   const showList = open && options.length > 0;
+  const noMatch = emptyFor === value && enoughToSearch(value) && picked.current !== value;
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown" && options.length > 0) {
       e.preventDefault();
@@ -89,78 +92,85 @@ export function PlaceInput({ value, onText, onPick }: Props) {
   };
 
   return (
-    <div className="flex gap-2">
-      <div className="relative min-w-0 flex-1">
-        <input
-          id={id}
-          role="combobox"
-          aria-expanded={showList}
-          aria-controls={`${id}-list`}
-          aria-autocomplete="list"
-          aria-activedescendant={showList && active >= 0 ? `${id}-o${active}` : undefined}
-          aria-label={t("where")}
-          autoComplete="off"
-          inputMode="text"
-          maxLength={60}
-          placeholder={t("placePh")}
-          value={value}
-          onChange={(e) => {
-            picked.current = null;
-            onText(e.target.value);
-            setOpen(true);
-          }}
-          onFocus={() => {
-            setOpen(true);
-          }}
-          onBlur={() => {
-            // Options use onMouseDown, so a click lands before this closes the list.
-            setOpen(false);
-          }}
-          onKeyDown={onKeyDown}
-          className="h-[52px] w-full min-w-0 rounded-control border-2 border-border-control bg-surface px-[14px] text-body text-text placeholder:text-text-subtle"
-        />
-        {showList && (
-          <div
-            id={`${id}-list`}
-            role="listbox"
-            aria-label={t("suggestions")}
-            className="absolute inset-x-0 top-full z-30 mt-1 max-h-[60svh] overflow-y-auto rounded-control border-2 border-border-control bg-surface shadow-sheet"
+    <div className="flex flex-col gap-1">
+      <div className="flex gap-2">
+        <div className="relative min-w-0 flex-1">
+          <input
+            id={id}
+            role="combobox"
+            aria-expanded={showList}
+            aria-controls={`${id}-list`}
+            aria-autocomplete="list"
+            aria-activedescendant={showList && active >= 0 ? `${id}-o${active}` : undefined}
+            aria-label={t("where")}
+            autoComplete="off"
+            inputMode="text"
+            maxLength={60}
+            placeholder={t("placePh")}
+            value={value}
+            onChange={(e) => {
+              picked.current = null;
+              onText(e.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => {
+              setOpen(true);
+            }}
+            onBlur={() => {
+              // Options use onMouseDown, so a click lands before this closes the list.
+              setOpen(false);
+            }}
+            onKeyDown={onKeyDown}
+            className="h-[52px] w-full min-w-0 rounded-control border-2 border-border-control bg-surface px-[14px] text-body text-text placeholder:text-text-subtle"
+          />
+          {showList && (
+            <div
+              id={`${id}-list`}
+              role="listbox"
+              aria-label={t("suggestions")}
+              className="absolute inset-x-0 top-full z-30 mt-1 max-h-[60svh] overflow-y-auto rounded-control border-2 border-border-control bg-surface shadow-sheet"
+            >
+              {options.map((o, i) => (
+                <div
+                  key={`${o.pin}-${o.village}`}
+                  id={`${id}-o${i}`}
+                  role="option"
+                  tabIndex={-1}
+                  aria-selected={i === active}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    choose(o);
+                  }}
+                  className={cn(
+                    "flex min-h-tap cursor-pointer items-center px-[14px] text-small",
+                    i === active ? "bg-selected text-selected-on" : "hover:bg-surface-muted",
+                  )}
+                >
+                  {o.label}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {speech.supported && (
+          <button
+            type="button"
+            aria-label={t("speak")}
+            aria-pressed={speech.listening}
+            onClick={speech.toggle}
+            className={cn(
+              "flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-control border-2 border-border-control text-text hover:bg-surface-muted",
+              speech.listening && "border-action bg-selected text-selected-on",
+            )}
           >
-            {options.map((o, i) => (
-              <div
-                key={`${o.pin}-${o.village}`}
-                id={`${id}-o${i}`}
-                role="option"
-                tabIndex={-1}
-                aria-selected={i === active}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  choose(o);
-                }}
-                className={cn(
-                  "flex min-h-tap cursor-pointer items-center px-[14px] text-small",
-                  i === active ? "bg-selected text-selected-on" : "hover:bg-surface-muted",
-                )}
-              >
-                {o.label}
-              </div>
-            ))}
-          </div>
+            <Mic aria-hidden className="h-6 w-6" />
+          </button>
         )}
       </div>
-      {speech.supported && (
-        <button
-          type="button"
-          aria-label={t("speak")}
-          aria-pressed={speech.listening}
-          onClick={speech.toggle}
-          className={cn(
-            "flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-control border-2 border-border-control text-text hover:bg-surface-muted",
-            speech.listening && "border-action bg-selected text-selected-on",
-          )}
-        >
-          <Mic aria-hidden className="h-6 w-6" />
-        </button>
+      {noMatch && (
+        <p role="status" className="text-small text-text-muted">
+          {t("placeNone")}
+        </p>
       )}
     </div>
   );
