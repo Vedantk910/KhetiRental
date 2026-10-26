@@ -13,6 +13,7 @@ const NAV = [
   { href: "/rent", key: "rent" },
   { href: "/bookings", key: "bookings" },
   { href: "/help", key: "help" },
+  { href: "/settings", key: "settings" }, // where Log out lives
 ] as const;
 const OWNER = { href: "/owner", key: "owner" } as const;
 
@@ -20,7 +21,7 @@ const OWNER = { href: "/owner", key: "owner" } as const;
 export function SiteHeader() {
   const t = useTranslations();
   const pathname = usePathname();
-  const nav = useRoles()?.includes("owner") ? [...NAV.slice(0, 2), OWNER, NAV[2]] : NAV;
+  const nav = useRoles()?.includes("owner") ? [...NAV.slice(0, 2), OWNER, ...NAV.slice(2)] : NAV;
   // The login pages draw their own back arrow and language switch.
   if (isActive(pathname, "/login")) return null;
   // Welcome page: floats transparent over the field scene (UI-SPEC §4.1.1).

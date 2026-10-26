@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheck, CircleHelp, LayoutDashboard, Tractor, Warehouse } from "lucide-react";
+import { CalendarCheck, CircleHelp, LayoutDashboard, Settings, Tractor, Warehouse } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { isActive, isAppRoute } from "@/lib/nav";
@@ -8,15 +8,19 @@ import { cn } from "@/lib/utils";
 import { useRoles } from "./use-roles";
 
 const HELP = { href: "/help", key: "help", Icon: CircleHelp } as const;
+// Settings holds Log out, so every set ends with it.
+const SETTINGS = { href: "/settings", key: "settings", Icon: Settings } as const;
 const RENTER = [
   { href: "/rent", key: "rent", Icon: Tractor },
   { href: "/bookings", key: "bookings", Icon: CalendarCheck },
   HELP,
+  SETTINGS,
 ] as const;
 const OWNER_ONLY = [
   { href: "/owner", key: "dashboard", Icon: LayoutDashboard },
   { href: "/owner#machines", key: "machines", Icon: Warehouse },
   HELP,
+  SETTINGS,
 ] as const;
 /** "My machines" shares the dashboard page, so it is active on the wizard pages only. */
 const current = (pathname: string, href: string) =>
@@ -40,7 +44,7 @@ export function TabBar({ preview = false }: { preview?: boolean }) {
   const tabs = ownerOnly
     ? OWNER_ONLY
     : roles?.includes("owner")
-      ? [...RENTER.slice(0, 2), OWNER_TAB, HELP]
+      ? [...RENTER.slice(0, 2), OWNER_TAB, HELP, SETTINGS]
       : RENTER;
   return (
     <div data-tab-bar className={preview ? undefined : "lg:hidden"}>

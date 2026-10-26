@@ -34,6 +34,8 @@ describe("SiteHeader", () => {
     const nav = within(banner).getByRole("navigation", { name: "Main" });
     expect(within(nav).getByRole("link", { name: "Rent" })).toHaveAttribute("aria-current", "page");
     expect(within(nav).getByRole("link", { name: "My bookings" })).not.toHaveAttribute("aria-current");
+    // Settings (where Log out lives) must be reachable from the menu, not only by typing its address.
+    expect(within(nav).getByRole("link", { name: "Settings" })).toHaveAttribute("href", "/settings");
     expect(within(banner).getByRole("link", { name: "Notifications" })).toHaveAttribute(
       "href",
       "/notifications",
@@ -53,8 +55,8 @@ describe("TabBar", () => {
     renderIntl(<TabBar />, { locale: "hi" });
     const nav = screen.getByRole("navigation", { name: "Sections" });
     const links = within(nav).getAllByRole("link");
-    expect(links.map((l) => l.textContent)).toEqual(["किराया", "मेरी बुकिंग", "मदद"]);
-    expect(links.map((l) => l.getAttribute("aria-current"))).toEqual([null, "page", null]);
+    expect(links.map((l) => l.textContent)).toEqual(["किराया", "मेरी बुकिंग", "मदद", "सेटिंग्स"]);
+    expect(links.map((l) => l.getAttribute("aria-current"))).toEqual([null, "page", null, null]);
   });
 
   it("owner-only accounts get Dashboard · My machines · Help", () => {
@@ -62,8 +64,8 @@ describe("TabBar", () => {
     roles = ["owner"];
     renderIntl(<TabBar />, { locale: "en" });
     const links = within(screen.getByRole("navigation", { name: "Sections" })).getAllByRole("link");
-    expect(links.map((l) => l.textContent)).toEqual(["Dashboard", "My machines", "Help"]);
-    expect(links.map((l) => l.getAttribute("aria-current"))).toEqual(["page", null, null]);
+    expect(links.map((l) => l.textContent)).toEqual(["Dashboard", "My machines", "Help", "Settings"]);
+    expect(links.map((l) => l.getAttribute("aria-current"))).toEqual(["page", null, null, null]);
     roles = null;
   });
 
@@ -72,7 +74,7 @@ describe("TabBar", () => {
     roles = ["renter", "owner"];
     renderIntl(<TabBar />, { locale: "en" });
     const links = within(screen.getByRole("navigation", { name: "Sections" })).getAllByRole("link");
-    expect(links.map((l) => l.textContent)).toEqual(["Rent", "My bookings", "Owner", "Help"]);
+    expect(links.map((l) => l.textContent)).toEqual(["Rent", "My bookings", "Owner", "Help", "Settings"]);
     roles = null;
   });
 

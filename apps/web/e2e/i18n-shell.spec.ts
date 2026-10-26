@@ -82,11 +82,11 @@ test("phone header: 56 px, logo, bell, language; short labels below 400 px", asy
   expect(await hasHScroll(page)).toBe(false);
 });
 
-test("desktop header: top nav with Rent · My bookings · Help", async ({ page }) => {
+test("desktop header: top nav with Rent · My bookings · Help · Settings", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/en/dev/ui");
   const nav = page.getByRole("banner").getByRole("navigation", { name: "Main" });
-  await expect(nav.getByRole("link")).toHaveText(["Rent", "My bookings", "Help"]);
+  await expect(nav.getByRole("link")).toHaveText(["Rent", "My bookings", "Help", "Settings"]);
   expect((await page.getByRole("banner").boundingBox())!.height).toBeCloseTo(65, 0);
 });
 
