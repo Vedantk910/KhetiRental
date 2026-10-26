@@ -1,4 +1,6 @@
 // @vitest-environment node
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { CATEGORIES, JOB_MACHINES, type Attachment, type Category, type Job } from "@/lib/domain";
 import { buildSeed } from "./seed-data";
 import { seed } from "./seed";
@@ -137,9 +139,41 @@ describe("sample seed", () => {
     expect(new Set(rows.map((r) => r.job)).size).toBeGreaterThanOrEqual(4);
   });
 
+  it("has at least 5 live tractors with photos within 10 km of Latur, Baramati and Nashik", async () => {
+    await seed(t.sql);
+    const rows = await t.sql<{ pin: string; tractors: number; withPhotos: number }[]>`
+      SELECT p.pin,
+        count(m.id)::int AS tractors,
+        count(m.id) FILTER (WHERE (SELECT count(*) FROM machine_photos f WHERE f.machine_id = m.id) >= 2)::int AS "withPhotos"
+      FROM pin_codes p
+      JOIN machines m ON m.category = 'tractor' AND m.active AND ST_DWithin(m.location, p.location, 10000)
+      WHERE p.pin IN ('413512', '413102', '422001')
+      GROUP BY p.pin ORDER BY p.pin`;
+    expect(rows.map((r) => r.pin)).toEqual(["413102", "413512", "422001"]);
+    for (const r of rows) expect(r.withPhotos, r.pin).toBeGreaterThanOrEqual(5);
+    // Every sample photo points at a file that exists.
+    const urls = await t.sql<{ url: string }[]>`SELECT url FROM machine_photos WHERE url LIKE '/samples/%'`;
+    expect(urls.length).toBeGreaterThanOrEqual(30);
+    for (const { url } of urls) expect(existsSync(path.join(process.cwd(), "public", url)), url).toBe(true);
+  });
+
   it("generates its dates from the day it runs, so the demo stays fresh", () => {
     const first = (day: string) => buildSeed(day).bookings.find((b) => b.status === "IN_PROGRESS")?.startDate;
     expect(first("2026-11-01")).not.toBe(first("2027-03-01"));
+  });
+
+  it("re-seeds after a real user booked a sample machine (the demo booking goes with it, the user stays)", async () => {
+    await seed(t.sql);
+    const [u] = await t.sql<{ id: string }[]>`
+      INSERT INTO users (name, email) VALUES ('Visitor', 'visitor@example.com') RETURNING id`;
+    await t.sql`INSERT INTO bookings (code, machine_id, renter_id, during, start_date, end_date, slot, est_qty, unit,
+        rate_paise, rent_paise, deposit_paise, diesel_included, total_paise, status, reply_by, idempotency_key)
+      SELECT 'KR-9001', id, ${u.id}, '[2030-01-02 07:00+05:30,2030-01-02 13:00+05:30)', '2030-01-02', '2030-01-02',
+        'full', 4, 'hour', 70000, 280000, 70000, true, 280000, 'REQUESTED', now() + interval '2 hours', 'visitor-1'
+      FROM machines WHERE is_sample LIMIT 1`;
+    await seed(t.sql);
+    expect(await t.sql`SELECT 1 FROM users WHERE email = 'visitor@example.com'`).toHaveLength(1);
+    expect(await t.sql`SELECT 1 FROM bookings WHERE idempotency_key = 'visitor-1'`).toHaveLength(0);
   });
 
   it("leaves real (non-sample) rows alone", async () => {

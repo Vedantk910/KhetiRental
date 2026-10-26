@@ -1,6 +1,7 @@
 // Sample data for Maharashtra (Latur, Pune, Nashik, Satara, Kolhapur, Solapur, Chhatrapati Sambhajinagar,
 // Nagpur, Jalgaon) and Jaipur (Rajasthan), D-13. Pure and deterministic: the same seed gives the same rows;
 // dates are relative to `today` so bookings stay upcoming.
+import { SAMPLE_PHOTOS, samplePhotoUrls } from "./sample-photos";
 import {
   JOB_MACHINES,
   JOBS,
@@ -689,6 +690,7 @@ interface SeedMachine {
   dieselIncluded: boolean;
   rcStatus: "pending" | "checked" | "rejected";
   active: boolean;
+  photos?: string[];
 }
 
 /** A hand-picked machine for the other districts, so every category has several and every screen has variety. */
@@ -1362,6 +1364,33 @@ export function buildSeed(today: string, seed = 2026) {
       dieselIncluded: e.diesel ?? true,
       rcStatus: e.rc ?? "checked",
       active: !e.paused,
+    });
+  }
+  for (const t of SAMPLE_PHOTOS) {
+    const place = PINS.find((p) => p.pin === t.pin);
+    if (!place) throw new Error(`seed: unknown PIN ${t.pin}`);
+    machines.push({
+      idx: machines.length,
+      owner: t.owner,
+      category: "tractor",
+      make: t.make,
+      model: t.model,
+      hp: t.hp,
+      year: t.year,
+      hourMeter: Math.round(between(300, 6000)),
+      lastServiced: addDays(today, -Math.floor(between(10, 200))),
+      attachments: t.attachments,
+      lat: Math.round((place.lat + between(-0.05, 0.05)) * 1e5) / 1e5,
+      lng: Math.round((place.lng + between(-0.05, 0.05)) * 1e5) / 1e5,
+      village: place.village,
+      pin: t.pin,
+      priceUnit: "hour",
+      pricePaise: t.rupees * 100,
+      operatorIncluded: t.operator,
+      dieselIncluded: t.diesel,
+      rcStatus: "checked",
+      active: true,
+      photos: samplePhotoUrls(t.key),
     });
   }
   let extraCode = 2000;

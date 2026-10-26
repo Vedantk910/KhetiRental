@@ -12,7 +12,10 @@ export async function seed(sql: Sql, today = todayIst()) {
   const data = buildSeed(today);
   const passwordHash = await hashPassword(SEED_PASSWORD);
   await sql.begin(async (tx) => {
-    await tx`DELETE FROM bookings WHERE is_sample`;
+    // Any booking that touches a sample machine or a sample person is demo activity, whoever made it.
+    await tx`DELETE FROM bookings WHERE is_sample
+      OR machine_id IN (SELECT id FROM machines WHERE is_sample)
+      OR renter_id IN (SELECT id FROM users WHERE is_sample)`;
     await tx`DELETE FROM machines WHERE is_sample`;
     await tx`DELETE FROM users WHERE is_sample AND email <> 'demo.google@khetirental.test'`;
     await tx`DELETE FROM pin_codes WHERE is_sample`;
@@ -42,6 +45,9 @@ export async function seed(sql: Sql, today = todayIst()) {
           ${m.village}, ${m.pin}, ${m.priceUnit}, ${m.pricePaise}, ${m.operatorIncluded}, ${m.dieselIncluded}, ${m.rcStatus}, ${m.active}, true)
         RETURNING id`;
       machineIds.push(row.id);
+      for (const [sort, url] of (m.photos ?? []).entries())
+        await tx`INSERT INTO machine_photos (machine_id, url, kind, sort)
+          VALUES (${row.id}, ${url}, ${sort === 0 ? "front" : "side"}, ${sort})`;
     }
     const now = Date.now();
     const iso = (ms: number) => new Date(ms).toISOString();
