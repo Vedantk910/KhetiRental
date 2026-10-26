@@ -3,5 +3,6 @@
   "next": true,
   "vitest": true,
   "playwright": true,
-  "ignoreDependencies": ["eslint-config-next"]
+  "ignoreDependencies": ["eslint-config-next"],
+  "ignore": ["public/sw.js"]
 }

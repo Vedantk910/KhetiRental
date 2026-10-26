@@ -67,7 +67,7 @@ export async function requestPasswordReset(rawEmail: string): Promise<string | n
 }
 
 /** Absolute reset link on the configured site, or null when SITE_URL is not usable (nothing is sent then). */
-export function resetLink(token: string) {
+function resetLink(token: string) {
   const base = siteUrl();
   return base && `${base}/login/reset?token=${token}`;
 }
