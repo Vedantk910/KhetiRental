@@ -26,24 +26,23 @@ jobs:
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       VERCEL_CLI: vercel@65.2.0
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: apps/web/package-lock.json
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
+      # Tests run in the CI workflow (with PostGIS). This one only deploys, and only when the Vercel secrets exist;
+      # with Vercel's own GitHub integration connected instead, it skips and Vercel deploys each push itself.
       - name: Check Vercel credentials
         id: vercel
+        working-directory: ${{ github.workspace }} # before checkout, so apps/web isn't there yet
         run: |
           if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::notice::Vercel secrets are not set; skipping deploy. See README, 'Deploying to Vercel'."
+            echo "::notice::Vercel secrets are not set; skipping deploy. See README, 'Deploy'."
           fi
+      - if: steps.vercel.outputs.enabled == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - if: steps.vercel.outputs.enabled == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
       - name: Pull Vercel environment
         if: steps.vercel.outputs.enabled == 'true'
         run: npx --yes "$VERCEL_CLI" pull --yes --environment=production --token="$VERCEL_TOKEN"

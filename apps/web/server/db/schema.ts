@@ -23,6 +23,7 @@ const geography = customType<{ data: string; driverData: string }>({
 });
 /** tstzrange as Postgres prints it, e.g. ["2026-11-02 07:00:00+05:30","2026-11-02 19:00:00+05:30"). */
 const tstzrange = customType<{ data: string }>({ dataType: () => "tstzrange" });
+const bytea = customType<{ data: Buffer }>({ dataType: () => "bytea" });
 
 const ts = (name: string) => timestamp(name, { withTimezone: true, mode: "date" });
 const createdAt = () => ts("created_at").notNull().defaultNow();
@@ -131,6 +132,14 @@ export const machines = pgTable(
     index("machines_owner_idx").on(t.ownerId),
   ],
 );
+
+/** Uploaded images (photos, RC, problem reports): kept in the database because hosts like Vercel have no lasting disk. */
+export const uploads = pgTable("uploads", {
+  name: text("name").primaryKey(),
+  type: text("type").notNull(),
+  bytes: bytea("bytes").notNull(),
+  createdAt: createdAt(),
+});
 
 export const machinePhotos = pgTable("machine_photos", {
   id: uuid("id").primaryKey().defaultRandom(),
