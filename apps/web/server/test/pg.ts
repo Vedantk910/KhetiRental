@@ -24,8 +24,20 @@ export async function createTestDb() {
     async drop() {
       await c.sql.end();
       const a = postgres(base, { max: 1, onnotice: () => undefined });
-      await a.unsafe(`DROP DATABASE IF EXISTS ${name} WITH (FORCE)`);
-      await a.end();
+      try {
+        // A superuser autovacuum worker can still be on the database; FORCE may not end it, so wait it out.
+        for (let attempt = 1; ; attempt++) {
+          try {
+            await a.unsafe(`DROP DATABASE IF EXISTS ${name} WITH (FORCE)`);
+            break;
+          } catch (e) {
+            if ((e as { code?: string }).code !== "42501" || attempt === 20) throw e;
+            await new Promise((r) => setTimeout(r, 250));
+          }
+        }
+      } finally {
+        await a.end();
+      }
     },
   };
 }

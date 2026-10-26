@@ -1,6 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
-import { expectNoAxeViolations, hasHScroll, LOCALES, setTheme, watchErrors } from "./helpers";
-import { newVisitor } from "./auth-helpers";
+import {
+  expectNoAxeViolations,
+  hasHScroll,
+  LOCALES,
+  setTheme,
+  untilInteractive,
+  watchErrors,
+} from "./helpers";
+import { newVisitor, signUp } from "./auth-helpers";
 
 const WIDTHS = [320, 390, 768, 1024, 1440];
 const FINAL = ["86%", "1.08", "47%"];
@@ -191,3 +198,17 @@ for (const theme of ["light", "dark"] as const) {
     });
   }
 }
+
+test("a signed-in renter's List your tractor goes to listing (owner mode offered), not to log-in", async ({
+  browser,
+}) => {
+  const { ctx, page } = await signUp(browser, "Kisan Rao", "renter");
+  await page.goto("/en");
+  const cta = page.getByRole("link", { name: "List your tractor" });
+  await expect(cta).toHaveAttribute("href", "/en/owner/machines/new");
+  await untilInteractive(cta);
+  await cta.click();
+  await expect(page).toHaveURL(/\/en\/owner\/machines\/new/);
+  await expect(page.getByRole("heading", { name: "Turn on owner mode" })).toBeVisible();
+  await ctx.close();
+});

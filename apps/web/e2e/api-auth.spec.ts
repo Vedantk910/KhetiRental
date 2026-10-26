@@ -102,9 +102,20 @@ test("search → book → replay → pay later, with the session from Mock Googl
   expect(body.items.every((i) => i.isSample)).toBe(true);
   const day = new Date(Date.now() + 5.5 * 3600_000 + 60 * 86_400_000).toISOString().slice(0, 10);
   const key = crypto.randomUUID();
+  // Not one of the seeded owner's machines: the owner dashboard's checks and screenshots expect his requests as seeded.
+  const sql = postgres(E2E_DATABASE_URL, { max: 1 });
+  const seededOwner = new Set(
+    (
+      await sql<{ id: string }[]>`SELECT m.id FROM machines m JOIN users u ON u.id = m.owner_id
+        WHERE u.email = 'ramesh@khetirental.test'`
+    ).map((r) => r.id),
+  );
+  await sql.end();
+  const machine = body.items.find((i) => !seededOwner.has(i.id));
+  expect(machine).toBeDefined();
   const make = () =>
     request.post("/api/bookings", {
-      data: { machineId: body.items[0].id, startDate: day, endDate: day, slot: "full" },
+      data: { machineId: machine!.id, startDate: day, endDate: day, slot: "full" },
       headers: { "idempotency-key": key },
     });
   const a = await make();

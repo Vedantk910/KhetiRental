@@ -38,8 +38,16 @@ export const smallTargets = (page: Page) =>
         );
       })
       .filter((el) => {
-        // A checkbox or radio is tapped through its label.
-        const box = el.matches("input[type=checkbox], input[type=radio]") ? (el.closest("label") ?? el) : el;
+        // A checkbox or radio is tapped through its label; a stretched link (an ::after layer over its card) through
+        // the card it covers.
+        const after = getComputedStyle(el, "::after");
+        let box: HTMLElement = el;
+        if (el.matches("input[type=checkbox], input[type=radio]")) box = el.closest("label") ?? el;
+        else if (after.content !== "none" && after.position === "absolute") {
+          let c = el.parentElement; // the ::after fills its containing block: the nearest positioned ancestor
+          while (c && getComputedStyle(c).position === "static") c = c.parentElement;
+          box = c ?? el;
+        }
         const r = box.getBoundingClientRect();
         return r.width < 47.5 || r.height < 47.5;
       })

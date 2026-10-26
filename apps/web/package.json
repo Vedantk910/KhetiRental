@@ -23,6 +23,7 @@
     "lighthouse": "tsx --env-file-if-exists=.env scripts/lighthouse.ts",
     "test:visual": "playwright test e2e/visual.spec.ts",
     "test:visual:update": "UPDATE_VISUAL=1 playwright test e2e/visual.spec.ts --update-snapshots",
+    "photos:samples": "tsx scripts/make-sample-photos.ts",
     "icons": "tsx scripts/make-icons.ts"
   },
   "dependencies": {

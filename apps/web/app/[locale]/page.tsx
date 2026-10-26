@@ -32,7 +32,6 @@ export default async function Welcome({ params }: { params: Promise<{ locale: st
   // eslint-disable-next-line @typescript-eslint/no-deprecated -- next/root-params needs Next 16; this is the Next 15 API
   setRequestLocale(locale as Locale);
   const [t, user] = await Promise.all([getTranslations("welcome"), pageUser()]);
-  const owner = user?.roles.includes("owner") ?? false;
 
   return (
     <>
@@ -90,7 +89,8 @@ export default async function Welcome({ params }: { params: Promise<{ locale: st
           />
         </div>
       </section>
-      <Story ownerHref={owner ? "/owner/machines/new" : "/login?mode=signup&role=owner"} />
+      {/* Signed in (renter or owner): the listing page, which offers owner mode to a renter. */}
+      <Story ownerHref={user ? "/owner/machines/new" : "/login?mode=signup&role=owner"} />
     </>
   );
 }
