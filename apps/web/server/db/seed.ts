@@ -67,7 +67,7 @@ export async function seed(sql: Sql, today = todayIst()) {
       const [row] = await tx<{ id: string }[]>`
         INSERT INTO bookings (code, machine_id, renter_id, during, start_date, end_date, slot, est_qty, unit, rate_paise,
           rent_paise, deposit_paise, diesel_included, total_paise, status, reply_by, idempotency_key, confirmed_at,
-          closed_at, decline_reason, cancelled_by, cancel_reason, is_sample, created_at)
+          closed_at, decline_reason, cancelled_by, cancel_reason, job, renter_distance_km, is_sample, created_at)
         VALUES (${b.code}, ${machineIds[b.machineIdx]}, ${renterId},
           tstzrange(${w.start.toISOString()}::timestamptz, ${w.end.toISOString()}::timestamptz, '[)'),
           ${b.startDate}, ${b.endDate}, ${b.slot}, ${q.qty}, ${q.unit}, ${q.ratePaise}, ${q.rentPaise}, ${q.depositPaise},
@@ -78,7 +78,7 @@ export async function seed(sql: Sql, today = todayIst()) {
           ${closed === null ? null : iso(closed)}::timestamptz,
           ${b.declineReason ?? null},
           ${b.cancelledBy === "owner" ? ownerId : b.cancelledBy === "renter" ? renterId : null},
-          ${b.cancelReason ?? null}, true,
+          ${b.cancelReason ?? null}, ${b.job ?? null}, ${b.distanceKm ?? null}, true,
           ${iso(b.status === "REQUESTED" && b.ageMin === undefined ? now : created)}::timestamptz)
         RETURNING id`;
       if (b.stars) {

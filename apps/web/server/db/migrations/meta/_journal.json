@@ -22,6 +22,20 @@
       "when": 1792999573544,
       "tag": "0002_baler",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793099573544,
+      "tag": "0003_listing_drafts",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793199573544,
+      "tag": "0004_booking_job_distance",
+      "breakpoints": true
     }
   ]
 }

@@ -95,4 +95,25 @@ describe("schema constraints (F-09)", () => {
       ),
     ).toBe("23514");
   });
+
+  it("CHECKs keep a booking's job to the known list and its distance to a real range", async () => {
+    const owner = await makeUser(["owner"]);
+    const renter = await makeUser();
+    const m = await makeMachine(owner.id);
+    const withExtra = (job: string | null, km: number | null, day: number) =>
+      t.sql`INSERT INTO bookings (code, machine_id, renter_id, during, start_date, end_date, slot, est_qty, unit,
+              rate_paise, rent_paise, deposit_paise, diesel_included, total_paise, reply_by, idempotency_key, job, renter_distance_km)
+            VALUES (${`KR-${String(++seq).padStart(4, "0")}`}, ${m}, ${renter.id},
+              ${`[2027-03-${day} 07:00+05:30,2027-03-${day} 13:00+05:30)`}::tstzrange, ${`2027-03-${day}`}, ${`2027-03-${day}`},
+              'full', 4, 'hour', 75000, 300000, 75000, true, 300000, now() + interval '2 hours', ${crypto.randomUUID()},
+              ${job}, ${km})`;
+    await withExtra(null, null, 10);
+    await withExtra("sow", 12.5, 11);
+    for (const [job, km] of [
+      ["hack", 1],
+      ["sow", -0.5],
+      ["sow", 20101],
+    ] as const)
+      expect(code(await withExtra(job, km, 12).catch((e: unknown) => e)), `${job} ${km}`).toBe("23514");
+  });
 });

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { CATEGORIES } from "@/lib/domain";
+import { CATEGORIES, JOB_MACHINES, type Attachment, type Category, type Job } from "@/lib/domain";
 import { buildSeed } from "./seed-data";
 import { seed } from "./seed";
 import { createTestDb, type TestDb } from "../test/pg";
@@ -109,6 +109,32 @@ describe("sample seed", () => {
     expect(x.resolved).toBeGreaterThanOrEqual(1);
     expect(x.both).toBeGreaterThanOrEqual(1);
     expect(x.admins).toBe(1);
+  });
+
+  it("gives every sample booking the job the machine can do and a distance in half-kilometres", async () => {
+    await seed(t.sql);
+    const rows = await t.sql<
+      { job: string | null; km: string | null; category: string; attachments: string[] }[]
+    >`
+      SELECT b.job, b.renter_distance_km::text AS km, m.category, m.attachments
+      FROM bookings b JOIN machines m ON m.id = b.machine_id WHERE b.is_sample`;
+    expect(rows.length).toBeGreaterThan(50);
+    for (const r of rows) {
+      expect(r.job).not.toBeNull();
+      const km = Number(r.km);
+      expect(km).toBeGreaterThanOrEqual(0.5);
+      expect(km).toBeLessThanOrEqual(25);
+      expect(km * 2).toBe(Math.round(km * 2));
+      const machines = JOB_MACHINES[r.job as Job];
+      expect(
+        machines.categories.includes(r.category as Category) ||
+          (r.category === "tractor" &&
+            r.attachments.some((a) => machines.attachments.includes(a as Attachment))) ||
+          (r.category === "tractor" && r.job === "plough"),
+        `${r.job} on ${r.category}`,
+      ).toBe(true);
+    }
+    expect(new Set(rows.map((r) => r.job)).size).toBeGreaterThanOrEqual(4);
   });
 
   it("generates its dates from the day it runs, so the demo stays fresh", () => {

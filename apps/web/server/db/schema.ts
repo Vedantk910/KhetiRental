@@ -7,6 +7,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   numeric,
   pgTable,
   primaryKey,
@@ -173,6 +174,9 @@ export const bookings = pgTable("bookings", {
   depositPaise: integer("deposit_paise").notNull(),
   dieselIncluded: boolean("diesel_included").notNull(),
   totalPaise: integer("total_paise").notNull(),
+  /** What the renter wants done (one of JOBS) and how far they searched from, rounded to 0.5 km. Never a point. */
+  job: text("job"),
+  renterDistanceKm: numeric("renter_distance_km", { precision: 6, scale: 1 }),
   status: text("status").notNull().default("REQUESTED"),
   replyBy: ts("reply_by").notNull(),
   idempotencyKey: text("idempotency_key").notNull().unique(),
@@ -261,4 +265,21 @@ export const rateLimits = pgTable("rate_limits", {
   key: text("key").primaryKey(),
   windowStart: ts("window_start").notNull(),
   count: integer("count").notNull(),
+});
+
+/** The owner's half-finished listing (UI-SPEC §4.11): one per owner, photos are upload urls only the server sets. */
+export const listingDrafts = pgTable("listing_drafts", {
+  ownerId: uuid("owner_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  step: smallint("step").notNull().default(1),
+  data: jsonb("data")
+    .$type<Record<string, unknown>>()
+    .notNull()
+    .default(sql`'{}'`),
+  photos: jsonb("photos")
+    .$type<Record<string, string>>()
+    .notNull()
+    .default(sql`'{}'`),
+  updatedAt: ts("updated_at").notNull().defaultNow(),
 });

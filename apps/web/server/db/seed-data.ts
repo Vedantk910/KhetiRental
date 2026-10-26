@@ -1,7 +1,17 @@
 // Sample data for Maharashtra (Latur, Pune, Nashik, Satara, Kolhapur, Solapur, Chhatrapati Sambhajinagar,
 // Nagpur, Jalgaon) and Jaipur (Rajasthan), D-13. Pure and deterministic: the same seed gives the same rows;
 // dates are relative to `today` so bookings stay upcoming.
-import type { Attachment, BookingStatus, Category, PriceUnit, Role, Slot } from "@/lib/domain";
+import {
+  JOB_MACHINES,
+  JOBS,
+  type Attachment,
+  type BookingStatus,
+  type Category,
+  type Job,
+  type PriceUnit,
+  type Role,
+  type Slot,
+} from "@/lib/domain";
 import { addDays } from "../pricing";
 
 /** mulberry32 */
@@ -1066,6 +1076,9 @@ interface SeedBooking {
   endDate: string;
   slot: Slot;
   status: BookingStatus;
+  /** What the renter wanted done, and how far they searched from (km, a multiple of 0.5). */
+  job?: Job;
+  distanceKm?: number;
   stars?: number;
   review?: string;
   /** Minutes since the request was made; set for requests that should show a live reply timer or have lapsed. */
@@ -1375,6 +1388,20 @@ export function buildSeed(today: string, seed = 2026) {
     "jalgaon-rotavator",
   ].entries()) {
     blocks.push({ machineIdx: idxOf.get(key) ?? 0, day: addDays(today, 12 + i * 2) });
+  }
+  // Every sample booking says what job it is for (one the machine can do) and how far the renter was.
+  const jobOf = (m: SeedMachine, n: number): Job => {
+    const can = JOBS.filter(
+      (j) =>
+        JOB_MACHINES[j].categories.includes(m.category) ||
+        (m.category === "tractor" && JOB_MACHINES[j].attachments.some((a) => m.attachments.includes(a))),
+    );
+    return can.length ? can[n % can.length] : "plough";
+  };
+  for (const b of bookings) {
+    const n = Number(b.code.slice(3));
+    b.job ??= jobOf(machines[b.machineIdx], n);
+    b.distanceKm ??= 1 + ((n * 7) % 36) / 2;
   }
   return { pins: PINS, users: [...USERS, ...MORE_USERS], machines, bookings, blocks };
 }

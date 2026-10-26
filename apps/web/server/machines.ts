@@ -26,7 +26,7 @@ const MAX_PHOTOS = 8;
 
 const roundTo = (n: number, dp: number) => Math.round(n * 10 ** dp) / 10 ** dp;
 
-export async function resolvePlace(q: SearchQuery) {
+export async function resolvePlace(q: Pick<SearchQuery, "lat" | "lng" | "pin" | "village">) {
   const sql = getSql();
   if (q.lat !== undefined && q.lng !== undefined)
     return { lat: q.lat, lng: q.lng, label: null, district: null };
