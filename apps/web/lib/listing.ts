@@ -1,5 +1,12 @@
 // The listing wizard's data (UI-SPEC §4.11): validation per step, the API payload, the draft. Pure and testable.
-import { ATTACHMENTS, CATEGORIES, type Attachment, type Category, type PriceUnit } from "./domain";
+import {
+  ATTACHMENTS,
+  CATEGORIES,
+  type Attachment,
+  type Category,
+  type PhotoKey,
+  type PriceUnit,
+} from "./domain";
 import { toAsciiNumber } from "./format";
 import { addDays, parseDay } from "@/server/pricing";
 
@@ -71,12 +78,14 @@ export const emptyDraft = (): Draft => ({
   price: "",
 });
 
-export type PhotoKey = "front" | "side" | "meter" | "extra1" | "extra2" | "extra3" | "rc";
+export type { PhotoKey };
 export interface PhotoSlot {
   preview: string;
   blob?: Blob;
   /** Set when the photo is already on the server (edit). */
   id?: string;
+  /** Set when the photo sits in the server-side draft (new listing); no blob is kept then. */
+  draft?: boolean;
 }
 export type Photos = Partial<Record<PhotoKey, PhotoSlot>>;
 const REQUIRED_PHOTOS = ["front", "side", "meter"] as const;

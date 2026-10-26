@@ -9,7 +9,7 @@ import type { Locale } from "@/i18n/routing";
 import type { Category, PaymentMethod, PriceUnit } from "@/lib/domain";
 import { PAYMENT_METHODS } from "@/lib/domain";
 import { toAsciiNumber } from "@/lib/format";
-import { estimateQty, filtersToQuery, parseFilters, presetRange, type Raw } from "@/lib/rent";
+import { bookingOrigin, estimateQty, filtersToQuery, parseFilters, presetRange, type Raw } from "@/lib/rent";
 import { machineDays } from "@/server/machines";
 import { bookingWindow, cancelDeadline, quote, todayIst } from "@/server/pricing";
 import { loadMachine } from "@/server/rent-pages";
@@ -96,6 +96,8 @@ export default async function BookPage({
         step={step}
         range={range}
         slot={f.slot}
+        job={f.job}
+        origin={bookingOrigin(f)}
         unit={unit}
         acres={f.acres}
         qty={q.qty}

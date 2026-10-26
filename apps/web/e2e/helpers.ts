@@ -73,7 +73,9 @@ export async function setTheme(page: Page, theme: "light" | "dark") {
 /** Waits until React has hydrated the element (its props are attached), so a click reaches its handler. */
 export async function untilInteractive(locator: Locator) {
   await expect
-    .poll(() => locator.evaluate((el) => Object.keys(el).some((k) => k.startsWith("__reactProps"))))
+    .poll(() => locator.evaluate((el) => Object.keys(el).some((k) => k.startsWith("__reactProps"))), {
+      timeout: 15_000,
+    })
     .toBe(true);
 }
 

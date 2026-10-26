@@ -30,6 +30,7 @@ import {
   type Draft,
   type Errors,
   type PhotoKey,
+  type PhotoSlot,
   type Photos,
   type ServerMachine,
 } from "@/lib/listing";
@@ -57,6 +58,13 @@ const DRAFT_KEY = "kr:listing-draft:v1";
 const HORIZON_DAYS = 60;
 const EXTRA_KEYS = ["extra1", "extra2", "extra3"] as const;
 const UPLOAD_ORDER: PhotoKey[] = ["front", "side", "meter", "extra1", "extra2", "extra3", "rc"];
+
+interface ServerDraft {
+  step: number;
+  data: Partial<Draft>;
+  photos: Record<string, string>;
+  updatedAt: string;
+}
 
 export interface EditMachine extends ServerMachine {
   id: string;
@@ -172,28 +180,108 @@ export function Wizard({
     };
   }, []);
 
-  // The draft (without photos) is kept on this phone; restored after the first paint.
+  // The draft lives on the server (any phone, photos too); this phone keeps a copy for when the network is down.
+  // Autosave waits for the restore so an empty form never overwrites a saved draft.
+  const [restored, setRestored] = useState(editing);
+  const untouched = useRef(draft);
+  const lastSaved = useRef("");
+  const onServer = useRef(false);
+  const saving = useRef<Promise<unknown>>(Promise.resolve());
+  const prevStep = useRef(step);
   useEffect(() => {
     if (editing) return;
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (!raw) return;
-      const saved = JSON.parse(raw) as { draft?: Partial<Draft>; step?: number };
-      if (saved.draft) setDraft({ ...emptyDraft(), ...saved.draft });
-      if (initialStep === null && saved.step && saved.step >= 1 && saved.step <= 4)
-        setStep(saved.step as 1 | 2 | 3 | 4, false);
-    } catch {
-      // private mode or a damaged draft: start fresh
-    }
+    const ac = new AbortController();
+    void (async () => {
+      let local: { draft?: Partial<Draft>; step?: number; savedAt?: number } = {};
+      try {
+        local = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}") as typeof local;
+      } catch {
+        // private mode or a damaged copy: the server draft (if any) is enough
+      }
+      const res = await fetch("/api/owner/draft", { signal: ac.signal }).catch(() => null);
+      const body = res?.ok
+        ? ((await res.json().catch(() => null)) as { draft: ServerDraft | null } | null)
+        : null;
+      if (ac.signal.aborted) return;
+      const server = body?.draft ?? null;
+      onServer.current = !!server;
+      // Whichever copy was saved last wins for the fields; photos only exist on the server.
+      const fromServer = !!server && (!local.savedAt || Date.parse(server.updatedAt) >= local.savedAt);
+      const fields = fromServer ? server.data : local.draft;
+      const savedStep = fromServer ? server.step : local.step;
+      // Anything typed while the draft was loading wins over it.
+      if (fields) setDraft((cur) => (cur === untouched.current ? { ...emptyDraft(), ...fields } : cur));
+      if (server) {
+        const saved = Object.fromEntries(
+          Object.entries(server.photos).map(([k, url]) => [k, { preview: url, draft: true }]),
+        ) as Photos;
+        setPhotos((cur) => ({ ...saved, ...cur }));
+        if (fromServer) lastSaved.current = JSON.stringify({ data: server.data, step: server.step });
+      }
+      if (initialStep === null && savedStep && savedStep >= 1 && savedStep <= 4)
+        setStep(savedStep as 1 | 2 | 3 | 4, false);
+      setRestored(true);
+    })();
+    return () => {
+      ac.abort();
+    };
   }, [editing, initialStep, setStep]);
   useEffect(() => {
-    if (editing || done.current) return;
+    if (editing || !restored || done.current) return;
+    const snap = JSON.stringify({ data: draft, step });
+    if (snap === JSON.stringify({ data: emptyDraft(), step: 1 }) && !onServer.current) return;
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ draft, step }));
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ draft, step, savedAt: Date.now() }));
     } catch {
-      // storage blocked: the form still works
+      // storage blocked: the server copy still works
     }
-  }, [draft, step, editing]);
+    if (snap === lastSaved.current) return;
+    // A step change saves at once; typing waits for a pause.
+    const delay = prevStep.current === step ? 800 : 0;
+    prevStep.current = step;
+    const timer = setTimeout(() => {
+      if (done.current) return;
+      saving.current = fetch("/api/owner/draft", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ step, data: draft }),
+      })
+        .then((r) => {
+          if (r.ok) {
+            lastSaved.current = snap;
+            onServer.current = true;
+          }
+        })
+        .catch(() => undefined);
+    }, delay);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [draft, step, editing, restored]);
+
+  // A photo goes to the draft as soon as it is chosen, so it follows the owner to another phone. If that fails
+  // (no signal) the slot keeps its blob and publish uploads it directly.
+  const setPhoto = (k: PhotoKey) => (v: PhotoSlot | undefined) => {
+    setPhotos((p) => ({ ...p, [k]: v }));
+    if (editing) return;
+    if (!v) {
+      void fetch(`/api/owner/draft/photos/${k}`, { method: "DELETE" }).catch(() => undefined);
+      return;
+    }
+    if (!v.blob) return;
+    const fd = new FormData();
+    fd.set("photo", v.blob, "photo.webp");
+    fd.set("key", k);
+    fetch("/api/owner/draft/photos", { method: "POST", body: fd })
+      .then((r) => {
+        if (!r.ok) throw new Error("upload");
+        onServer.current = true;
+        setPhotos((p) =>
+          p[k]?.preview === v.preview ? { ...p, [k]: { preview: v.preview, draft: true } } : p,
+        );
+      })
+      .catch(() => undefined);
+  };
 
   const errors: Errors = useMemo(() => validateStep(step, draft, photos, year), [step, draft, photos, year]);
   const shown = tried ? errors : {};
@@ -324,7 +412,10 @@ export function Wizard({
         // A replaced RC is swapped by the server; every other replaced or removed photo is deleted first.
         if (was && (!slot || (slot.blob && key !== "rc")))
           await call(`/api/owner/machines/${id}/photos/${was.id}`, { method: "DELETE" });
-        if (slot?.blob && !uploaded.current.has(key)) {
+        if (slot?.draft && !uploaded.current.has(key)) {
+          await call(`/api/owner/machines/${id}/photos`, json("POST", { fromDraft: key }));
+          uploaded.current.add(key);
+        } else if (slot?.blob && !uploaded.current.has(key)) {
           const fd = new FormData();
           fd.set("photo", slot.blob, "photo.webp");
           fd.set("kind", key.startsWith("extra") ? "extra" : key);
@@ -345,6 +436,10 @@ export function Wizard({
 
       if (!editing) await call(`/api/owner/machines/${id}`, json("PATCH", { active: true }));
       done.current = true;
+      if (!editing) {
+        await saving.current;
+        await fetch("/api/owner/draft", { method: "DELETE" }).catch(() => undefined);
+      }
       try {
         localStorage.removeItem(DRAFT_KEY);
       } catch {
@@ -519,15 +614,7 @@ export function Wizard({
                 ...EXTRA_KEYS.map((k) => [k, t("slotExtra")] as const),
               ] as const
             ).map(([k, label]) => (
-              <PhotoSlotTile
-                key={k}
-                slotKey={k}
-                label={label}
-                value={photos[k]}
-                onChange={(v) => {
-                  setPhotos((p) => ({ ...p, [k]: v }));
-                }}
-              />
+              <PhotoSlotTile key={k} slotKey={k} label={label} value={photos[k]} onChange={setPhoto(k)} />
             ))}
           </div>
           {shown.photos && (
@@ -541,9 +628,7 @@ export function Wizard({
               label={t("slotRc")}
               value={photos.rc}
               status={machine?.rcStatus === "checked" && photos.rc?.id ? t("rcChecked") : t("rcPending")}
-              onChange={(v) => {
-                setPhotos((p) => ({ ...p, rc: v }));
-              }}
+              onChange={setPhoto("rc")}
             />
           </div>
           <p className="text-caption text-text-subtle">{t("rcHint")}</p>

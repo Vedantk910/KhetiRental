@@ -41,6 +41,10 @@ export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 export const PHOTO_KINDS = ["front", "side", "meter", "extra", "rc"] as const;
 
+/** The listing wizard's photo places; the three extras all become kind "extra". */
+export const PHOTO_KEYS = ["front", "side", "meter", "extra1", "extra2", "extra3", "rc"] as const;
+export type PhotoKey = (typeof PHOTO_KEYS)[number];
+
 export const DECLINE_REASONS = ["busy", "too_far", "not_ready", "other"] as const;
 
 export const PROBLEM_TYPES = {

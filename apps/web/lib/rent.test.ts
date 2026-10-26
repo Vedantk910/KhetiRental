@@ -1,6 +1,7 @@
 import fc from "fast-check";
 import {
   apiParams,
+  bookingOrigin,
   dayCount,
   estimateQty,
   filtersToQuery,
@@ -194,5 +195,19 @@ describe("estimates and links", () => {
   it("whatsappLink strips the phone to digits and encodes the text", () => {
     expect(whatsappLink("+919800000001", "Hi & bye")).toBe("https://wa.me/919800000001?text=Hi%20%26%20bye");
     expect(whatsappLink("+91 98000-00001", "x")).toMatch(/wa\.me\/919800000001/);
+  });
+});
+
+describe("bookingOrigin", () => {
+  const f = (raw: Parameters<typeof parseFilters>[0]) => parseFilters(raw, TODAY);
+  it("names the place the same way the search did: PIN, then GPS, then village", () => {
+    expect(bookingOrigin(f({ place: "413512" }))).toEqual({ pin: "413512" });
+    expect(bookingOrigin(f({ place: "Latur", lat: "18.4", lng: "76.5" }))).toEqual({ lat: 18.4, lng: 76.5 });
+    expect(bookingOrigin(f({ place: "Latur" }))).toEqual({ village: "Latur" });
+    expect(bookingOrigin(f({ place: "413512", lat: "18.4", lng: "76.5" }))).toEqual({ pin: "413512" });
+  });
+  it("is undefined with no place, and never carries anything else", () => {
+    expect(bookingOrigin(f({}))).toBeUndefined();
+    expect(bookingOrigin(f({ place: "Latur", job: "sow", acres: "3" }))).toEqual({ village: "Latur" });
   });
 });

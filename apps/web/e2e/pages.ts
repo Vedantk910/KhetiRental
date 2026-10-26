@@ -57,6 +57,7 @@ export const PAGES: PageDef[] = [
   p("problem", "renter", (i) => `/bookings/${i.booking}/problem`),
   p("notifications", "renter", "/notifications"),
   p("settings", "renter", "/settings"),
+  p("settings-email", "renter", "/settings/email?token=sweep"),
   p("owner", "owner", "/owner"),
   p("owner-new", "owner", "/owner/machines/new"),
   p("owner-edit", "owner", (i) => `/owner/machines/${i.ownerMachine}/edit`),

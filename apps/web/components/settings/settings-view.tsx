@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { ChipGroup } from "@/components/ui/chip-group";
 import { Input } from "@/components/ui/field";
 import { LanguageSwitch } from "@/components/ui/language-switch";
+import { EmailChange } from "@/components/settings/email-change";
 import { Sheet } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/toast";
 import { useRouter } from "@/i18n/navigation";
@@ -18,6 +19,7 @@ type Props = {
   name: string;
   phone: string | null;
   email: string | null;
+  hasPassword: boolean;
   renter: boolean;
   owner: boolean;
   admin: boolean;
@@ -58,7 +60,12 @@ const send = (method: string, url: string, body: unknown) =>
     () => null,
   );
 
-function Profile({ name, phone, email }: Pick<Props, "name" | "phone" | "email">) {
+function Profile({
+  name,
+  phone,
+  email,
+  hasPassword,
+}: Pick<Props, "name" | "phone" | "email" | "hasPassword">) {
   const t = useTranslations("settings");
   const tc = useTranslations();
   const toast = useToast();
@@ -182,11 +189,7 @@ function Profile({ name, phone, email }: Pick<Props, "name" | "phone" | "email">
           )}
         </div>
       )}
-      <div className="flex flex-col gap-1">
-        <p className="text-label">{t("email")}</p>
-        <p className="break-words text-body">{email ?? t("emailNone")}</p>
-        <p className="text-caption text-text-subtle">{t("emailNote")}</p>
-      </div>
+      <EmailChange email={email} hasPassword={hasPassword} />
     </Section>
   );
 }
@@ -391,7 +394,7 @@ export function SettingsView(props: Props) {
       <Section id="s-lang" title={t("language")}>
         <LanguageSwitch name="settings" className="self-start" />
       </Section>
-      <Profile name={props.name} phone={props.phone} email={props.email} />
+      <Profile name={props.name} phone={props.phone} email={props.email} hasPassword={props.hasPassword} />
       <Roles renter={props.renter} owner={props.owner} />
       <Appearance />
       <Section id="s-notif" title={t("notifs")}>

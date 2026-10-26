@@ -65,7 +65,11 @@ for (const locale of LOCALES) {
     await page.getByRole("combobox").fill("413512");
     await page.getByRole("option").first().click();
     await page.getByLabel(m.list.blockSundays).check();
-    await expect(page.locator('[data-state="blocked"]').first()).toBeVisible();
+    await expect(page.getByLabel(m.list.blockSundays)).toBeChecked();
+    // Late in a month there may be no Sunday left on this page; the next one is on next month's.
+    const blocked = page.locator('[data-state="blocked"]');
+    if ((await blocked.count()) === 0) await page.getByRole("button", { name: m.owner.nextMonth }).click();
+    await expect(blocked.first()).toBeVisible();
     await checkLayout(page, `step 3 ${locale}`, full);
     await stepButton(page).click();
 
@@ -104,6 +108,8 @@ for (const locale of LOCALES) {
           endDate: inDays(offset),
           slot: "full",
           qty: 2,
+          job: "rotavate",
+          origin: { pin: "413512" },
         },
       });
       expect(r.status()).toBe(201);
@@ -126,6 +132,9 @@ for (const locale of LOCALES) {
     const timerText = (post.trim() || pre.trim()).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     await expect(page.getByText(new RegExp(timerText)).first()).toBeVisible();
     await expect(page.getByRole("button", { name: m.owner.accept })).toHaveCount(2);
+    // the card says what is wanted and how far the farmer is (the PIN is the machine's own, so under a kilometre)
+    await expect(page.getByText(new RegExp(`${m.jobs.rotavate} · `)).first()).toBeVisible();
+    await expect(page.getByText(m.owner.underKm).first()).toBeVisible();
     await checkLayout(page, `dashboard ${locale}`, full);
 
     // request detail: short name, number hidden until accepted
@@ -134,6 +143,8 @@ for (const locale of LOCALES) {
     await expect(page.getByText("Kisan R.")).toBeVisible();
     await expect(page.getByText("Kisan Rao")).toHaveCount(0);
     await expect(page.getByText(m.owner.numberAfter)).toBeVisible();
+    await expect(page.getByText(`${m.owner.work}: ${m.jobs.rotavate}`)).toBeVisible();
+    await expect(page.getByText(`${m.owner.distance}: ${m.owner.underKm}`)).toBeVisible();
     await checkLayout(page, `request ${locale}`, full);
 
     // accept: the renter's booking changes and they get a notification
@@ -186,6 +197,8 @@ for (const locale of LOCALES) {
     if (inDays(accept).slice(0, 7) !== month) await next.click();
     const day = page.locator(`[data-date="${inDays(accept)}"]`);
     await untilInteractive(day);
+    // The calendar's bookings arrive after the page; until then the day reads as free and a tap would block it.
+    await expect(day).toHaveAttribute("data-state", "busy");
     await day.click();
     await expect(page).toHaveURL(new RegExp(`/owner/requests/${code1}$`));
     await page.goBack();

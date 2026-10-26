@@ -8,12 +8,14 @@ const config = tseslint.config(
   {
     ignores: [
       ".next/**",
+      ".next-dev/**",
       "node_modules/**",
       "playwright-report/**",
       "test-results/**",
       "next-env.d.ts",
       "*.config.{js,mjs,ts}",
       "scripts/**", // plain Node build scripts
+      "public/**", // the service worker and its rules are plain browser scripts
     ],
   },
   // next/core-web-vitals registers react, react-hooks, jsx-a11y and @next/next.

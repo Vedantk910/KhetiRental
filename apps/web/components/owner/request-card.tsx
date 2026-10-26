@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import type { PriceUnit } from "@/lib/domain";
 import { formatRupees } from "@/lib/format";
 import { fmtDays } from "@/lib/rent";
+import { useKmText } from "./km-text";
 import { ReplyButtons, ReplyTimer } from "./reply";
 
 /** "2.5 acres", "4 h", "2 days" for the quantity the renter asked for. */
@@ -26,6 +27,8 @@ export function RequestCard({ b }: { b: BookingView }) {
   const t = useTranslations("owner");
   const locale = useLocale();
   const qtyText = useQtyText();
+  const kmText = useKmText();
+  const tj = useTranslations("jobs");
   const [gone, setGone] = useState(false);
   if (gone) return null;
   const name = b.renter.name ?? "";
@@ -38,13 +41,20 @@ export function RequestCard({ b }: { b: BookingView }) {
             prefetch={false}
             className="after:absolute after:inset-0 after:content-['']"
           >
-            {t("reqLine", { name, qty: qtyText(b.unit as PriceUnit, b.qty) })}
+            {b.distanceKm === null
+              ? t("reqLine", { name, qty: qtyText(b.unit as PriceUnit, b.qty) })
+              : t("reqLineKm", {
+                  name,
+                  qty: qtyText(b.unit as PriceUnit, b.qty),
+                  dist: kmText(b.distanceKm),
+                })}
           </Link>
         </h3>
         <ReplyTimer replyBy={String(b.replyBy)} />
       </div>
       <p className="text-small text-text-muted">
-        {fmtDays(b.startDate, b.endDate, locale)} · {b.machine.name}
+        {fmtDays(b.startDate, b.endDate, locale)}
+        {b.job ? ` · ${tj(b.job)}` : ""} · {b.machine.name}
       </p>
       <p className="text-h2">{formatRupees(b.totalPaise, locale)}</p>
       <ReplyButtons

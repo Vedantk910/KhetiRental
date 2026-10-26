@@ -131,10 +131,11 @@ test.describe("fallbacks", () => {
     await asDevice(page, "rich");
     await page.goto("/en");
     const canvas = slot(page).locator("canvas");
-    // The pins build after idle and can move the page; keep the slot in view until the canvas shows.
+    // The pins build after idle and can move the page; keep the slot in view until the scene is running (its first
+    // tag is placed), so the context-loss listener is attached before the loss is fired.
     await expect(async () => {
       await slot(page).scrollIntoViewIfNeeded();
-      await expect(canvas).toBeVisible({ timeout: 1000 });
+      await expect(slot(page).locator("[data-tag='tractor'][data-anchor]")).toBeVisible({ timeout: 1000 });
     }).toPass({ timeout: 20_000 });
     await canvas.evaluate((c) => c.dispatchEvent(new Event("webglcontextlost", { cancelable: true })));
     await expect(canvas).toHaveCount(0);

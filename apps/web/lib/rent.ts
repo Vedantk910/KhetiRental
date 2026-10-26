@@ -127,6 +127,15 @@ export function apiParams(f: Filters, extra: Record<string, string> = {}): URLSe
   return q;
 }
 
+/** Where the booking request says the search started: a PIN, else GPS, else the village text (as apiParams does). */
+export function bookingOrigin(
+  f: Filters,
+): { pin: string } | { lat: number; lng: number } | { village: string } | undefined {
+  if (isPin(f.place)) return { pin: f.place };
+  if (f.lat !== null && f.lng !== null) return { lat: f.lat, lng: f.lng };
+  return f.place ? { village: f.place } : undefined;
+}
+
 export const hasPlace = (f: Filters) => f.place !== "" || (f.lat !== null && f.lng !== null);
 
 export type Range = { from: string; to: string };

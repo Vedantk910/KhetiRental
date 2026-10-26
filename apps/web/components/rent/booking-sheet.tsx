@@ -9,9 +9,9 @@ import { PriceRow } from "@/components/ui/price-row";
 import { Sheet } from "@/components/ui/sheet";
 import { Stepper } from "@/components/ui/stepper";
 import { Link, useRouter } from "@/i18n/navigation";
-import { type PaymentMethod, type PriceUnit, SLOTS, type Slot } from "@/lib/domain";
+import { type Job, type PaymentMethod, type PriceUnit, SLOTS, type Slot } from "@/lib/domain";
 import { formatRupees } from "@/lib/format";
-import { dayCount, estimateQty, fmtDays, type Range } from "@/lib/rent";
+import { type bookingOrigin, dayCount, estimateQty, fmtDays, type Range } from "@/lib/rent";
 import { cn } from "@/lib/utils";
 import { SLOT_HOURS } from "@/server/pricing";
 import { DateRangeSheet } from "./date-range-sheet";
@@ -32,6 +32,9 @@ type Props = {
   step: 1 | 2 | 3;
   range: Range;
   slot: Slot;
+  /** From the search, so the owner sees what the work is and roughly how far away. */
+  job: Job | null;
+  origin: ReturnType<typeof bookingOrigin>;
   unit: PriceUnit;
   acres: number | null;
   qty: number;
@@ -164,6 +167,8 @@ export function BookingSheet(p: Props) {
             startDate: p.range.from,
             endDate: p.range.to,
             slot: p.slot,
+            ...(p.job ? { job: p.job } : {}),
+            ...(p.origin ? { origin: p.origin } : {}),
             ...(p.unit === "day" ? {} : { qty: p.quote.qty }),
           }),
         });

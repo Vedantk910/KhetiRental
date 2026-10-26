@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/shell/site-footer";
 import { SiteHeader } from "@/components/shell/site-header";
 import { SkipLink } from "@/components/shell/skip-link";
+import { ServiceWorkerRegister } from "@/components/shell/sw-register";
 import { TabBar } from "@/components/shell/tab-bar";
 import { ToastProvider } from "@/components/ui/toast";
 import { routing } from "@/i18n/routing";
@@ -52,10 +53,26 @@ export async function generateMetadata({
     // Only used to turn relative metadata URLs (canonical, language alternates) into absolute ones.
     metadataBase: new URL(process.env.SITE_URL || "http://localhost:3000"),
     title: { default: t("brand"), template: `%s – ${t("brand")}` },
+    icons: {
+      icon: [
+        { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+        { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+      ],
+      apple: "/icons/apple-touch-icon.png",
+    },
+    appleWebApp: { capable: true, title: t("brand") },
   };
 }
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1 };
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // The browser's address bar follows the page background (REVIEW A-10).
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FAF8F4" },
+    { media: "(prefers-color-scheme: dark)", color: "#13100D" },
+  ],
+};
 
 export default async function LocaleLayout({
   children,
@@ -82,6 +99,7 @@ export default async function LocaleLayout({
       <body className="flex min-h-screen flex-col overflow-x-hidden font-ui antialiased">
         <NextIntlClientProvider>
           <ToastProvider>
+            <ServiceWorkerRegister />
             <SkipLink />
             <SiteHeader />
             <main id="main" tabIndex={-1} className="flex-1 outline-none">

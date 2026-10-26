@@ -1,6 +1,6 @@
 // Local-disk uploads for dev (apps/web/.uploads). Type is sniffed from the bytes, not trusted from the client.
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { ApiError } from "./http";
 
@@ -30,6 +30,13 @@ export async function saveImage(file: unknown): Promise<string> {
   await mkdir(dir(), { recursive: true });
   await writeFile(path.join(dir(), name), bytes);
   return `/api/uploads/${name}`;
+}
+
+/** Deletes a file saved by saveImage, given its url. Anything else (and a missing file) is ignored. */
+export async function removeUpload(url: string) {
+  const name = url.slice("/api/uploads/".length);
+  if (url.startsWith("/api/uploads/") && NAME.test(name))
+    await unlink(path.join(dir(), name)).catch(() => undefined);
 }
 
 export async function readUpload(name: string) {

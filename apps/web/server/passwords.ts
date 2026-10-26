@@ -51,7 +51,7 @@ export async function loginWithPassword(
   return { id: u.id, name: u.name, email: u.email, phone: u.phone, roles: u.roles };
 }
 
-const tokenHash = (t: string) => createHmac("sha256", authSecret()).update(t).digest("hex");
+export const tokenHash = (t: string) => createHmac("sha256", authSecret()).update(t).digest("hex");
 
 /** Returns the token (for the caller to email) or null when no such account; callers show the same message either way. */
 export async function requestPasswordReset(rawEmail: string): Promise<string | null> {

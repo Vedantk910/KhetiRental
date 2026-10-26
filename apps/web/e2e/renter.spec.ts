@@ -73,6 +73,14 @@ for (const locale of LOCALES) {
     // Confirmation, then my bookings
     await expect(page).toHaveURL(/\/bookings\/KR-\d{4}/);
     const code = /KR-\d{4}/.exec(page.url())![0];
+    // The search's job and place travelled with the booking; only a rounded distance is kept.
+    const [kept] = await sql(
+      (s) => s<{ job: string | null; km: string | null }[]>`
+      SELECT job, renter_distance_km::text AS km FROM bookings WHERE code = ${code} ORDER BY created_at DESC LIMIT 1`,
+    );
+    expect(kept.job).toBe("plough");
+    expect(Number(kept.km) * 2).toBe(Math.round(Number(kept.km) * 2));
+    expect(Number(kept.km)).toBeLessThan(5);
     await expectNoAxeViolations(page, `booking ${locale}`);
     await page.goto(`/${locale}/bookings`);
     await expect(page.getByText(code).first()).toBeVisible();

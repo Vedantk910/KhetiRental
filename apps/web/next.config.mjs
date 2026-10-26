@@ -18,6 +18,8 @@ const csp = [
   // Real Google sign-in redirects there after the sign-in form posts (D-05).
   "form-action 'self' https://accounts.google.com",
   "object-src 'none'",
+  // The offline service worker (REVIEW A-10) is served from this site only.
+  "worker-src 'self'",
 ].join("; ");
 
 const securityHeaders = [
@@ -55,13 +57,25 @@ const moved = Object.entries(MOVED).flatMap(([from, to]) => [
 
 /** @type {import('next').NextConfig} */
 const config = {
+  // `npm run dev` builds into .next-dev, so a running dev server never overwrites the production build e2e tests use.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   reactStrictMode: true,
   poweredByHeader: false,
   async redirects() {
     return moved;
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // A changed service worker must be picked up on the next visit, not after a day in some cache.
+      {
+        source: "/(sw.js|sw-rules.js)",
+        headers: [
+          { key: "Cache-Control", value: "no-cache" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
   },
 };
 

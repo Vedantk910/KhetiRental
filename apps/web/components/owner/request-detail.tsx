@@ -11,6 +11,7 @@ import { keepPaise, type PriceUnit } from "@/lib/domain";
 import { formatRupees } from "@/lib/format";
 import { fmtDays, whatsappLink } from "@/lib/rent";
 import { SLOT_HOURS } from "@/server/pricing";
+import { useKmText } from "./km-text";
 import { ReplyButtons, ReplyTimer } from "./reply";
 
 const btn =
@@ -21,6 +22,8 @@ export function RequestDetail({ b }: { b: BookingView }) {
   const t = useTranslations("owner");
   const tb = useTranslations("bookings");
   const tr = useTranslations();
+  const tj = useTranslations("jobs");
+  const kmText = useKmText();
   const locale = useLocale();
   const money = (p: number) => formatRupees(p, locale);
   const unit = b.unit as PriceUnit;
@@ -67,6 +70,16 @@ export function RequestDetail({ b }: { b: BookingView }) {
         <p className="text-small text-text-muted">
           {t("field")}: {qty}
         </p>
+        {b.job && (
+          <p className="text-small text-text-muted">
+            {t("work")}: {tj(b.job)}
+          </p>
+        )}
+        {b.distanceKm !== null && (
+          <p className="text-small text-text-muted">
+            {t("distance")}: {kmText(b.distanceKm)}
+          </p>
+        )}
       </Card>
       <Card className="flex flex-col gap-2">
         <PriceRow label={tb("price")} value={money(b.totalPaise)} />

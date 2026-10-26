@@ -4,6 +4,7 @@ import type { TransactionSql as Sql } from "postgres";
 import { ACTIVE_STATUSES, type Role } from "@/lib/domain";
 import { getSql, one } from "./db";
 import { ApiError } from "./http";
+import { deleteDraft } from "./drafts";
 import { verifyOtp } from "./otp";
 import type { SessionUser } from "./session";
 
@@ -87,9 +88,11 @@ export async function deleteAccount(u: SessionUser) {
     await tx`DELETE FROM notifications WHERE user_id = ${u.id}`;
     if (me.phone) await tx`DELETE FROM otp_codes WHERE phone = ${me.phone}`;
     if (me.email) await tx`DELETE FROM verification_tokens WHERE identifier = ${me.email}`;
+    await tx`DELETE FROM verification_tokens WHERE identifier LIKE ${`email-change:${u.id}:%`}`;
     await tx`
       UPDATE users SET name = NULL, email = NULL, email_verified = NULL, image = NULL, phone = NULL,
         phone_verified_at = NULL, password_hash = NULL, roles = ARRAY['renter'], deleted_at = now()
       WHERE id = ${u.id}`;
   });
+  await deleteDraft(u.id);
 }

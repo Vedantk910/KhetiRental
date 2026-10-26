@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SettingsView } from "@/components/settings/settings-view";
 import type { Locale } from "@/i18n/routing";
+import { getSql, one } from "@/server/db";
 import { pageUser } from "@/server/page-user";
 
 export async function generateMetadata({
@@ -21,11 +22,19 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
   setRequestLocale(locale as Locale);
   const user = await pageUser();
   if (!user) notFound();
+  const hasPassword = Boolean(
+    one(
+      await getSql()<
+        { p: boolean }[]
+      >`SELECT password_hash IS NOT NULL AS p FROM users WHERE id = ${user.id}`,
+    )?.p,
+  );
   return (
     <SettingsView
       name={user.name ?? ""}
       phone={user.phone}
       email={user.email}
+      hasPassword={hasPassword}
       renter={user.roles.includes("renter")}
       owner={user.roles.includes("owner")}
       admin={user.roles.includes("admin")}

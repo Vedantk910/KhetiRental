@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "NEXT_DIST_DIR=.next-dev next dev",
     "build": "next build",
     "start": "next start",
     "db:migrate": "tsx --env-file-if-exists=.env server/db/migrate.ts",
@@ -22,7 +22,8 @@
     "test:budget": "playwright test e2e/budget.spec.ts",
     "lighthouse": "tsx --env-file-if-exists=.env scripts/lighthouse.ts",
     "test:visual": "playwright test e2e/visual.spec.ts",
-    "test:visual:update": "UPDATE_VISUAL=1 playwright test e2e/visual.spec.ts --update-snapshots"
+    "test:visual:update": "UPDATE_VISUAL=1 playwright test e2e/visual.spec.ts --update-snapshots",
+    "icons": "tsx scripts/make-icons.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "1.11.3",

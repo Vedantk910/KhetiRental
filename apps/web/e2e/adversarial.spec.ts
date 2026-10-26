@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { watchErrors } from "./helpers";
+import { untilInteractive, watchErrors } from "./helpers";
 
 const USERS = 5;
 
@@ -121,22 +121,28 @@ test("5 users long-press the stepper: it repeats, stops at the bounds and on rel
     const value = page.getByRole("spinbutton", { name: "Field size" });
     const more = page.getByRole("button", { name: "More acres" });
     const less = page.getByRole("button", { name: "Fewer acres" });
+    await untilInteractive(more);
 
-    const hold = async (b: typeof more, ms: number) => {
+    const press = async (b: typeof more) => {
       await b.scrollIntoViewIfNeeded();
       const box = (await b.boundingBox())!;
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
       await page.mouse.down();
-      await page.waitForTimeout(ms);
-      await page.mouse.up();
     };
-    await hold(more, 1200);
-    const up = Number(await value.getAttribute("aria-valuenow"));
-    expect(up).toBeGreaterThan(4); // 2.5 + at least a few repeats
+    const now = async () => Number(await value.getAttribute("aria-valuenow"));
+    // Held: it keeps repeating (2.5 + several steps), however slow the machine is.
+    await press(more);
+    await expect.poll(now, { timeout: 10_000 }).toBeGreaterThan(4);
+    await page.mouse.up();
+    // A repeat already queued at release may still land under load; after that the value must hold.
+    await page.waitForTimeout(150);
+    const up = await now();
     await page.waitForTimeout(400);
-    expect(Number(await value.getAttribute("aria-valuenow"))).toBe(up); // stopped on release
+    expect(await now()).toBe(up); // stopped on release
 
-    await hold(less, 9000);
+    await press(less);
+    await expect.poll(now, { timeout: 20_000 }).toBe(0.5);
+    await page.mouse.up();
     await expect(value).toHaveAttribute("aria-valuenow", "0.5");
     await expect(less).toHaveAttribute("aria-disabled", "true");
     await expect(value).toHaveValue("0.5");

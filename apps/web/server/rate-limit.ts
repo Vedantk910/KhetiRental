@@ -11,8 +11,13 @@ export const LIMITS = {
   passwordIp: [50, 600],
   signupIp: [20, 3600],
   resetEmail: [5, 3600],
+  emailChangeUser: [5, 3600],
+  emailChangeTarget: [3, 3600],
+  emailChangeIp: [20, 3600],
+  emailConfirmIp: [30, 600],
   bookingCreate: [5, 3600],
   upload: [60, 3600],
+  draftSave: [600, 3600],
   problemReport: [10, 3600],
 } as const satisfies Record<string, readonly [number, number]>;
 

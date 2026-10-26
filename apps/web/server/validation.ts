@@ -6,6 +6,7 @@ import {
   DECLINE_REASONS,
   JOBS,
   PAYMENT_METHODS,
+  PHOTO_KEYS,
   PHOTO_KINDS,
   PRICE_UNITS,
   RADII_KM,
@@ -146,6 +147,13 @@ export const idempotencyKeySchema = z.string().regex(/^[A-Za-z0-9_-]{8,100}$/);
 
 const qty = z.number().positive().max(10_000);
 
+/** Where the renter searched from. Only a place to look up: the server works out the distance itself. */
+const bookingOrigin = z.union([
+  z.object({ pin }).strict(),
+  z.object({ village: z.string().trim().min(2).max(60) }).strict(),
+  z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) }).strict(),
+]);
+
 export const bookingCreateSchema = z
   .object({
     machineId: z.uuid(),
@@ -153,6 +161,8 @@ export const bookingCreateSchema = z
     endDate: day,
     slot: z.enum(SLOTS),
     qty: qty.optional(),
+    job: z.enum(JOBS).optional(),
+    origin: bookingOrigin.optional(),
   })
   .strict()
   .refine((b) => daySpan(b.startDate, b.endDate) >= 0, { message: "dates", path: ["endDate"] })
@@ -262,3 +272,42 @@ export const deleteAccountSchema = z.object({ confirm: z.literal("DELETE") }).st
 export const profileSchema = z.object({ name: nameSchema }).strict();
 export const phoneChangeSchema = z.object({ phone: phoneSchema, code: z.string().max(12) }).strict();
 export const rolesSchema = z.object({ renter: z.boolean(), owner: z.boolean() }).strict();
+export const emailChangeSchema = z
+  .object({ email: emailSchema, password: z.string().max(128).optional() })
+  .strict();
+export const emailConfirmSchema = z.object({ token: z.string().regex(/^[A-Za-z0-9_-]{20,100}$/) }).strict();
+
+// Listing drafts: the wizard's text fields as typed (so strings, not numbers), bounded, no control characters
+// (NUL cannot be stored in jsonb). Photos are never part of this body; only the upload endpoint sets them.
+const text = (max: number) =>
+  z
+    .string()
+    .max(max)
+    .regex(/^[^\u0000-\u001f\u007f]*$/);
+const draftData = z
+  .object({
+    category: z.enum(CATEGORIES),
+    make: text(40),
+    makeOther: text(40),
+    model: text(60),
+    hp: text(12),
+    year: text(12),
+    hourMeter: text(12),
+    lastServiced: z.string().regex(/^(20\d\d-(0[1-9]|1[0-2]))?$/),
+    attachments: z.array(z.enum(ATTACHMENTS)).max(ATTACHMENTS.length),
+    place: text(120),
+    pin: text(12),
+    village: text(60),
+    lat: z.number().min(-90).max(90).nullable(),
+    lng: z.number().min(-180).max(180).nullable(),
+    blocked: z.array(day).max(70),
+    operator: z.boolean(),
+    diesel: z.boolean(),
+    unit: z.enum(PRICE_UNITS),
+    price: text(12),
+  })
+  .partial()
+  .strict();
+export const draftSaveSchema = z.object({ step: z.number().int().min(1).max(4), data: draftData }).strict();
+export const draftPhotoKeySchema = z.enum(PHOTO_KEYS);
+export const draftAttachSchema = z.object({ fromDraft: draftPhotoKeySchema }).strict();

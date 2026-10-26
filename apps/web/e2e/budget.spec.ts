@@ -43,7 +43,8 @@ const CEILING_KB: Record<string, number> = {
   booking: 150,
   problem: 151,
   notifications: 152,
-  settings: 157,
+  settings: 160,
+  "settings-email": 150,
   owner: 162,
   "owner-new": 168,
   "owner-edit": 163,
@@ -72,10 +73,11 @@ for (const def of PAGES.filter((d) => d.name !== "not-found")) {
       if (r.request().resourceType() === "script") bodies.set(r.url(), await r.text().catch(() => ""));
     });
 
-    const nav = await page.goto(`/en${def.path(ids)}`, { waitUntil: "load" });
+    await page.goto(`/en${def.path(ids)}`, { waitUntil: "load" });
     // First load = the scripts the HTML itself asks for. Chunks Next prefetches for other routes, or that a page
     // imports later (map, 3D), come on top and are reported as "all" but not budgeted.
-    const html = await nav!.text();
+    // Fetched on its own: the page body is gone once the app has navigated on, which some pages do under load.
+    const html = await (await ctx.request.get(`/en${def.path(ids)}`)).text();
     const initial = new Set(
       [...html.matchAll(/<script\b[^>]*>/g)]
         .map((m) => m[0])
