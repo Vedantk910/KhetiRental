@@ -618,7 +618,12 @@
     "notFound": "TODO-translate: We couldn't find that.",
     "replyLeft": "TODO-translate: Reply within {time}",
     "call": "TODO-translate: Call {name}",
-    "acceptedBy": "TODO-translate: Accepted"
+    "acceptedBy": "TODO-translate: Accepted",
+    "reqLineKm": "TODO-translate: {name} · {qty} · {dist}",
+    "km": "TODO-translate: {km} km",
+    "underKm": "TODO-translate: under 1 km",
+    "work": "TODO-translate: Work wanted",
+    "distance": "TODO-translate: From your machine"
   },
   "list": {
     "step": "पायरी {n} / 4",
@@ -692,7 +697,7 @@
     "save": "TODO-translate: Save changes",
     "saved": "TODO-translate: Changes saved.",
     "publishFailed": "TODO-translate: We couldn't finish. Nothing is lost. Try again.",
-    "draftNote": "TODO-translate: Your answers are saved on this phone.",
+    "draftNote": "TODO-translate: Your answers and photos are saved to your account. You can carry on from any phone.",
     "stepsLabel": "TODO-translate: Steps",
     "progress": "TODO-translate: Step {n} of 4",
     "rcLabelStatus": "TODO-translate: RC status",
@@ -750,7 +755,10 @@
       "too_many_photos": "TODO-translate: You've added the most photos allowed.",
       "internal": "आमच्याकडून चूक झाली. पुन्हा प्रयत्न करा किंवा {phone} वर कॉल करा.",
       "active_bookings": "TODO-translate: You have bookings in progress. Finish or cancel them first.",
-      "phone_taken": "TODO-translate: This number already has an account."
+      "phone_taken": "TODO-translate: This number already has an account.",
+      "email_same": "TODO-translate: That is already your email.",
+      "password_wrong": "TODO-translate: That password is wrong.",
+      "mail_unavailable": "TODO-translate: We cannot send email right now. Try again later."
     }
   },
   "notFound": {
@@ -862,7 +870,7 @@
     "phoneChanged": "TODO-translate: Your number is changed.",
     "email": "TODO-translate: Email",
     "emailNone": "TODO-translate: Not added",
-    "emailNote": "TODO-translate: Email can't be changed yet.",
+    "emailNote": "TODO-translate: We email a link to the new address to confirm the change.",
     "roles": "TODO-translate: What you do here",
     "rent": "TODO-translate: I rent machines",
     "own": "TODO-translate: I list machines",
@@ -886,7 +894,17 @@
     "deleteGo": "TODO-translate: Delete my account",
     "deleteKeep": "TODO-translate: Keep my account",
     "deleted": "TODO-translate: Your account is deleted.",
-    "signedOut": "TODO-translate: You are not logged in."
+    "signedOut": "TODO-translate: You are not logged in.",
+    "emailChange": "TODO-translate: Change email",
+    "newEmail": "TODO-translate: New email",
+    "currentPassword": "TODO-translate: Your password",
+    "emailSend": "TODO-translate: Send link",
+    "emailSent": "TODO-translate: We sent a link to {email}. Open it while you are logged in. It works for 30 minutes.",
+    "emailPageTitle": "TODO-translate: Confirm your new email",
+    "emailPageBody": "TODO-translate: This will change the email on your account. You stay logged in.",
+    "emailPageGo": "TODO-translate: Confirm new email",
+    "emailPageDone": "TODO-translate: Your email is now {email}.",
+    "emailPageBack": "TODO-translate: Back to settings"
   },
   "help": {
     "title": "मदत",

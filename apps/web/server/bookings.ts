@@ -1,12 +1,20 @@
 // Bookings (F-06/F-08/F-09/F-21, S-02/S-03, UI-SPEC §4.7–§4.9, §4.12). The EXCLUDE constraint is the
 // only thing that decides who gets a slot; this code maps its 23P01 to 409 machine_unavailable.
 import { randomInt } from "node:crypto";
-import { type BookingStatus, type PaymentMethod, type Slot } from "@/lib/domain";
+import { type BookingStatus, type Job, type PaymentMethod, type Slot } from "@/lib/domain";
 import { getSql, one } from "./db";
 import { ApiError } from "./http";
+import { resolvePlace } from "./machines";
 import { createPayment } from "./mocks/payments";
 import { notify } from "./notifications";
-import { bookingWindow, cancelDeadline, type PricedMachine, quote, REPLY_WINDOW_MS } from "./pricing";
+import {
+  bookingWindow,
+  cancelDeadline,
+  type PricedMachine,
+  quote,
+  REPLY_WINDOW_MS,
+  roundKm,
+} from "./pricing";
 import { limit } from "./rate-limit";
 import { shortName } from "@/lib/format";
 import { bookingCodeSchema } from "./validation";
@@ -34,6 +42,8 @@ interface BookingRow {
   slot: Slot;
   est_qty: string;
   unit: string;
+  job: Job | null;
+  renter_distance_km: string | null;
   rate_paise: number;
   rent_paise: number;
   deposit_paise: number;
@@ -59,7 +69,7 @@ interface BookingRow {
 const SELECT = (sql: ReturnType<typeof getSql>) => sql`
   SELECT b.id, b.code, b.status, b.machine_id, b.renter_id, m.owner_id, m.make || ' ' || m.model AS machine_name,
     m.attachments, (SELECT p.url FROM machine_photos p WHERE p.machine_id = m.id AND p.kind <> 'rc' ORDER BY p.sort, p.created_at LIMIT 1) AS photo,
-    m.village, b.start_date::text, b.end_date::text, b.slot, b.est_qty::text, b.unit, b.rate_paise, b.rent_paise,
+    m.village, b.start_date::text, b.end_date::text, b.slot, b.est_qty::text, b.unit, b.job, b.renter_distance_km::text, b.rate_paise, b.rent_paise,
     b.deposit_paise, b.diesel_included, b.total_paise, b.reply_by, lower(b.during) AS starts_at, b.created_at,
     b.confirmed_at, b.closed_at, b.decline_reason, b.cancel_reason,
     o.name AS owner_name, o.phone AS owner_phone, r.name AS renter_name, r.phone AS renter_phone,
@@ -91,6 +101,8 @@ function view(b: BookingRow, viewer: SessionUser) {
     slot: b.slot,
     qty: Number(b.est_qty),
     unit: b.unit,
+    job: b.job,
+    distanceKm: b.renter_distance_km === null ? null : Number(b.renter_distance_km),
     ratePaise: b.rate_paise,
     rentPaise: b.rent_paise,
     depositPaise: b.deposit_paise,
@@ -149,6 +161,8 @@ interface CreateBookingInput {
   endDate: string;
   slot: Slot;
   qty?: number;
+  job?: Job;
+  origin?: { pin: string } | { village: string } | { lat: number; lng: number };
 }
 
 export async function createBooking(
@@ -190,6 +204,29 @@ export async function createBooking(
     throw new ApiError(400, "invalid_request", "qty");
   }
 
+  // The distance is worked out here from a place we look up ourselves, then rounded (S-07): the owner
+  // learns "about 4 km", never where the renter searched from.
+  let distanceKm: number | null = null;
+  if (input.origin) {
+    const o = input.origin;
+    // A place we don't know (a hand-typed village) only costs the distance, never the booking.
+    const at = await resolvePlace({
+      pin: "pin" in o ? o.pin : undefined,
+      village: "village" in o ? o.village : undefined,
+      lat: "lat" in o ? o.lat : undefined,
+      lng: "lng" in o ? o.lng : undefined,
+    }).catch((e: unknown) => {
+      if (e instanceof ApiError && e.code === "place_not_found") return null;
+      throw e;
+    });
+    if (at) {
+      const [d] = await sql<{ km: number }[]>`
+        SELECT ST_Distance(location, ST_SetSRID(ST_MakePoint(${at.lng}, ${at.lat}), 4326)::geography) / 1000 AS km
+        FROM machines WHERE id = ${m.id}`;
+      distanceKm = roundKm(d.km);
+    }
+  }
+
   await expireStale(m.id);
   for (let attempt = 0; attempt < 20; attempt++) {
     const code = `KR-${String(randomInt(0, 10_000)).padStart(4, "0")}`;
@@ -212,11 +249,11 @@ export async function createBooking(
         if (blocked) throw new ApiError(409, "machine_unavailable");
         return tx<{ id: string }[]>`
         INSERT INTO bookings (code, machine_id, renter_id, during, start_date, end_date, slot, est_qty, unit, rate_paise,
-          rent_paise, deposit_paise, diesel_included, total_paise, reply_by, idempotency_key)
+          rent_paise, deposit_paise, diesel_included, total_paise, reply_by, idempotency_key, job, renter_distance_km)
         VALUES (${code}, ${m.id}, ${u.id}, tstzrange(${w.start.toISOString()}::timestamptz, ${w.end.toISOString()}::timestamptz, '[)'),
           ${input.startDate}, ${input.endDate}, ${input.slot}, ${q.qty}, ${q.unit}, ${q.ratePaise}, ${q.rentPaise},
           ${q.depositPaise}, ${q.dieselIncluded}, ${q.totalPaise}, ${new Date(now.getTime() + REPLY_WINDOW_MS).toISOString()}::timestamptz,
-          ${idempotencyKey})
+          ${idempotencyKey}, ${input.job ?? null}, ${distanceKm})
         RETURNING id`;
       });
       await notify(m.owner_id, "booking_requested", row.id);
