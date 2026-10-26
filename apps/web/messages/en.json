@@ -204,6 +204,7 @@
     "need": "Choose the work and your place",
     "moreAcres": "More acres",
     "fewerAcres": "Fewer acres",
+    "placeNone": "We don't know this PIN code or village yet. Try a nearby town, or use your phone's location.",
     "suggestions": "Matching places",
     "nearYou": "Near you ({place})",
     "locating": "Finding your location…",

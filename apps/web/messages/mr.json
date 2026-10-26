@@ -204,6 +204,7 @@
     "need": "काम आणि ठिकाण निवडा",
     "moreAcres": "TODO-translate: More acres",
     "fewerAcres": "TODO-translate: Fewer acres",
+    "placeNone": "हा पिन कोड किंवा गाव आमच्याकडे अजून नाही. जवळचे गाव लिहा, किंवा फोनचे लोकेशन वापरा.",
     "suggestions": "TODO-translate: Matching places",
     "nearYou": "TODO-translate: Near you ({place})",
     "locating": "TODO-translate: Finding your location…",
